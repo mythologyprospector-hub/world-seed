@@ -95,7 +95,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = inspect_layout(args.repo, token)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        write_private_json(output, report)
     except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
         print(f"BLOCKED: inspection failed ({type(exc).__name__}); no clean result is implied.", file=sys.stderr)
         return 2

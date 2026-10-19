@@ -109,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = collect_inventory(token, args.owner)
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        write_private_json(output_path, report)
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
         print(f"BLOCKED: inventory collection failed ({type(exc).__name__}); no completeness claim is possible.", file=sys.stderr)
         return 2
