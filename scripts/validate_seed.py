@@ -15,7 +15,22 @@ def validate(root: Path) -> list[str]:
         except (OSError, UnicodeError) as exc:
             errors.append(f"cannot read {path.relative_to(root)}: {exc}")
             continue
-        for line_number, line in enumerate(content.splitlines(), 1):
+        visible_lines = []
+        fenced = False
+        fence_marker = ""
+        for line in content.splitlines():
+            stripped = line.lstrip()
+            if stripped.startswith("```") or stripped.startswith("~~~"):
+                marker = stripped[:3]
+                if not fenced:
+                    fenced, fence_marker = True, marker
+                elif marker == fence_marker:
+                    fenced = False
+                visible_lines.append("")
+                continue
+            visible_lines.append("" if fenced else line)
+
+        for line_number, line in enumerate(visible_lines, 1):
             if "](" not in line:
                 continue
             remainder = line.split("](", 1)[1]
