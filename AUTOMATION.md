@@ -68,6 +68,6 @@ Every repository should use the shared [CONSISTENCY_STANDARD.md](CONSISTENCY_STA
 
 ## Implemented baseline in world-seed
 
-The `.github/workflows/world-seed-checks.yml` workflow runs the dependency-free `scripts/validate_seed.py` check and unit tests on pull requests and pushes, with manual and weekly scheduled triggers. Its permissions are read-only. The validator checks required seed files and obvious broken relative Markdown links.
+The `.github/workflows/world-seed-checks.yml` workflow runs the dependency-free `scripts/validate_seed.py` check and unit tests on pull requests and pushes, with manual and weekly scheduled triggers. Its permissions are read-only. The seed validator checks required seed files and obvious broken relative Markdown links. CI also runs `scripts/validate_audit_findings.py` against the canonical finding template to enforce core lifecycle invariants.
 
 This is deliberately a repository-local baseline. It does not enumerate the target account, inspect private repositories, verify cross-repository contracts, or write audit findings. Do not treat the existence of this workflow as proof that a run succeeded; inspect its actual run result. Do not describe world-seed as account-audit-ready until the account inventory, private-scope access, durable findings destination, cross-repository checks, and safe fixture/end-to-end validation are implemented and demonstrated.
