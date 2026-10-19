@@ -56,6 +56,31 @@ class BranchSafeguardTests(unittest.TestCase):
         self.assertEqual(result["classic_branch_protection"]["status"], "unverified")
         self.assertEqual(result["repository_rulesets"]["status"], "unverified")
 
+    def test_organization_rulesets_are_paginated(self):
+        first_page = [
+            {"id": index, "name": f"Rule {index}", "target": "branch", "enforcement": "active"}
+            for index in range(100)
+        ]
+        second_page = [{"id": 101, "name": "Last rule", "target": "branch", "enforcement": "active"}]
+
+        def fake_get(path, token):
+            if "/branches/main/protection" in path:
+                raise http_error(404)
+            if "/repos/example/project/rulesets?" in path:
+                return []
+            if path == "/users/example":
+                return {"type": "Organization"}
+            if "/orgs/example/rulesets?per_page=100&page=1" in path:
+                return first_page
+            if "/orgs/example/rulesets?per_page=100&page=2" in path:
+                return second_page
+            raise AssertionError(path)
+
+        with patch.object(AUDITOR, "api_get", side_effect=fake_get):
+            result = AUDITOR.inspect_branch_safeguards("example/project", "main", "test-token")
+        self.assertEqual(result["organization_rulesets"]["status"], "observed")
+        self.assertEqual(result["organization_rulesets"]["count"], 101)
+
     def test_configured_classic_protection_is_summarized(self):
         def fake_get(path, token):
             if "/branches/main/protection" in path:
