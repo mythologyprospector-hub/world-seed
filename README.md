@@ -53,3 +53,14 @@ python -m unittest discover -s tests -v
 ```
 
 GitHub Actions runs these checks on pull requests and pushes, supports manual execution, and schedules a weekly repository-local check. This is the first executable quality gate—not the complete account-wide audit. It checks required seed documents and obvious broken relative Markdown links. It does not prove semantic consistency, private-repository coverage, security posture, runtime health, or recovery readiness.
+
+
+## Read-only account inventory
+
+For an operator with a GitHub token already configured in the environment, `scripts/audit_account_inventory.py` can collect a repository inventory without changing GitHub. It requires an explicit local report path:
+
+```bash
+python scripts/audit_account_inventory.py --owner YOUR_ACCOUNT_OR_ORG --output /secure/private/path/account-inventory.json
+```
+
+Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment before running; never put the token in the command, report, or repository. The report can contain private repository names. Keep it in access-controlled storage and never commit it to this public repository. Its coverage is intentionally labelled `partial-unverified`: token-visible inventory is not proof that every account repository was discovered, and this collector does not inspect repository contents or cross-repository contracts.
