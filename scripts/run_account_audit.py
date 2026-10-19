@@ -23,6 +23,7 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
     inventory = collect_inventory(token, owner_filter)
     results = []
     blocked = []
+    document_blocked = []
     for repository in inventory["repositories"]:
         full_name = repository["full_name"]
         try:
@@ -38,7 +39,7 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
             document_status = "inspected"
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             document_status = "blocked"
-            blocked.append({"repository": full_name, "reason": type(exc).__name__, "stage": "document-inspection"})
+            document_blocked.append({"repository": full_name, "reason": type(exc).__name__, "stage": "document-inspection"})
         results.append({"repository": full_name, "inventory": repository, "layout": layout, "documents": documents, "inspection_status": "inspected", "document_inspection_status": document_status})
     return {
         "schema_version": 1,
@@ -49,6 +50,7 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         "repository_count_discovered": inventory["repository_count"],
         "repository_count_inspected": sum(item["inspection_status"] == "inspected" for item in results),
         "repository_count_blocked": len(blocked),
+        "document_inspections_blocked": len(document_blocked),
         "coverage": {
             "status": "partial-unverified",
             "account_completeness_verified": False,
@@ -64,7 +66,7 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         },
         "review_policy": "Presence signals are prompts for human/AI review, not automatic defects; applicability depends on project purpose and documented exceptions.",
         "repositories": results,
-        "blocked_inspections": blocked,
+        "blocked_inspections": blocked + document_blocked,
     }
 
 
