@@ -1,9 +1,11 @@
 """Fixture tests for repository layout inspection."""
 import importlib.util
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "inspect_repository_layout.py"
 SPEC = importlib.util.spec_from_file_location("inspect_repository_layout", MODULE_PATH)
 assert SPEC and SPEC.loader

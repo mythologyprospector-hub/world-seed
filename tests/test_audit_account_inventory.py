@@ -1,9 +1,11 @@
 """Fixture tests for the authenticated inventory collector."""
 import importlib.util
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "audit_account_inventory.py"
 SPEC = importlib.util.spec_from_file_location("audit_account_inventory", MODULE_PATH)
 assert SPEC and SPEC.loader
