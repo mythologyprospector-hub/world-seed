@@ -41,3 +41,15 @@ Never store credentials, tokens, private keys, recovery codes, or other secrets 
 ## Evolution
 
 When a reusable rule changes, update its canonical document here and record the rationale. Do not silently let temporary chat context become policy. Keep operator-specific details in the profile, not in the universal constitution.
+
+
+## Local quality gate
+
+Run the dependency-free baseline checks and unit tests from the repository root:
+
+```bash
+python scripts/validate_seed.py
+python -m unittest discover -s tests -v
+```
+
+GitHub Actions runs these checks on pull requests and pushes, supports manual execution, and schedules a weekly repository-local check. This is the first executable quality gate—not the complete account-wide audit. It checks required seed documents and obvious broken relative Markdown links. It does not prove semantic consistency, private-repository coverage, security posture, runtime health, or recovery readiness.
