@@ -34,7 +34,10 @@ def validate(root: Path) -> list[str]:
             if "](" not in line:
                 continue
             remainder = line.split("](", 1)[1]
-            target = remainder.split(")", 1)[0].split()[0].strip("<>")
+            raw_target = remainder.split(")", 1)[0].strip()
+            if not raw_target:
+                continue
+            target = raw_target.split()[0].strip("<>")
             if not target or "://" in target or target.startswith(("mailto:", "#", "//")):
                 continue
             relative = target.split("#", 1)[0].split("?", 1)[0]
