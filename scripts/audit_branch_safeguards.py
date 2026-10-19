@@ -6,10 +6,16 @@ names and governance details; keep them outside public repositories.
 """
 from __future__ import annotations
 
+import argparse
 import json
+import os
+import sys
+from pathlib import Path
 from datetime import datetime, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+from private_report import write_private_json
 
 API_ROOT = "https://api.github.com"
 PAGE_SIZE = 100
@@ -154,3 +160,43 @@ def inspect_branch_safeguards(full_name: str, default_branch: str | None, token:
     else:
         result["interpretation"] = "Settings endpoints were readable; review the returned rules and bypass actors to determine effective protection."
     return result
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Write one repository's read-only safeguard report to private local storage."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repository", required=True, help="Repository in OWNER/NAME form")
+    parser.add_argument("--output", required=True, type=Path, help="Private local report path outside this repository")
+    args = parser.parse_args(argv)
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if not token:
+        print("BLOCKED: set GH_TOKEN or GITHUB_TOKEN in the environment; do not pass tokens as arguments.", file=sys.stderr)
+        return 2
+    if args.repository.count("/") != 1 or not all(args.repository.split("/", 1)):
+        print("BLOCKED: --repository must be OWNER/NAME.", file=sys.stderr)
+        return 2
+    output = args.output.expanduser().resolve()
+    seed_root = Path(__file__).resolve().parents[1]
+    if output == seed_root or seed_root in output.parents:
+        print("BLOCKED: report output must remain outside the public world-seed repository.", file=sys.stderr)
+        return 2
+    try:
+        metadata = api_get(f"/repos/{args.repository}", token)
+        report = inspect_branch_safeguards(args.repository, metadata.get("default_branch"), token)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        write_private_json(output, report)
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
+        print(f"BLOCKED: safeguard inspection failed ({type(exc).__name__}); no absence claim is possible.", file=sys.stderr)
+        return 2
+    statuses = [
+        report["classic_branch_protection"]["status"],
+        report["repository_rulesets"]["status"],
+        report["organization_rulesets"]["status"],
+    ]
+    print(f"Safeguard report written to the chosen local path. Endpoint statuses: {', '.join(statuses)}.")
+    print("Read the report's interpretation and evidence; unverified settings are not proof that safeguards are absent.")
+    return 0 if not any(status in {"unverified", "error"} for status in statuses) else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
