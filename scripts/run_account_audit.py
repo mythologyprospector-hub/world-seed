@@ -38,9 +38,16 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         documents = None
         try:
             documents = inspect_documents(full_name, token, layout.get("root_entry_names", []))
-            candidate_count = documents.get("candidate_count", documents.get("inspected_count", 0))
-            inspected_count = documents.get("inspected_count", 0)
-            document_status = "partial" if documents.get("blocked_count", 0) or inspected_count < candidate_count else "inspected"
+            # Missing conventional paths are expected probes, not failed inspections.
+            # Other non-inspected statuses (blocked, too large, unreadable, etc.)
+            # still make coverage partial. This status does not certify completeness.
+            document_results = documents.get("documents", [])
+            incomplete = any(
+                item.get("status") not in {"inspected", "not-found-or-not-visible"}
+                for item in document_results
+                if isinstance(item, dict)
+            )
+            document_status = "partial" if incomplete or documents.get("blocked_count", 0) else "inspected"
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             document_status = "blocked"
             document_blocked.append({"repository": full_name, "reason": type(exc).__name__, "stage": "document-inspection"})
