@@ -26,6 +26,8 @@ jobs:
     steps:
       - name: Check out exact revision
         uses: actions/checkout@v4
+      - name: Check shell script syntax
+        run: bash -n scripts/prepare_local_handoff_backup.sh
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
