@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a read-only baseline scan of visible repositories and their root layouts.
+"""Run a read-only baseline scan of visible repositories, layouts, and governance-document structure.
 
 This is a partial baseline audit, not a completeness or security certification.
 Reports can reveal private repository names and structure; store them outside public repositories.
@@ -19,7 +19,7 @@ from inspect_repository_documents import inspect_documents
 
 
 def build_report(token: str, owner_filter: str | None = None) -> dict:
-    """Collect inventory and root-layout review signals without changing GitHub."""
+    """Collect inventory, root-layout signals, and bounded governance-document structure without changing GitHub."""
     inventory = collect_inventory(token, owner_filter)
     results = []
     blocked = []
