@@ -36,7 +36,9 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         documents = None
         try:
             documents = inspect_documents(full_name, token, layout.get("root_entry_names", []))
-            document_status = "partial" if documents.get("blocked_count", 0) else "inspected"
+            candidate_count = documents.get("candidate_count", documents.get("inspected_count", 0))
+            inspected_count = documents.get("inspected_count", 0)
+            document_status = "partial" if documents.get("blocked_count", 0) or inspected_count < candidate_count else "inspected"
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             document_status = "blocked"
             document_blocked.append({"repository": full_name, "reason": type(exc).__name__, "stage": "document-inspection"})
