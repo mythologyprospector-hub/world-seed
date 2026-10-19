@@ -79,7 +79,7 @@ Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment before running; never put th
 
 ### Combined account baseline
 
-The combined read-only baseline runs repository discovery and root-layout inspection in one report:
+The combined read-only baseline runs repository discovery, root-layout inspection, and bounded inspection of selected governance-document headings in one report. It records document hashes and headings but does not retain document bodies:
 
 ```bash
 python scripts/run_account_audit.py --owner YOUR_ACCOUNT_OR_ORG --output /secure/private/path/repositories/account-baseline.json
