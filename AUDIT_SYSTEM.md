@@ -169,3 +169,10 @@ Still required before claiming account-wide audit readiness:
 - fixture tests, confirmed workflow-run evidence, and a fresh-builder/bootstrap recovery drill.
 
 Until those conditions are demonstrated, report readiness as **NOT VERIFIED** and coverage as **repository-local only** for this implementation. Missing credentials, inaccessible repositories, failed or overdue runs, and unavailable evidence must remain visible blockers rather than being interpreted as a clean audit.
+
+
+## Read-only inventory collector
+
+`scripts/audit_account_inventory.py` is an initial authenticated inventory utility. It uses GitHub API GET requests, paginates the repositories visible to the authenticated identity, optionally filters by repository owner, and writes a JSON report to a path explicitly selected by the operator. It does not modify GitHub.
+
+The report contains repository names and may contain private metadata. Store it only in an approved, access-controlled location outside the public seed repository. The utility deliberately reports `partial-unverified` coverage and does not claim to prove account completeness. It is not the full audit engine: it does not inspect repository contents, workflows, branch protections, cross-repository seams, or remediation state.
