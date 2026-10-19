@@ -20,12 +20,14 @@ class AccountBaselineTests(unittest.TestCase):
             "coverage": {"status": "partial-unverified"},
         }
         layout = {"repository": "example/project", "signals": {"readme_present": True}, "coverage": "entry names only"}
-        with patch.object(AUDITOR, "collect_inventory", return_value=inventory), patch.object(AUDITOR, "inspect_layout", return_value=layout):
+        documents = {"inspected_count": 1, "documents": [{"path": "README.md", "status": "inspected"}]}
+        with patch.object(AUDITOR, "collect_inventory", return_value=inventory), patch.object(AUDITOR, "inspect_layout", return_value=layout), patch.object(AUDITOR, "inspect_documents", return_value=documents):
             report = AUDITOR.build_report("test-token", "example")
         self.assertEqual(report["repository_count_inspected"], 1)
         self.assertEqual(report["repository_count_blocked"], 0)
         self.assertFalse(report["coverage"]["account_completeness_verified"])
         self.assertFalse(report["coverage"]["cross_repository_contracts_checked"])
+        self.assertEqual(report["repositories"][0]["document_inspection_status"], "inspected")
 
     def test_blocked_repository_is_counted_and_not_silently_omitted(self):
         inventory = {
