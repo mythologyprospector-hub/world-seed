@@ -31,5 +31,7 @@ jobs:
           python-version: "3.12"
       - name: Run dependency-free structural checks
         run: python scripts/validate_seed.py
+      - name: Validate the canonical audit finding template
+        run: python scripts/validate_audit_findings.py templates/audit-finding.template.json
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
