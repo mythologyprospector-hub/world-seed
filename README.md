@@ -87,6 +87,16 @@ python scripts/run_account_audit.py --owner YOUR_ACCOUNT_OR_ORG --output /secure
 
 Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment. The output must remain outside this public repository and in access-controlled storage. Repositories that cannot be inspected are recorded as blocked rather than silently omitted. A zero blocked count still does **not** prove complete account coverage, repository-content quality, security posture, or cross-repository compatibility; the report deliberately remains `partial-unverified`.
 
+### Compare two baselines
+
+After saving two reports from the same baseline utility, compare them without changing either source report:
+
+```bash
+python scripts/compare_audit_baselines.py --previous /secure/private/path/previous.json --current /secure/private/path/current.json --output /secure/private/path/comparison.json
+```
+
+The comparison reports added/removed repositories and changes in selected metadata, layout signals, document headings, and document hashes. Its output is written with owner-only file permissions. It compares only the records supplied; it cannot explain a disappearance or prove the inventory complete. It is a structural delta, not the durable findings ledger or a semantic review.
+
 
 ## Audit finding contract
 
