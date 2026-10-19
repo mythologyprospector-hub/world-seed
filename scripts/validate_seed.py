@@ -3,7 +3,7 @@
 from pathlib import Path
 import sys
 
-REQUIRED_FILES = ("README.md", "AGENTS.md", "CONSTITUTION.md", "HUMAN.md", "BOOTSTRAP.md", "REPOSITORY_MODEL.md", "AUTOMATION.md", "AUDIT_SYSTEM.md", "CONSISTENCY_STANDARD.md", "MACHINE_PROFILE.md", "RECOVERY.md", "ONBOARDING_PROMPT.md", "profiles/ACCOUNT_PROFILE.template.md")
+REQUIRED_FILES = ("README.md", "AGENTS.md", "CONSTITUTION.md", "HUMAN.md", "BOOTSTRAP.md", "REPOSITORY_MODEL.md", "AUTOMATION.md", "AUDIT_SYSTEM.md", "CONSISTENCY_STANDARD.md", "MACHINE_PROFILE.md", "RECOVERY.md", "ONBOARDING_PROMPT.md", "profiles/ACCOUNT_PROFILE.template.md", "schemas/audit-finding.schema.json", "templates/audit-finding.template.json")
 
 def validate(root: Path) -> list[str]:
     """Return missing required files and broken relative Markdown links."""
