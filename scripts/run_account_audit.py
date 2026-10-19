@@ -88,14 +88,13 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = build_report(token, args.owner)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        output.write_text(json.dumps(report, indent=2) + "\\n", encoding="utf-8")
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
         print(f"BLOCKED: baseline scan failed ({type(exc).__name__}); no clean result is implied.", file=sys.stderr)
+        return 2
     document_status = report["coverage"]["document_inspection_status_counts"]
     print(f"Baseline report written to the chosen local path: {report['repository_count_inspected']} layouts inspected, {report['repository_count_blocked']} layout inspections blocked; document inspections: {document_status['inspected']} complete, {document_status['partial']} partial, {document_status['blocked']} blocked. Coverage remains partial-unverified.")
     return 0 if not report["repository_count_blocked"] and not report["document_inspections_blocked"] and not document_status["partial"] else 1
-    print(f"Baseline report written to the chosen local path: {report['repository_count_inspected']} inspected, {report['repository_count_blocked']} blocked; coverage remains partial-unverified.")
-    return 0 if not report["repository_count_blocked"] else 1
 
 if __name__ == "__main__":
     raise SystemExit(main())
