@@ -32,5 +32,16 @@ class InventoryTests(unittest.TestCase):
             report = AUDITOR.collect_inventory("test-token", "wanted")
         self.assertEqual([item["full_name"] for item in report["repositories"]], ["wanted/repo"])
 
+    def test_report_inside_public_seed_repository_is_refused(self):
+        import os
+        from unittest.mock import patch
+        import contextlib
+        import io
+        repo_root = MODULE_PATH.parents[1]
+        with patch.dict(os.environ, {"GH_TOKEN": "test-token"}), contextlib.redirect_stderr(io.StringIO()):
+            result = AUDITOR.main(["--output", str(repo_root / "private-report.json")])
+        self.assertEqual(result, 2)
+        self.assertFalse((repo_root / "private-report.json").exists())
+
 if __name__ == "__main__":
     unittest.main()
