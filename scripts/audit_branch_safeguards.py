@@ -123,26 +123,44 @@ def inspect_branch_safeguards(full_name: str, default_branch: str | None, token:
     if owner_meta["status"] == "observed":
         owner_data = owner_meta.pop("data")
         if owner_data.get("type") == "Organization":
-            org_result = _read_control(f"/orgs/{owner}/rulesets?per_page={PAGE_SIZE}&page=1", token)
-            if org_result["status"] == "observed":
-                payload = org_result.pop("data")
-                if isinstance(payload, list):
-                    result["organization_rulesets"] = {
-                        "status": "observed",
-                        "count": len(payload),
-                        "rulesets": [{
-                            "id": item.get("id"),
-                            "name": item.get("name"),
-                            "target": item.get("target"),
-                            "enforcement": item.get("enforcement"),
-                            "conditions": item.get("conditions"),
-                            "bypass_actors": item.get("bypass_actors"),
-                        } for item in payload if isinstance(item, dict)],
-                    }
-                else:
-                    result["organization_rulesets"] = {"status": "error", "evidence": "Unexpected organization rulesets response shape."}
+            org_rulesets = []
+            org_error = None
+            for page in range(1, MAX_PAGES + 1):
+                try:
+                    payload = api_get(f"/orgs/{owner}/rulesets?per_page={PAGE_SIZE}&page={page}", token)
+                except HTTPError as exc:
+                    org_error = {"status": "unverified", "http_status": exc.code, "evidence": "Organization rulesets could not be read with the current identity."}
+                    break
+                except (URLError, TimeoutError, OSError, ValueError):
+                    org_error = {"status": "error", "evidence": "Organization rulesets request failed."}
+                    break
+                if not isinstance(payload, list):
+                    org_error = {"status": "error", "evidence": "Unexpected organization rulesets response shape."}
+                    break
+                org_rulesets.extend({
+                    "id": item.get("id"),
+                    "name": item.get("name"),
+                    "target": item.get("target"),
+                    "enforcement": item.get("enforcement"),
+                    "conditions": item.get("conditions"),
+                    "bypass_actors": item.get("bypass_actors"),
+                } for item in payload if isinstance(item, dict))
+                if len(payload) < PAGE_SIZE:
+                    break
             else:
-                result["organization_rulesets"] = org_result
+                org_error = {"status": "error", "evidence": f"Organization ruleset pagination exceeded safety limit ({MAX_PAGES} pages)."}
+            if org_error:
+                result["organization_rulesets"] = {
+                    "status": org_error["status"],
+                    "rulesets_observed": org_rulesets,
+                    "error": org_error,
+                }
+            else:
+                result["organization_rulesets"] = {
+                    "status": "observed",
+                    "count": len(org_rulesets),
+                    "rulesets": org_rulesets,
+                }
         else:
             result["organization_rulesets"] = {"status": "not-applicable", "evidence": "Repository owner is not an organization."}
     else:
