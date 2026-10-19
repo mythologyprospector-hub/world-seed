@@ -51,6 +51,26 @@ class BranchSafeguardTests(unittest.TestCase):
         self.assertEqual(result["classic_branch_protection"]["status"], "unverified")
         self.assertIn("partial", result["interpretation"])
 
+    def test_unverified_controls_create_follow_up_and_never_certify_gate(self):
+        plan = AUDITOR.build_policy_follow_up({
+            "classic_branch_protection": {"status": "unverified"},
+            "repository_rulesets": {"status": "unverified"},
+            "organization_rulesets": {"status": "unverified"},
+        })
+        self.assertEqual(plan["status"], "review-required")
+        self.assertFalse(plan["effective_human_gate_certified"])
+        self.assertTrue(any(item["action"] == "Resolve settings coverage gaps" for item in plan["next_actions"]))
+        self.assertTrue(any(item["priority"] == "approval-required" for item in plan["next_actions"]))
+
+    def test_no_reported_protection_creates_proposal_not_automatic_change(self):
+        plan = AUDITOR.build_policy_follow_up({
+            "classic_branch_protection": {"status": "not-reported"},
+            "repository_rulesets": {"status": "observed", "count": 0},
+            "organization_rulesets": {"status": "observed", "count": 0},
+        })
+        self.assertTrue(any(item["action"] == "Prepare a branch-protection proposal" for item in plan["next_actions"]))
+        self.assertFalse(plan["effective_human_gate_certified"])
+
     def test_missing_default_branch_is_unverified(self):
         result = AUDITOR.inspect_branch_safeguards("example/project", None, "test-token")
         self.assertEqual(result["classic_branch_protection"]["status"], "unverified")
