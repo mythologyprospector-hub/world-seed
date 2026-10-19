@@ -1,0 +1,92 @@
+# Account Bootstrap and Genesis
+
+**Status:** Canonical procedure
+**Governs:** The repeatable process for establishing the operating machinery in a new or existing GitHub account.
+**Last verified:** 2026-10-19
+
+## Objective
+
+Establish an AI-led operating ecosystem for the target account and its mission, using actual discovery rather than assumptions. The bootstrap must work for different missions, account owners, AI builders, and repository sets.
+
+## Phase 0 — Establish authority and target
+
+1. Identify the target GitHub account/organization and the human owner.
+2. Confirm which connected identity and tools can actually access it.
+3. Read the owner's stated mission, constraints, and risk boundaries. If absent, ask the smallest necessary mission-level question; do not invent a mission.
+4. Distinguish read-only discovery from writes. Confirm authorization for consequential actions before executing them.
+5. Never request or place credentials in chat, repository files, issues, or logs. Use approved credential managers and platform permission flows.
+
+## Phase 1 — Discover reality
+
+Inventory:
+- repositories and visibility;
+- default branches, current heads, open pull requests/issues, workflows, and automation;
+- canonical governance and project documents;
+- reusable templates, seeds, shared services, and cross-repository contracts;
+- account/team permission boundaries available to the current tools;
+- local machines, clone locations, installed runtimes, and required tools where accessible;
+- independent backups and recovery dependencies.
+
+Label every finding as observed, inferred, or unknown. Do not imply a complete inventory when permissions or API coverage prevent it. Avoid exposing private repository names or details in public files.
+
+## Phase 2 — Assess the operating machinery
+
+Before downstream implementation, compare existing rules and automation for contradictions, gaps, unsafe assumptions, duplicated sources of truth, unverified claims, and missing recovery paths.
+
+Test whether a fresh builder can distinguish:
+- inventory from portfolio assessment;
+- evidence from inference;
+- recommendation from authorization;
+- intended work from implemented work;
+- tested from verified;
+- project-level authority from account-level coordination.
+
+Repair or propose repairs to the operating machinery before directing broad downstream work. Keep discovery moving while readiness issues are investigated.
+
+## Phase 3 — Establish the ecosystem layer
+
+Select or establish one canonical ecosystem-orientation repository. It should contain:
+- the launch/arrival protocol;
+- the AI stewardship mandate;
+- a project map or documented discovery procedure;
+- account mission and governance references;
+- cross-project integration and ownership boundaries;
+- the current readiness/gap assessment and handoff;
+- links to the lower-level project bootstrap.
+
+Do not assume the source seed's repository names or structure are appropriate for the target account. Choose the smallest coherent structure that supports the mission.
+
+## Phase 4 — Establish project-level bootstrap
+
+Use the target account's existing project seed/template if sound. If none exists, derive one from this seed without copying ecosystem-specific account details into it.
+
+A project seed should preserve reusable interaction, documentation, testing, security, licensing, provenance, and machine-discovery standards, while leaving each project's purpose, architecture, and roadmap to its own canon.
+
+Never silently overwrite a repository's established canon with a template. Use a reviewable proposal and resolve conflicts explicitly.
+
+## Phase 5 — Automation and safety
+
+Inventory every workflow and its triggers, permissions, secrets, target repositories, write effects, and failure behavior. Prefer least privilege, explicit allowlists, pinned or controlled dependencies where appropriate, validation before writes, clear logs, and human gates for consequential actions.
+
+Do not assume a workflow is safe because it is YAML or because it passes syntax validation. Do not run live evaluations or trigger side effects without the required authorization.
+
+## Phase 6 — Verify and hand off
+
+Produce a compact report with:
+- what was inspected and at what ref/commit;
+- what was created or changed;
+- exact commits/branches/PRs;
+- checks actually run and their results;
+- permissions or environment areas not verified;
+- remaining blockers and risks;
+- the next best action.
+
+Keep these categories separate: complete, implemented but unverified, blocked, and not attempted. Leave a durable handoff in the canonical ecosystem repository.
+
+## Repeatability
+
+The process should be idempotent where practical. On rerun, inspect the current state and reconcile rather than blindly duplicating files or overwriting local changes. A bootstrap must be safe to interrupt and resume.
+
+## Acceptance test
+
+A bootstrap is not complete merely because seed files were copied. Demonstrate that a fresh builder can identify the mission, locate the canonical rules, describe the authority boundaries, find the project bootstrap, assess the real account state, and produce a truthful readiness report without relying on prior chat history.
