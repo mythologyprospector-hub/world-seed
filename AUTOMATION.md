@@ -43,6 +43,12 @@ Before creating or adapting sync automation, explicitly define source of truth, 
 
 Use branches and reviewable PRs for substantive shared automation changes. Obtain human approval before merge or consequential permission changes. Do not launch live workflows, write to external repositories, rotate secrets, or alter account security as an incidental side effect.
 
+## Mandatory rolling audits
+
+Automation must support the three audit scopes defined in [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md): individual repository integrity, cross-repository coherence, and account/ecosystem integrity. Establish pull-request checks, scheduled/manual audit runs, a durable findings destination, and run/evidence links as part of initial setup—not as future polish. An account-wide workflow must handle pagination, access boundaries, rate limits, partial failure, and explicit repository scope. The default repository token is not presumed to have account-wide or private-repository access. If an appropriate GitHub App or narrowly scoped credential must be configured, document the requirement and keep the uncovered scope visibly blocked until verified.
+
+Audit jobs should default to read-only. They must not auto-merge, delete repositories, change permissions, or perform destructive remediation. Missing/failed/overdue audit runs are themselves findings. Scheduled configuration alone does not establish successful coverage.
+
 ## Verification record
 
 For each workflow, distinguish:

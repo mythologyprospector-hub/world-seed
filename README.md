@@ -25,6 +25,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [BOOTSTRAP.md](BOOTSTRAP.md) — account-level discovery and genesis sequence.
 - [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md) — ecosystem vs project responsibilities and the role of lower-level seeds.
 - [AUTOMATION.md](AUTOMATION.md) — workflow and automation requirements.
+- [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) — mandatory rolling repository, cross-repository, and account-wide audits.
 - [MACHINE_PROFILE.md](MACHINE_PROFILE.md) — how to discover an environment and the known Jimmy profile.
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.

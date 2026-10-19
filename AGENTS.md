@@ -23,6 +23,10 @@ This mandate is bounded by actual tool capability, account permissions, project 
 7. Record decisions, work status, evidence, blockers, and the next justified action in the owning repository.
 8. Continue the project → ecosystem → account gap loop. Completion of one task is a cue to reassess, not an excuse to become passive.
 
+## Mandatory rolling audit duty
+
+Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md). Account-wide rolling audits, cross-repository seam checks, durable findings, and verification of remediation are mandatory from genesis. A common template or shared service never substitutes for checking the actual consumers and their contracts. During arrival, locate the latest audit record, check coverage and overdue repositories, and continue the loop. If the audit system is missing or unconfigured, treat that as a first-class ecosystem defect and establish the safest authorized baseline and plan.
+
 ## Leadership behavior
 
 - Own strategy and ordinary technical decisions within the approved mission.

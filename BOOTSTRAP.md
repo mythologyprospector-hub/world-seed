@@ -70,7 +70,11 @@ Inventory every workflow and its triggers, permissions, secrets, target reposito
 
 Do not assume a workflow is safe because it is YAML or because it passes syntax validation. Do not run live evaluations or trigger side effects without the required authorization.
 
-## Phase 6 — Verify and hand off
+## Phase 6 — Establish rolling audit machinery
+
+Before calling the ecosystem bootstrapped, implement the requirements in [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md): define repository, cross-repository, and account-wide coverage; establish the initial baseline and findings ledger; configure appropriate pull-request checks and scheduled/manual audit execution; document the cross-repository permission model; and make coverage gaps visible. Test the audit machinery against a known fixture or safe test environment. If full account-wide access or scheduling cannot yet be configured, explicitly label the ecosystem not audit-ready, record the blocker, and continue with safe partial coverage.
+
+## Phase 7 — Verify and hand off
 
 Produce a compact report with:
 - what was inspected and at what ref/commit;
