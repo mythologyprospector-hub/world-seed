@@ -18,6 +18,7 @@ from urllib.error import HTTPError, URLError
 from audit_account_inventory import collect_inventory
 from inspect_repository_layout import inspect_layout
 from inspect_repository_documents import inspect_documents
+from audit_branch_safeguards import inspect_branch_safeguards
 
 
 def build_report(token: str, owner_filter: str | None = None) -> dict:
@@ -26,13 +27,16 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
     results = []
     blocked = []
     document_blocked = []
+    safeguard_results = []
     for repository in inventory["repositories"]:
         full_name = repository["full_name"]
+        safeguards = inspect_branch_safeguards(full_name, repository.get("default_branch"), token)
+        safeguard_results.append(safeguards)
         try:
             layout = inspect_layout(full_name, token)
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             blocked.append({"repository": full_name, "reason": type(exc).__name__})
-            results.append({"repository": full_name, "inventory": repository, "layout": None, "documents": None, "inspection_status": "blocked", "document_inspection_status": "not-attempted"})
+            results.append({"repository": full_name, "inventory": repository, "layout": None, "documents": None, "branch_safeguards": safeguards, "inspection_status": "blocked", "document_inspection_status": "not-attempted"})
             continue
         document_status = "blocked"
         documents = None
@@ -51,7 +55,7 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             document_status = "blocked"
             document_blocked.append({"repository": full_name, "reason": type(exc).__name__, "stage": "document-inspection"})
-        results.append({"repository": full_name, "inventory": repository, "layout": layout, "documents": documents, "inspection_status": "inspected", "document_inspection_status": document_status})
+        results.append({"repository": full_name, "inventory": repository, "layout": layout, "documents": documents, "branch_safeguards": safeguards, "inspection_status": "inspected", "document_inspection_status": document_status})
     return {
         "schema_version": 1,
         "audit_type": "account_visible_repository_baseline",
@@ -62,6 +66,12 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         "repository_count_inspected": sum(item["inspection_status"] == "inspected" for item in results),
         "repository_count_blocked": len(blocked),
         "document_inspections_blocked": len(document_blocked),
+        "branch_safeguard_repositories_inspected": len(safeguard_results),
+        "branch_safeguard_repositories_with_unverified_controls": sum(
+            any((item.get(control) or {}).get("status") in {"unverified", "error"}
+                for control in ("classic_branch_protection", "repository_rulesets", "organization_rulesets"))
+            for item in safeguard_results
+        ),
         "coverage": {
             "status": "partial-unverified",
             "account_completeness_verified": False,
