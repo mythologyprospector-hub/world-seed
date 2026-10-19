@@ -38,6 +38,8 @@ git pull --ff-only origin main
 
 Do not assume that the machine is online, a tool is installed, a checkout is clean, a branch is safe to change, or Organs is healthy merely because the profile says it should exist.
 
+For interactive-shell discovery and the role/limits of the local prompt, follow [BASH_PROMPT.md](BASH_PROMPT.md). The supplied Jimmy configuration includes branch/dirty-state and exit-status signals plus a `pstatus` helper; verify the live configuration before relying on it. Do not silently replace or modify `~/.bashrc`.
+
 ## Other operators and machines
 
 For a different operator or machine, create a separate profile using [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md). Keep universal discovery procedures here; keep mutable machine details in the profile. Never copy Jimmy's hostname, paths, service locations, or preferences into another operator's profile.
