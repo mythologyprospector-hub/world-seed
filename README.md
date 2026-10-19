@@ -77,6 +77,17 @@ python scripts/audit_account_inventory.py --owner YOUR_ACCOUNT_OR_ORG --output /
 Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment before running; never put the token in the command, report, or repository. The report can contain private repository names. Keep it in access-controlled storage and never commit it to this public repository. Its coverage is intentionally labelled `partial-unverified`: token-visible inventory is not proof that every account repository was discovered, and this collector does not inspect repository contents or cross-repository contracts.
 
 
+### Combined account baseline
+
+The combined read-only baseline runs repository discovery and root-layout inspection in one report:
+
+```bash
+python scripts/run_account_audit.py --owner YOUR_ACCOUNT_OR_ORG --output /secure/private/path/repositories/account-baseline.json
+```
+
+Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment. The output must remain outside this public repository and in access-controlled storage. Repositories that cannot be inspected are recorded as blocked rather than silently omitted. A zero blocked count still does **not** prove complete account coverage, repository-content quality, security posture, or cross-repository compatibility; the report deliberately remains `partial-unverified`.
+
+
 ## Audit finding contract
 
 The portable finding record is defined in [schemas/audit-finding.schema.json](schemas/audit-finding.schema.json), with a starter record at [templates/audit-finding.template.json](templates/audit-finding.template.json). Findings must preserve evidence, ownership, severity, lifecycle state, remediation, and verification. A finding may be marked `verified-resolved` only when verification evidence is recorded.
