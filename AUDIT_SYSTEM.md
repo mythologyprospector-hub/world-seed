@@ -153,3 +153,19 @@ The question is not “Did every repository start from the same template?” It 
 ## Mandatory consistency and maintainability audit
 
 Every rolling audit must apply [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) at repository, cross-repository, and account scope. Evaluate documentation presentation and accuracy, code comments/docstrings, naming, repository layout, process naming, quality-tool configuration, and alignment between declared conventions and actual practice. Distinguish mechanical checks from semantic review; report unverified areas honestly. Track justified exceptions and prioritize risks and operational friction over cosmetic churn. A newly created repository inherits the standard from day one.
+
+
+## Implementation status and honest readiness
+
+The initial executable baseline now consists of a repository-local structural validator, unit tests, and a read-only GitHub Actions workflow with pull-request, push, manual, and weekly scheduled triggers. This gives world-seed an initial self-check; it does not yet implement the full audit loop specified above.
+
+Still required before claiming account-wide audit readiness:
+
+- authenticated, paginated discovery of the target account's accessible repositories, with explicit distinction between complete and partial coverage;
+- a safe permission model for private repositories and sensitive evidence;
+- repository, cross-repository, and account-level checks beyond this seed's required-file/link baseline;
+- a durable findings ledger with lifecycle and remediation verification;
+- scheduled/manual audit runs that preserve evidence without exposing private project details in public logs or artifacts;
+- fixture tests, confirmed workflow-run evidence, and a fresh-builder/bootstrap recovery drill.
+
+Until those conditions are demonstrated, report readiness as **NOT VERIFIED** and coverage as **repository-local only** for this implementation. Missing credentials, inaccessible repositories, failed or overdue runs, and unavailable evidence must remain visible blockers rather than being interpreted as a clean audit.
