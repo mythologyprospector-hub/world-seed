@@ -116,3 +116,25 @@ The comparison reports added/removed repositories and changes in selected metada
 The portable finding record is defined in [schemas/audit-finding.schema.json](schemas/audit-finding.schema.json), with a starter record at [templates/audit-finding.template.json](templates/audit-finding.template.json). Findings must preserve evidence, ownership, severity, lifecycle state, remediation, and verification. A finding may be marked `verified-resolved` only when verification evidence is recorded.
 
 The dependency-free `scripts/validate_audit_findings.py` enforces core required-field and lifecycle invariants. `scripts/validate_audit_schema.py` applies the full Draft 2020-12 JSON Schema, including format checks, using the development dependency in `requirements-dev.txt`; CI checks the canonical template against both validators. The durable, queryable findings ledger remains pending. `scripts/compare_audit_baselines.py` can compare two saved baseline reports and report repository additions, removals, and structural changes without retaining document bodies; its output is written with owner-only file permissions and remains explicitly partial/unverified. Keep real audit records in access-controlled storage when they expose private repositories or security-sensitive details.
+
+
+## Prepare a local handoff backup
+
+Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. On Jimmy's Bucky machine, this script uses the existing GitHub CLI login; it does not require switching accounts or creating a new one.
+
+From a terminal:
+
+```bash
+cd ~/projects/world-seed
+git status --short --branch
+```
+
+If this branch has the latest proposed seed work checked out, run:
+
+```bash
+bash scripts/prepare_local_handoff_backup.sh
+```
+
+The script lists repositories visible under `mythologyprospector-hub`, then saves a checkout, a Git bundle, and a ZIP snapshot for each repository under a new timestamped directory in `~/archive`. It uses owner-only local permissions, refuses to overwrite an existing destination, records successes/failures in a local manifest, and does not change any GitHub repository. Review the output and manifest; investigate every failure before relying on the backup.
+
+This is a first preservation pass, not a complete GitHub account export. It does not preserve issues, pull-request discussions, Actions artifacts, releases, repository settings, or every account-level permission. Keep all original GitHub repositories intact until the handoff audit confirms what else must be preserved. Do not run repository deletion or archival as part of this step.
