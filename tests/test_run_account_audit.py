@@ -1,10 +1,13 @@
 """Fixture tests for the combined account baseline scan."""
 import importlib.util
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "run_account_audit.py"
+SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
+sys.path.insert(0, str(SCRIPTS_DIR))
+MODULE_PATH = SCRIPTS_DIR / "run_account_audit.py"
 SPEC = importlib.util.spec_from_file_location("run_account_audit", MODULE_PATH)
 assert SPEC and SPEC.loader
 AUDITOR = importlib.util.module_from_spec(SPEC)
