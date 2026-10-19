@@ -70,4 +70,4 @@ Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment before running; never put th
 
 The portable finding record is defined in [schemas/audit-finding.schema.json](schemas/audit-finding.schema.json), with a starter record at [templates/audit-finding.template.json](templates/audit-finding.template.json). Findings must preserve evidence, ownership, severity, lifecycle state, remediation, and verification. A finding may be marked `verified-resolved` only when verification evidence is recorded.
 
-The schema and template establish the record contract; automated schema validation and a durable findings store are still pending implementation. Keep real audit records in access-controlled storage when they expose private repositories or security-sensitive details.
+The dependency-free `scripts/validate_audit_findings.py` enforces core required-field and lifecycle invariants, and CI checks the template. It does not implement every JSON Schema keyword; full schema validation and a durable findings store remain pending. Keep real audit records in access-controlled storage when they expose private repositories or security-sensitive details.
