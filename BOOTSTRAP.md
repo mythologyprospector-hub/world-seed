@@ -15,6 +15,7 @@ Establish an AI-led operating ecosystem for the target account and its mission, 
 3. Read the owner's stated mission, constraints, and risk boundaries. If absent, ask the smallest necessary mission-level question; do not invent a mission.
 4. Distinguish read-only discovery from writes. Confirm authorization for consequential actions before executing them.
 5. Never request or place credentials in chat, repository files, issues, or logs. Use approved credential managers and platform permission flows.
+6. Before declaring an integration blocked for lack of credentials, consult the operator's private machine/profile notes for an existing credential vault. Verify only whether an appropriate credential is available and scoped; do not reveal, copy, or log its value. Never assume one provider's credential grants access to another provider or to the required repositories.
 
 ## Phase 1 — Discover reality
 

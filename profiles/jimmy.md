@@ -27,6 +27,7 @@ Jimmy's current GitHub world was created to answer: **What is the best help we c
 - Standard repository clone root: `~/projects`.
 - Standard local clone path: `~/projects/<repo-name>`.
 - Existing Organs installation/runtime: `/srv/organs`.
+- Existing local API credential vault: `~/.config/api-vault/secrets.env`; Jimmy reports that it contains multiple collected API credentials. This path is operator-reported and has not been inspected or independently verified by this seed change. Check for usable credentials here before claiming an API integration is blocked, but never read secrets into chat, print values, commit the file, expose it in logs, or assume a credential has the required scope. Inspect only variable names/availability when necessary, and load only the specific needed credential into the required process environment using a safe local procedure.
 
 These are documented facts from the existing World and Project Seed repositories as of 2026-10-19, not live machine verification. Confirm current state when available. Keep Organs installed; do not reinstall, change, or reconfigure it incidentally. Read its actual contracts before integrating with it. Shared infrastructure changes are separate consequential work.
 
