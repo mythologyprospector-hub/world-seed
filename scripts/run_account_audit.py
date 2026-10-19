@@ -88,7 +88,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = build_report(token, args.owner)
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_text(json.dumps(report, indent=2) + "\\n", encoding="utf-8")
+        output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
         print(f"BLOCKED: baseline scan failed ({type(exc).__name__}); no clean result is implied.", file=sys.stderr)
         return 2
