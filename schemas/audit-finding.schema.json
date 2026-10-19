@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/mythologyprospector-hub/world-seed/blob/main/schemas/audit-finding.schema.json",
+  "$id": "urn:world-seed:schema:audit-finding:v1",
   "title": "World-seed audit finding",
   "description": "Portable, evidence-backed record for an audit finding. Store records according to the target ecosystem's privacy and access controls.",
   "type": "object",
@@ -123,6 +123,7 @@
       "then": {
         "properties": {
           "verification": {
+            "required": ["verified", "evidence", "verified_at"],
             "properties": {
               "verified": {"const": true},
               "evidence": {"minItems": 1},
@@ -137,6 +138,7 @@
       "then": {
         "properties": {
           "remediation": {
+            "required": ["accepted_risk_rationale", "review_by"],
             "properties": {
               "accepted_risk_rationale": {"type": "string", "minLength": 1},
               "review_by": {"type": "string", "format": "date"}
