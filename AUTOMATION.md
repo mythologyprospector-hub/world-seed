@@ -59,3 +59,8 @@ For each workflow, distinguish:
 - end-to-end behavior demonstrated.
 
 Record the actual evidence and limitations.
+
+
+## House-style and quality enforcement
+
+Every repository should use the shared [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md). Prefer reusable formatter, linter, link-check, naming/structure, and test configurations when compatible with the target language and project. CI should run the checks that are actually configured and required; failures must be visible and actionable. Keep the canonical commands documented and test them in a clean or reproducible environment where practical. Do not add a cosmetic check that produces noise, and do not claim semantic comment quality can be fully automated. Cross-repository audits must detect convention drift and report explicit exceptions.
