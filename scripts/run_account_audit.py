@@ -15,6 +15,7 @@ from urllib.error import HTTPError, URLError
 
 from audit_account_inventory import collect_inventory
 from inspect_repository_layout import inspect_layout
+from inspect_repository_documents import inspect_documents
 
 
 def build_report(token: str, owner_filter: str | None = None) -> dict:
@@ -26,10 +27,19 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         full_name = repository["full_name"]
         try:
             layout = inspect_layout(full_name, token)
-            results.append({"repository": full_name, "inventory": repository, "layout": layout, "inspection_status": "inspected"})
         except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
             blocked.append({"repository": full_name, "reason": type(exc).__name__})
-            results.append({"repository": full_name, "inventory": repository, "layout": None, "inspection_status": "blocked"})
+            results.append({"repository": full_name, "inventory": repository, "layout": None, "documents": None, "inspection_status": "blocked", "document_inspection_status": "not-attempted"})
+            continue
+        document_status = "blocked"
+        documents = None
+        try:
+            documents = inspect_documents(full_name, token, layout.get("root_entry_names", []))
+            document_status = "inspected"
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+            document_status = "blocked"
+            blocked.append({"repository": full_name, "reason": type(exc).__name__, "stage": "document-inspection"})
+        results.append({"repository": full_name, "inventory": repository, "layout": layout, "documents": documents, "inspection_status": "inspected", "document_inspection_status": document_status})
     return {
         "schema_version": 1,
         "audit_type": "account_visible_repository_baseline",
@@ -42,7 +52,12 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         "coverage": {
             "status": "partial-unverified",
             "account_completeness_verified": False,
-            "repository_contents_inspected": "root and workflow entry names only",
+            "repository_contents_inspected": "selected governance document headings and hashes; full document bodies are not retained",
+            "document_inspection_status_counts": {
+                "inspected": sum(item.get("document_inspection_status") == "inspected" for item in results),
+                "blocked": sum(item.get("document_inspection_status") == "blocked" for item in results),
+                "not_attempted": sum(item.get("document_inspection_status") == "not-attempted" for item in results),
+            },
             "cross_repository_contracts_checked": False,
             "security_posture_verified": False,
             "note": "This covers only repositories visible to the token. Compare with an authoritative expected inventory and verify private/organization access before claiming completeness.",
