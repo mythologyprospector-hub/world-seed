@@ -99,10 +99,15 @@ def main(argv: list[str] | None = None) -> int:
     if not token:
         print("BLOCKED: set GH_TOKEN or GITHUB_TOKEN in the environment; do not pass tokens as command-line arguments.", file=sys.stderr)
         return 2
+    output_path = args.output.expanduser().resolve()
+    seed_root = Path(__file__).resolve().parents[1]
+    if output_path == seed_root or seed_root in output_path.parents:
+        print("BLOCKED: report output must be outside the world-seed repository to protect private repository metadata.", file=sys.stderr)
+        return 2
     try:
         report = collect_inventory(token, args.owner)
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
         print(f"BLOCKED: inventory collection failed ({type(exc).__name__}); no completeness claim is possible.", file=sys.stderr)
         return 2
