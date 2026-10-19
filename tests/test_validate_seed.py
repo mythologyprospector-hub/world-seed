@@ -31,6 +31,13 @@ class ValidateSeedTests(unittest.TestCase):
             errors = VALIDATOR.validate(root)
         self.assertFalse(any("broken local link" in item for item in errors))
 
+    def test_empty_markdown_link_target_does_not_crash(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "README.md").write_text("# Title\n\n[Empty]()\n", encoding="utf-8")
+            errors = VALIDATOR.validate(root)
+        self.assertFalse(any("broken local link" in item for item in errors))
+
     def test_link_examples_inside_fenced_code_are_ignored(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
