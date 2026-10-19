@@ -13,6 +13,7 @@ assert SPEC and SPEC.loader
 AUDITOR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(AUDITOR)
 
+
 class AccountBaselineTests(unittest.TestCase):
     def test_combines_inventory_and_layout_without_claiming_completeness(self):
         inventory = {
@@ -32,7 +33,28 @@ class AccountBaselineTests(unittest.TestCase):
         self.assertFalse(report["coverage"]["cross_repository_contracts_checked"])
         self.assertEqual(report["repositories"][0]["document_inspection_status"], "inspected")
 
-    def test_uninspected_candidates_make_document_status_partial(self):
+    def test_missing_optional_paths_do_not_make_document_status_partial(self):
+        inventory = {
+            "authenticated_identity": "builder", "requested_owner_filter": "example",
+            "repository_count": 1, "repositories": [{"full_name": "example/project"}],
+            "coverage": {"status": "partial-unverified"},
+        }
+        layout = {"repository": "example/project", "root_entry_names": ["README.md"], "signals": {}}
+        documents = {
+            "candidate_count": 3, "inspected_count": 1, "blocked_count": 0,
+            "documents": [
+                {"path": "README.md", "status": "inspected"},
+                {"path": "SECURITY.md", "status": "not-found-or-not-visible"},
+                {"path": "docs/architecture.md", "status": "not-found-or-not-visible"},
+            ],
+        }
+        with patch.object(AUDITOR, "collect_inventory", return_value=inventory), patch.object(AUDITOR, "inspect_layout", return_value=layout), patch.object(AUDITOR, "inspect_documents", return_value=documents):
+            report = AUDITOR.build_report("test-token", "example")
+        self.assertEqual(report["repositories"][0]["document_inspection_status"], "inspected")
+        self.assertEqual(report["coverage"]["document_inspection_status_counts"]["partial"], 0)
+        self.assertFalse(report["coverage"]["account_completeness_verified"])
+
+    def test_non_missing_uninspected_candidates_make_document_status_partial(self):
         inventory = {
             "authenticated_identity": "builder", "requested_owner_filter": "example",
             "repository_count": 1, "repositories": [{"full_name": "example/project"}],
@@ -63,6 +85,7 @@ class AccountBaselineTests(unittest.TestCase):
         self.assertEqual(report["repository_count_blocked"], 1)
         self.assertEqual(report["repositories"][0]["inspection_status"], "blocked")
         self.assertEqual(report["blocked_inspections"][0]["repository"], "example/private")
+
 
 if __name__ == "__main__":
     unittest.main()
