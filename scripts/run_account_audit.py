@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+"""Run a read-only baseline scan of visible repositories and their root layouts.
+
+This is a partial baseline audit, not a completeness or security certification.
+Reports can reveal private repository names and structure; store them outside public repositories.
+"""
+from __future__ import annotations
+import argparse
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.error import HTTPError, URLError
+
+from audit_account_inventory import collect_inventory
+from inspect_repository_layout import inspect_layout
+
+
+def build_report(token: str, owner_filter: str | None = None) -> dict:
+    """Collect inventory and root-layout review signals without changing GitHub."""
+    inventory = collect_inventory(token, owner_filter)
+    results = []
+    blocked = []
+    for repository in inventory["repositories"]:
+        full_name = repository["full_name"]
+        try:
+            layout = inspect_layout(full_name, token)
+            results.append({"repository": full_name, "inventory": repository, "layout": layout, "inspection_status": "inspected"})
+        except (HTTPError, URLError, TimeoutError, OSError, ValueError) as exc:
+            blocked.append({"repository": full_name, "reason": type(exc).__name__})
+            results.append({"repository": full_name, "inventory": repository, "layout": None, "inspection_status": "blocked"})
+    return {
+        "schema_version": 1,
+        "audit_type": "account_visible_repository_baseline",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "authenticated_identity": inventory["authenticated_identity"],
+        "requested_owner_filter": owner_filter,
+        "repository_count_discovered": inventory["repository_count"],
+        "repository_count_inspected": sum(item["inspection_status"] == "inspected" for item in results),
+        "repository_count_blocked": len(blocked),
+        "coverage": {
+            "status": "partial-unverified",
+            "account_completeness_verified": False,
+            "repository_contents_inspected": "root and workflow entry names only",
+            "cross_repository_contracts_checked": False,
+            "security_posture_verified": False,
+            "note": "This covers only repositories visible to the token. Compare with an authoritative expected inventory and verify private/organization access before claiming completeness.",
+        },
+        "review_policy": "Presence signals are prompts for human/AI review, not automatic defects; applicability depends on project purpose and documented exceptions.",
+        "repositories": results,
+        "blocked_inspections": blocked,
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--owner", help="Keep only repositories owned by this user or organization login")
+    parser.add_argument("--output", required=True, type=Path, help="Access-controlled local report path")
+    args = parser.parse_args(argv)
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if not token:
+        print("BLOCKED: set GH_TOKEN or GITHUB_TOKEN in the environment; do not pass tokens as arguments.", file=sys.stderr)
+        return 2
+    output = args.output.expanduser().resolve()
+    seed_root = Path(__file__).resolve().parents[1]
+    if output == seed_root or seed_root in output.parents:
+        print("BLOCKED: write the report outside the public world-seed repository.", file=sys.stderr)
+        return 2
+    try:
+        report = build_report(token, args.owner)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
+        print(f"BLOCKED: baseline scan failed ({type(exc).__name__}); no clean result is implied.", file=sys.stderr)
+        return 2
+    print(f"Baseline report written to the chosen local path: {report['repository_count_inspected']} inspected, {report['repository_count_blocked']} blocked; coverage remains partial-unverified.")
+    return 0 if not report["repository_count_blocked"] else 1
+
+if __name__ == "__main__":
+    raise SystemExit(main())
