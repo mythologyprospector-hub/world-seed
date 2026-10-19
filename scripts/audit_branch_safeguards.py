@@ -56,6 +56,67 @@ def _read_control(path: str, token: str, *, absent_status: str = "unknown") -> d
     return {"status": "observed", "data": payload}
 
 
+def build_policy_follow_up(result: dict) -> dict:
+    """Turn observations into conservative next steps without claiming effective enforcement."""
+    controls = {
+        "classic_branch_protection": result.get("classic_branch_protection", {}),
+        "repository_rulesets": result.get("repository_rulesets", {}),
+        "organization_rulesets": result.get("organization_rulesets", {}),
+    }
+    unknown = [
+        name for name, item in controls.items()
+        if item.get("status") in {"unverified", "error"}
+    ]
+    next_actions = []
+    if unknown:
+        next_actions.append({
+            "priority": "high",
+            "action": "Resolve settings coverage gaps",
+            "reason": "At least one applicable protection source could not be verified.",
+            "controls": unknown,
+            "verification": "Use an authorized GitHub identity/settings view or API permission, then rerun this read-only inspection.",
+        })
+    classic = controls["classic_branch_protection"]
+    repo_rules = controls["repository_rulesets"]
+    org_rules = controls["organization_rulesets"]
+    classic_reported = classic.get("status") == "observed"
+    repo_rules_reported = repo_rules.get("status") == "observed" and repo_rules.get("count", 0) > 0
+    org_rules_reported = org_rules.get("status") == "observed" and org_rules.get("count", 0) > 0
+    if classic.get("status") == "not-reported" and not repo_rules_reported and not org_rules_reported:
+        next_actions.append({
+            "priority": "high",
+            "action": "Prepare a branch-protection proposal",
+            "reason": "No classic protection or ruleset entries were reported by the readable endpoints.",
+            "verification": "Inspect GitHub settings and effective rules before declaring protection absent; then propose pull-request, check, bypass, force-push, and deletion controls appropriate to this repository.",
+        })
+    elif classic_reported or repo_rules_reported or org_rules_reported:
+        next_actions.append({
+            "priority": "review",
+            "action": "Review effective policy and bypass paths",
+            "reason": "One or more protection sources are configured or reported, but presence alone does not prove the human approval gate is enforced.",
+            "verification": "Inspect applicable rule details, target branches, enforcement state, required check names, reviewer requirements, and bypass actors.",
+        })
+    if not next_actions:
+        next_actions.append({
+            "priority": "review",
+            "action": "Confirm effective policy in GitHub settings",
+            "reason": "The available evidence is insufficient to certify the human approval gate.",
+            "verification": "Confirm the effective rules and test enforcement safely before recording the gate as technically enforced.",
+        })
+    next_actions.append({
+        "priority": "approval-required",
+        "action": "Do not modify GitHub security settings without explicit human approval",
+        "reason": "Applying protections changes repository or organization governance and can affect normal development workflows.",
+        "verification": "After approval and any authorized change, reread settings and record evidence of the effective policy.",
+    })
+    return {
+        "status": "review-required",
+        "effective_human_gate_certified": False,
+        "next_actions": next_actions,
+        "note": "This plan is advisory and read-only. It does not apply settings or certify effective enforcement.",
+    }
+
+
 def inspect_branch_safeguards(full_name: str, default_branch: str | None, token: str) -> dict:
     """Inspect visible branch protection and rulesets for one repository."""
     result = {
@@ -177,6 +238,7 @@ def inspect_branch_safeguards(full_name: str, default_branch: str | None, token:
         result["interpretation"] = "No classic protection or repository rulesets were reported by the inspected endpoints; verify any applicable organization rulesets and review the GitHub settings UI before claiming the branch is unprotected."
     else:
         result["interpretation"] = "Settings endpoints were readable; review the returned rules and bypass actors to determine effective protection."
+    result["policy_follow_up"] = build_policy_follow_up(result)
     return result
 
 
