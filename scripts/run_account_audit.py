@@ -11,6 +11,8 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+from private_report import write_private_json
 from urllib.error import HTTPError, URLError
 
 from audit_account_inventory import collect_inventory

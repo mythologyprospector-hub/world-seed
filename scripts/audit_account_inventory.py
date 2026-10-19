@@ -12,6 +12,8 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+from private_report import write_private_json
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
