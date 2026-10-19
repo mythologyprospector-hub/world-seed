@@ -3,7 +3,7 @@
 from pathlib import Path
 import sys
 
-REQUIRED_FILES = ("README.md", "AGENTS.md", "CONSTITUTION.md", "HUMAN.md", "BOOTSTRAP.md", "REPOSITORY_MODEL.md", "AUTOMATION.md", "AUDIT_SYSTEM.md", "CONSISTENCY_STANDARD.md", "MACHINE_PROFILE.md", "RECOVERY.md", "ONBOARDING_PROMPT.md", "profiles/ACCOUNT_PROFILE.template.md", "schemas/audit-finding.schema.json", "templates/audit-finding.template.json")
+REQUIRED_FILES = ("README.md", "AGENTS.md", "CONSTITUTION.md", "HUMAN.md", "BOOTSTRAP.md", "REPOSITORY_MODEL.md", "AUTOMATION.md", "AUDIT_SYSTEM.md", "CONSISTENCY_STANDARD.md", "MACHINE_PROFILE.md", "RECOVERY.md", "ONBOARDING_PROMPT.md", "profiles/ACCOUNT_PROFILE.template.md", "schemas/audit-finding.schema.json", "templates/audit-finding.template.json", "scripts/validate_audit_findings.py", "scripts/audit_account_inventory.py", "scripts/inspect_repository_layout.py", "scripts/inspect_repository_documents.py", "scripts/run_account_audit.py", "tests/test_validate_seed.py", "tests/test_audit_contract.py", "tests/test_validate_audit_findings.py", "tests/test_audit_account_inventory.py", "tests/test_inspect_repository_layout.py", "tests/test_inspect_repository_documents.py", "tests/test_run_account_audit.py")
 
 def validate(root: Path) -> list[str]:
     """Return missing required files and broken relative Markdown links."""
