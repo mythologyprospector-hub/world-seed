@@ -73,7 +73,7 @@ Do not assume a workflow is safe because it is YAML or because it passes syntax 
 
 ## Phase 5A — Verify and establish GitHub branch safeguards
 
-For each repository, discover the default branch and inspect classic branch protection plus repository rulesets. Inspect organization-level rulesets when the current identity and integration can access them. Confirm pagination and record inaccessible settings as unverified, never as absent. Determine whether pull-request requirements, approvals, required checks, force-push/deletion restrictions, and bypasses actually support the human approval gate.
+For each repository, discover the default branch and inspect classic branch protection plus repository rulesets. The combined baseline invokes `scripts/audit_branch_safeguards.py` for each discovered repository. Inspect organization-level rulesets when the current identity and integration can access them. Confirm pagination and record inaccessible settings as unverified, never as absent. Determine whether pull-request requirements, approvals, required checks, force-push/deletion restrictions, and bypasses actually support the human approval gate.
 
 Prepare a concrete protection plan based on real workflows and the operator's role. Do not require nonexistent status checks or assume the owner can satisfy a second-reviewer rule alone. Because applying branch policies changes security/permissions, present the exact plan and obtain explicit approval before writing settings. After approval, apply it, re-read the effective policy, test the expected behavior where safe, and record what remains unverified. A clean build or a green CI run does not prove branch protection.
 
