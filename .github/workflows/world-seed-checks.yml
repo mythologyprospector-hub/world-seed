@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - build/world-seed-foundation
   workflow_dispatch:
   schedule:
     - cron: "23 8 * * 1"
@@ -13,8 +12,10 @@ on:
 permissions:
   contents: read
 
+# A PR gets one current check at a time; superseded runs are cancelled.
+# Do not also run push checks on the feature branch: pull_request already covers it.
 concurrency:
-  group: world-seed-checks-${{ github.ref }}
+  group: world-seed-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
