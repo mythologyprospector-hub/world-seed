@@ -42,7 +42,7 @@ class ValidateSeedTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             fence = chr(96) * 3
-            example = "# Title\\n\\n" + fence + "md\\n[Example](missing-file.md)\\n" + fence + "\\n"
+            example = "# Title\n\n" + fence + "md\n[Example](missing-file.md)\n" + fence + "\n"
             (root / "README.md").write_text(example, encoding="utf-8")
             errors = VALIDATOR.validate(root)
         self.assertFalse(any("broken local link" in item for item in errors))
