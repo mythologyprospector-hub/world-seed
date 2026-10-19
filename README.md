@@ -87,6 +87,19 @@ python scripts/run_account_audit.py --owner YOUR_ACCOUNT_OR_ORG --output /secure
 
 Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment. The output must remain outside this public repository and in access-controlled storage. Repositories that cannot be inspected are recorded as blocked rather than silently omitted. A zero blocked count still does **not** prove complete account coverage, repository-content quality, security posture, or cross-repository compatibility; the report deliberately remains `partial-unverified`.
 
+### Findings ledger
+
+The SQLite ledger stores schema-validated findings privately and supports lookup/filtering by stable finding ID, lifecycle status, and severity. It is not initialized against the live account by CI; choose a private local path and preserve backups securely.
+
+```bash
+python scripts/audit_findings_ledger.py --db /secure/private/path/findings.sqlite3 init
+python scripts/audit_findings_ledger.py --db /secure/private/path/findings.sqlite3 upsert --record /secure/private/path/AUDIT-EXAMPLE.json
+python scripts/audit_findings_ledger.py --db /secure/private/path/findings.sqlite3 list --status observed
+python scripts/audit_findings_ledger.py --db /secure/private/path/findings.sqlite3 show AUDIT-EXAMPLE
+```
+
+The database is created with owner-only permissions and paths inside this public repository are refused. Export, when needed, uses the same private-file writer. A ledger only becomes useful once real, evidence-backed findings are entered and the backup/review procedure is established.
+
 ### Compare two baselines
 
 After saving two reports from the same baseline utility, compare them without changing either source report:
