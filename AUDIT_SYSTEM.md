@@ -176,3 +176,10 @@ Until those conditions are demonstrated, report readiness as **NOT VERIFIED** an
 `scripts/audit_account_inventory.py` is an initial authenticated inventory utility. It uses GitHub API GET requests, paginates the repositories visible to the authenticated identity, optionally filters by repository owner, and writes a JSON report to a path explicitly selected by the operator. It does not modify GitHub.
 
 The report contains repository names and may contain private metadata. Store it only in an approved, access-controlled location outside the public seed repository. The utility deliberately reports `partial-unverified` coverage and does not claim to prove account completeness. It is not the full audit engine: it does not inspect repository contents, workflows, branch protections, cross-repository seams, or remediation state.
+
+
+## Canonical finding record
+
+Use [schemas/audit-finding.schema.json](schemas/audit-finding.schema.json) as the portable record contract and [templates/audit-finding.template.json](templates/audit-finding.template.json) as the starter record. Every finding needs a stable ID, scope, severity, confidence, lifecycle state, affected assets, impact, evidence, owner, timestamps, remediation, and verification state.
+
+The schema encodes important lifecycle invariants: `verified-resolved` requires positive verification and evidence; `accepted-risk` requires a rationale and review date. The contract and template now exist, but a validator and durable queryable findings store have not yet been implemented. Do not claim those enforcement capabilities are active. Store sensitive findings only in appropriately access-controlled locations.
