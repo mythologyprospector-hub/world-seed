@@ -183,3 +183,10 @@ The report contains repository names and may contain private metadata. Store it 
 Use [schemas/audit-finding.schema.json](schemas/audit-finding.schema.json) as the portable record contract and [templates/audit-finding.template.json](templates/audit-finding.template.json) as the starter record. Every finding needs a stable ID, scope, severity, confidence, lifecycle state, affected assets, impact, evidence, owner, timestamps, remediation, and verification state.
 
 The schema encodes important lifecycle invariants: `verified-resolved` requires positive verification and evidence; `accepted-risk` requires a rationale and review date. The dependency-free `scripts/validate_audit_findings.py` checks core required fields and lifecycle invariants, and the CI workflow validates the template. It does not implement every JSON Schema keyword, and a durable queryable findings store remains unimplemented. Store sensitive findings only in appropriately access-controlled locations.
+
+
+## Repository layout inspection
+
+`scripts/inspect_repository_layout.py` inspects one repository's root and, when present, the names of files under `.github/workflows`. It reports presence signals without treating absent README, tests, security policy, contribution guide, or license candidate as automatic defects. Applicability must be judged against the repository's purpose and documented exceptions.
+
+The report explicitly limits its coverage: it does not read file contents, inspect branch protection or secrets, verify workflow execution, or compare cross-repository contracts. Supply a read-scoped `GH_TOKEN` or `GITHUB_TOKEN` through the environment and store reports outside the public seed repository. Fixture tests cover expected signals and the distinction between uninspected and missing workflow directories.
