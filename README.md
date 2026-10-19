@@ -57,6 +57,17 @@ GitHub Actions runs these checks on pull requests and pushes, supports manual ex
 
 ## Read-only account inventory
 
+### Repository layout inspection
+
+For one repository, the optional metadata-only inspector records root entry names and signals such as README, builder instructions, tests, and workflow files:
+
+```bash
+python scripts/inspect_repository_layout.py --repo OWNER/REPOSITORY --output /secure/private/path/repository-layout.json
+```
+
+Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment. The report may reveal private repository names and structure, so keep it outside public repositories in access-controlled storage. This is a review aid, not a pass/fail policy: expected files vary by project purpose, and the inspector does not read file contents or verify branch protections, secrets, actual workflow runs, or cross-repository contracts.
+
+
 For an operator with a GitHub token already configured in the environment, `scripts/audit_account_inventory.py` can collect a repository inventory without changing GitHub. It requires an explicit local report path:
 
 ```bash
