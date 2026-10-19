@@ -85,13 +85,21 @@ Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment before running; never put th
 
 ### Combined account baseline
 
-The combined read-only baseline runs repository discovery, root-layout inspection, and bounded inspection of selected governance-document headings in one report. It records document hashes and headings but does not retain document bodies:
+The combined read-only baseline runs repository discovery, root-layout inspection, bounded inspection of selected governance-document headings, and read-only default-branch safeguard inspection in one report. It records classic branch-protection state and repository/organization rulesets where the authenticated identity permits. Inaccessible controls remain unverified rather than being treated as absent. It records document hashes and headings but does not retain document bodies:
 
 ```bash
 python scripts/run_account_audit.py --owner YOUR_ACCOUNT_OR_ORG --output /secure/private/path/repositories/account-baseline.json
 ```
 
 Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment. The output must remain outside this public repository and in access-controlled storage. Repositories that cannot be inspected are recorded as blocked rather than silently omitted. A zero blocked count still does **not** prove complete account coverage, repository-content quality, security posture, or cross-repository compatibility; the report deliberately remains `partial-unverified`.
+
+The safeguard collector can also be run directly for a single repository:
+
+```bash
+python scripts/audit_branch_safeguards.py --repository OWNER/REPOSITORY --output /secure/private/path/branch-safeguards.json
+```
+
+It is read-only. A report is evidence about endpoints visible to the current token, not a claim that all effective GitHub policy was observed. Apply security-setting changes only after explicit human approval and verify the effective settings afterward.
 
 ### Findings ledger
 
