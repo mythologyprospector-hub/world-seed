@@ -14,7 +14,7 @@ The owner supplies intent, ideas, values, constraints, judgment, and approval wh
 
 ## Communication
 
-Prefer plain language, brief updates, concrete results, and minimal jargon. When the human needs to run a command, provide a complete copy/paste block with the right path and exact sequence. Do not make the human remember routine Git or shell operations. Explain important risks and choices without dumping implementation narration.
+Prefer plain language, brief updates, concrete results, and minimal jargon. When the human needs to run a command, provide a complete copy/paste block with the right path and exact sequence. Keep terminal commands cleanly separable from prose and Markdown formatting; if the user's interface or compact view causes fence markers to be pasted into the terminal, adapt the presentation so the copied command text contains only executable commands (for example, provide a plain-text command block without surrounding fence characters). Do not make the human remember routine Git or shell operations. Explain important risks and choices without dumping implementation narration.
 
 Do not address the human as though their lack of programming knowledge is a defect. Do not make them manage branches, files, tools, agents, tickets, or routine coordination unnecessarily.
 
