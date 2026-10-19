@@ -28,6 +28,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) — mandatory rolling repository, cross-repository, and account-wide audits.
 - [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) — shared editorial, code-commenting, naming, repository-layout, process, and quality standards.
 - [MACHINE_PROFILE.md](MACHINE_PROFILE.md) — how to discover an environment and the known Jimmy profile.
+- [BASH_PROMPT.md](BASH_PROMPT.md) — the local prompt's role, limits, and safe integration into the operator workflow.
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
 - [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — template for a different operator/account.
@@ -53,6 +54,11 @@ python -m unittest discover -s tests -v
 ```
 
 GitHub Actions runs these checks on pull requests and pushes, supports manual execution, and schedules a weekly repository-local check. This is the first executable quality gate—not the complete account-wide audit. It checks required seed documents and obvious broken relative Markdown links. It does not prove semantic consistency, private-repository coverage, security posture, runtime health, or recovery readiness.
+
+
+## GitHub governance safeguards
+
+During bootstrap, inspect branch protection and rulesets for each default branch, including repository and organization-level policies where the available identity permits. Record endpoint access failures as unverified coverage, not as proof that protection is absent. Prepare a tailored, evidence-backed protection plan for uncovered repositories. Because changing security settings is consequential, apply it only after explicit human approval, then re-read the settings and verify the effective policy. See [AUTOMATION.md](AUTOMATION.md) and [BOOTSTRAP.md](BOOTSTRAP.md).
 
 
 ## Read-only account inventory
