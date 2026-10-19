@@ -148,3 +148,8 @@ If any condition is unmet, label the ecosystem **not yet audit-ready** and make 
 ## Guiding test
 
 The question is not “Did every repository start from the same template?” It is: **“What evidence shows that the ecosystem still works as a coherent whole today, where are the blind spots, and what happens when it does not?”**
+
+
+## Mandatory consistency and maintainability audit
+
+Every rolling audit must apply [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) at repository, cross-repository, and account scope. Evaluate documentation presentation and accuracy, code comments/docstrings, naming, repository layout, process naming, quality-tool configuration, and alignment between declared conventions and actual practice. Distinguish mechanical checks from semantic review; report unverified areas honestly. Track justified exceptions and prioritize risks and operational friction over cosmetic churn. A newly created repository inherits the standard from day one.
