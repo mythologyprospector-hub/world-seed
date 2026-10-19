@@ -64,3 +64,10 @@ Record the actual evidence and limitations.
 ## House-style and quality enforcement
 
 Every repository should use the shared [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md). Prefer reusable formatter, linter, link-check, naming/structure, and test configurations when compatible with the target language and project. CI should run the checks that are actually configured and required; failures must be visible and actionable. Keep the canonical commands documented and test them in a clean or reproducible environment where practical. Do not add a cosmetic check that produces noise, and do not claim semantic comment quality can be fully automated. Cross-repository audits must detect convention drift and report explicit exceptions.
+
+
+## Implemented baseline in world-seed
+
+The `.github/workflows/world-seed-checks.yml` workflow runs the dependency-free `scripts/validate_seed.py` check and unit tests on pull requests and pushes, with manual and weekly scheduled triggers. Its permissions are read-only. The validator checks required seed files and obvious broken relative Markdown links.
+
+This is deliberately a repository-local baseline. It does not enumerate the target account, inspect private repositories, verify cross-repository contracts, or write audit findings. Do not treat the existence of this workflow as proof that a run succeeded; inspect its actual run result. Do not describe world-seed as account-audit-ready until the account inventory, private-scope access, durable findings destination, cross-repository checks, and safe fixture/end-to-end validation are implemented and demonstrated.
