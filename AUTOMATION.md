@@ -49,6 +49,20 @@ Automation must support the three audit scopes defined in [AUDIT_SYSTEM.md](AUDI
 
 Audit jobs should default to read-only. They must not auto-merge, delete repositories, change permissions, or perform destructive remediation. Missing/failed/overdue audit runs are themselves findings. Scheduled configuration alone does not establish successful coverage.
 
+## Branch protection and rulesets
+
+Branch governance is part of account bootstrap and the rolling audit, not an optional cleanup task. For every repository, identify the default branch and inspect:
+
+- classic branch protection for that branch;
+- repository rulesets and their target branches;
+- organization-level rulesets when available;
+- required status checks and whether their check names correspond to real, maintained workflows;
+- pull-request requirements, approval rules, force-push/deletion restrictions, and bypass actors where visible.
+
+Use the strongest available read-only inspection method. A branch object's `protected: false` field speaks only to classic branch protection; it does not settle whether rulesets or other controls apply. A 403, 404, unsupported endpoint, incomplete page, or insufficient integration permission is an explicit unknown/coverage gap—not evidence that no safeguard exists. Record the endpoint, identity/scope limitation, repository, branch, and next verification action without exposing credentials.
+
+For uncovered branches, prepare a repository-specific protection plan that accounts for the actual workflow checks and the human-gate model. Do not blindly require a second approving reviewer when the owner is the sole reviewer, and do not require status checks that do not exist. Prefer pull requests for changes, prevent force pushes and branch deletion where appropriate, require verified checks when available, and document any justified exception. Security and permission changes require explicit human approval before application. After approval, apply the plan through the supported GitHub settings/API path, re-read the effective configuration, and record verification evidence. Never claim the approval gate is technically enforced based only on prose or a passing build.
+
 ## Verification record
 
 For each workflow, distinguish:
