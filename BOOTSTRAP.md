@@ -94,3 +94,10 @@ The process should be idempotent where practical. On rerun, inspect the current 
 ## Acceptance test
 
 A bootstrap is not complete merely because seed files were copied. Demonstrate that a fresh builder can identify the mission, locate the canonical rules, describe the authority boundaries, find the project bootstrap, assess the real account state, and produce a truthful readiness report without relying on prior chat history.
+
+
+## Safe inventory utility
+
+The repository includes `scripts/audit_account_inventory.py` for an initial read-only inventory of repositories visible to an authenticated GitHub identity. Use an environment-provided `GH_TOKEN` or `GITHUB_TOKEN` with the narrowest appropriate read access, and write the report to access-controlled storage outside the public repository. Never paste credentials into commands, files, prompts, or logs.
+
+Treat its output as a starting inventory, not a complete audit. Compare it with an authoritative expected repository list, verify access to private and organization-owned repositories, and record missing coverage as a blocker. This utility alone does not satisfy the account-wide audit acceptance gate.
