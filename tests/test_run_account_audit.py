@@ -81,6 +81,7 @@ class AccountBaselineTests(unittest.TestCase):
                 {"full_name": "owner/project-b"},
             ],
             "requested_owner_filter": None,
+            "pagination_complete": True,
             "coverage": {
                 "status": "partial-unverified",
                 "account_completeness_verified": False,
