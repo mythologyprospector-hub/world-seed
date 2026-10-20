@@ -1,4 +1,5 @@
 """Tests for expected-inventory reconciliation."""
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -36,6 +37,13 @@ class ExpectedInventoryTests(unittest.TestCase):
         expected = dict(self.expected, authoritative=False)
         report["requested_owner_filter"] = None
         self.assertFalse(reconcile_expected_inventory(report, expected)["account_completeness_verified"])
+
+    def test_canonical_template_is_valid_but_not_authoritative(self):
+        template = json.loads((Path(__file__).resolve().parents[1] / "templates" / "expected-inventory.template.json").read_text(encoding="utf-8"))
+        report = {"repositories": [], "requested_owner_filter": None}
+        result = reconcile_expected_inventory(report, template)
+        self.assertFalse(template["authoritative"])
+        self.assertFalse(result["account_completeness_verified"])
 
     def test_duplicate_or_malformed_expected_names_rejected(self):
         with self.assertRaises(ValueError):
