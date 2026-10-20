@@ -113,11 +113,34 @@ def verify_source_artifacts(root: Path) -> dict:
                     "detail": output,
                 }
                 if ok:
-                    heads_ok, heads = _run(["git", "--git-dir", str(clone), "show-ref"])
-                    result["bundle"]["has_refs"] = heads_ok
-                    result["bundle"]["refs_detail"] = heads
-                    if not heads_ok:
+                    refs_ok, bundle_refs = _run([
+                        "git", "--git-dir", str(clone),
+                        "for-each-ref", "--format=%(refname) %(objectname)",
+                    ])
+                    result["bundle"]["has_refs"] = refs_ok and bool(bundle_refs)
+                    result["bundle"]["ref_count"] = len(bundle_refs.splitlines()) if bundle_refs else 0
+                    result["bundle"]["refs_detail"] = bundle_refs
+                    if not refs_ok or not bundle_refs:
                         result["bundle"]["status"] = "invalid"
+                    else:
+                        checkout_candidate = root / "checkouts" / basename
+                        if checkout_candidate.is_dir() and not checkout_candidate.is_symlink():
+                            checkout_refs_ok, checkout_refs = _run([
+                                "git", "-C", str(checkout_candidate),
+                                "for-each-ref", "--format=%(refname) %(objectname)",
+                            ])
+                            bundle_set = set(bundle_refs.splitlines())
+                            checkout_set = set(checkout_refs.splitlines())
+                            result["bundle"]["ref_match_with_checkout"] = (
+                                checkout_refs_ok and bundle_set == checkout_set
+                            )
+                            result["bundle"]["bundle_only_refs"] = sorted(bundle_set - checkout_set)
+                            result["bundle"]["checkout_only_refs"] = sorted(checkout_set - bundle_set)
+                            if not result["bundle"]["ref_match_with_checkout"]:
+                                result["bundle"]["status"] = "ref-mismatch"
+                        else:
+                            result["bundle"]["ref_match_with_checkout"] = False
+                            result["bundle"]["status"] = "checkout-missing-or-unsafe"
 
         source_zip = root / "zips" / f"{basename}.zip"
         if not source_zip.is_file() or source_zip.is_symlink():
