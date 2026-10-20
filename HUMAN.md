@@ -30,4 +30,4 @@ A lone period (`.`) can mean accepted / proceed / continue when the intended act
 
 ## Operator adaptation
 
-Read `profiles/jimmy.md` for Jimmy-specific preferences and known environment facts. For another operator, create or complete a separate profile from [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md), without overwriting the universal principles.
+Discover the authorized operator profile package according to [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md). Do not assume a particular profile filename or embed private profile details in this distributable seed. Use [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) only as a starting point for an operator-approved, access-controlled location.
