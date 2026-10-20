@@ -18,6 +18,7 @@ PORTABLE_DOCS = (
     "MISSION.md",
     "ONBOARDING_PROMPT.md",
     "PROFILE_PACKAGES.md",
+    "scripts/prepare_local_handoff_backup.sh",
     "README.md",
     "RECOVERY.md",
     "REPOSITORY_MODEL.md",
