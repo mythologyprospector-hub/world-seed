@@ -63,9 +63,9 @@ class SourceArtifactVerificationTests(unittest.TestCase):
             (root / "zips").mkdir()
             (root / "checkouts").mkdir()
             (root / "manifest.tsv").write_text(
-                "owner\\tvisibility\\tarchived\\tresult\\n"
-                "owner-a/project\\tpublic\\tFalse\\tOK\\n"
-                "owner-b/project\\tprivate\\tFalse\\tOK\\n",
+                "owner\tvisibility\tarchived\tresult\n"
+                "owner-a/project\tpublic\tFalse\tOK\n"
+                "owner-b/project\tprivate\tFalse\tOK\n",
                 encoding="utf-8",
             )
             report = verify_source_artifacts(root)
