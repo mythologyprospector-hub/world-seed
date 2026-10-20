@@ -56,10 +56,14 @@ class BackupCoverageTests(unittest.TestCase):
     def test_governance_export_is_detected_but_does_not_certify_all_settings(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            (root / "manifest.tsv").write_text(
+                "owner\\tvisibility\\tarchived\\tresult\\nowner/project\\tprivate\\tFalse\\tOK\\n",
+                encoding="utf-8",
+            )
             governance = root / "records" / "governance"
             governance.mkdir(parents=True)
             (governance / "governance-owner_project.json").write_text(
-                '{"overall_status":"captured","controls":{}}',
+                '{"repository":"owner/project","overall_status":"captured","controls":{}}',
                 encoding="utf-8",
             )
             result = audit_backup_coverage(root)
