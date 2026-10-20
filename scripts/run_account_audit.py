@@ -97,6 +97,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--owner", help="Keep only repositories owned by this user or organization login")
     parser.add_argument("--output", required=True, type=Path, help="Access-controlled local report path")
     parser.add_argument("--ledger-db", type=Path, help="Optional private SQLite findings ledger path outside this public repository")
+    parser.add_argument("--expected-inventory", type=Path, help="Optional authoritative private JSON inventory outside this public repository")
     args = parser.parse_args(argv)
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -109,6 +110,16 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     try:
         report = build_report(token, args.owner)
+        if args.expected_inventory:
+            expected_path = args.expected_inventory.expanduser().resolve()
+            if expected_path == seed_root or seed_root in expected_path.parents:
+                raise ValueError("expected inventory must be outside the public world-seed repository")
+            from reconcile_expected_inventory import reconcile_expected_inventory
+            expected = json.loads(expected_path.read_text(encoding="utf-8"))
+            report["coverage"]["expected_inventory_reconciliation"] = reconcile_expected_inventory(report, expected)
+            report["coverage"]["account_completeness_verified"] = report["coverage"]["expected_inventory_reconciliation"]["account_completeness_verified"]
+            report["coverage"]["status"] = report["coverage"]["expected_inventory_reconciliation"]["status"]
+            report["coverage"]["note"] = report["coverage"]["expected_inventory_reconciliation"]["note"]
         output.parent.mkdir(parents=True, exist_ok=True)
         write_private_json(output, report)
         ledger_summary = None
