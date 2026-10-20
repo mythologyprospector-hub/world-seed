@@ -16,7 +16,7 @@ class ExpectedInventoryTests(unittest.TestCase):
 
     def test_exact_authoritative_match_without_filter_verifies_inventory_only(self):
         report = {"repositories": [{"full_name": "owner/public"}, {"full_name": "owner/private"}],
-                  "requested_owner_filter": None}
+                  "requested_owner_filter": None, "pagination_complete": True}
         result = reconcile_expected_inventory(report, self.expected)
         self.assertTrue(result["repository_inventory_verified"])
         self.assertFalse(result["account_completeness_verified"])
@@ -34,7 +34,7 @@ class ExpectedInventoryTests(unittest.TestCase):
 
     def test_owner_filter_and_non_authoritative_list_never_verify(self):
         report = {"repositories": [{"full_name": "owner/public"}, {"full_name": "owner/private"}],
-                  "requested_owner_filter": "owner"}
+                  "requested_owner_filter": "owner", "pagination_complete": True}
         self.assertFalse(reconcile_expected_inventory(report, self.expected)["repository_inventory_verified"])
         expected = dict(self.expected, authoritative=False)
         report["requested_owner_filter"] = None
