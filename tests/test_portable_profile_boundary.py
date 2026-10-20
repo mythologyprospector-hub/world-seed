@@ -5,8 +5,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PORTABLE_DOCS = (
     "AGENTS.md",
-    "BOOTSTRAP.md",
+    "AUDIT_SYSTEM.md",
+    "AUTOMATION.md",
     "BASH_PROMPT.md",
+    "BOOTSTRAP.md",
+    "CONSISTENCY_STANDARD.md",
     "CONSTITUTION.md",
     "HUMAN.md",
     "MACHINE_PROFILE.md",
@@ -14,6 +17,7 @@ PORTABLE_DOCS = (
     "ONBOARDING_PROMPT.md",
     "PROFILE_PACKAGES.md",
     "README.md",
+    "RECOVERY.md",
     "REPOSITORY_MODEL.md",
     "profiles/ACCOUNT_PROFILE.template.md",
     "templates/MISSION.md",
