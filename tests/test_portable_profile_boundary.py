@@ -23,6 +23,7 @@ SOURCE_OPERATOR_MARKERS = (
     "James Earl Stambaugh III",
     "mythologyprospector@gmail.com",
     "mythos1",
+    "Bucky",
     "/srv/organs",
     "teresa-oracle",
     "profiles/jimmy.md",
