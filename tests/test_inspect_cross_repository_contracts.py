@@ -1,4 +1,5 @@
 """Tests for explicit cross-repository contract inspection."""
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -31,6 +32,11 @@ class CrossRepositoryContractTests(unittest.TestCase):
                 {"full_name": "owner/world"},
             ],
         }
+
+    def test_canonical_template_is_valid_but_not_authoritative(self):
+        template = json.loads((Path(__file__).resolve().parents[1] / "templates" / "expected-contracts.template.json").read_text(encoding="utf-8"))
+        self.assertFalse(template["authoritative"])
+        self.assertEqual(len(validate_expected_contracts(template)), 1)
 
     def test_inventory_requires_authority_review_and_contract(self):
         with self.assertRaises(ValueError):
