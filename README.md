@@ -158,7 +158,7 @@ The dependency-free `scripts/validate_audit_findings.py` enforces core required-
 
 ## Prepare a local handoff backup
 
-Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. On Jimmy's Bucky machine, this script uses the existing GitHub CLI login; it does not require switching accounts or creating a new one.
+Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. The script uses an existing authenticated GitHub CLI session; verify the active identity before running it. It does not require creating a new account.
 
 From a terminal:
 
