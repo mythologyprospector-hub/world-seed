@@ -183,7 +183,7 @@ def export_governance(repository: str, token: str) -> dict:
         }
 
     statuses = [value.get("status", "unverified") for value in controls.values()]
-    overall = "captured" if all(status in {"captured", "not-applicable", "not-reported"} for status in statuses) else "partial"
+    overall = "captured" if all(status in {"captured", "not-applicable"} for status in statuses) else "partial"
     return {
         "schema_version": 1,
         "repository": repository,
