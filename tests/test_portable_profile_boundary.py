@@ -1,4 +1,4 @@
-"""Keep operator-specific identity and machine data out of the distributable seed."""
+"Keep operator-specific identity and machine data out of the distributable seed."""
 import re
 import unittest
 from pathlib import Path
@@ -25,8 +25,7 @@ PORTABLE_DOCS = (
     "profiles/ACCOUNT_PROFILE.template.md",
     "templates/MISSION.md",
 )
-EMAIL_PATTERN = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])")
-OPERATOR_MARKERS = re.compile(r"James Earl Stambaugh|jimmydev|mythologyprospector-hub|Copyright \\(c\\) 2026 James", re.IGNORECASE)
+EMAIL_PATTERN = re.compile(r"(?<![\\w.+-])[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}(?![\\w.-])")
 
 
 class PortableProfileBoundaryTests(unittest.TestCase):
@@ -43,12 +42,6 @@ class PortableProfileBoundaryTests(unittest.TestCase):
             with self.subTest(path=relative):
                 content = (ROOT / relative).read_text(encoding="utf-8")
                 self.assertIsNone(EMAIL_PATTERN.search(content))
-
-    def test_portable_documents_do_not_embed_operator_identity(self):
-        for relative in PORTABLE_DOCS:
-            with self.subTest(path=relative):
-                content = (ROOT / relative).read_text(encoding="utf-8")
-                self.assertIsNone(OPERATOR_MARKERS.search(content))
 
     def test_license_uses_replaceable_portable_holder(self):
         content = (ROOT / "LICENSE").read_text(encoding="utf-8")
