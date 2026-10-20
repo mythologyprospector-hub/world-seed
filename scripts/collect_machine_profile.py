@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -141,7 +142,16 @@ def main() -> int:
     rendered = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        with args.output.open("x", encoding="utf-8") as stream:
+        try:
+            # The report may contain private repository names and local paths.
+            # Enforce owner-only permissions regardless of the caller's umask,
+            # and O_EXCL closes the race between the earlier check and creation.
+            descriptor = os.open(
+                args.output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600
+            )
+        except FileExistsError:
+            parser.error(f"refusing to overwrite existing output file: {args.output}")
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
             stream.write(rendered)
         print(f"Wrote local report: {args.output}")
     else:
