@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PORTABLE_DOCS = (
     "AGENTS.md",
     "BOOTSTRAP.md",
+    "BASH_PROMPT.md",
     "CONSTITUTION.md",
     "HUMAN.md",
     "MACHINE_PROFILE.md",
@@ -23,6 +24,7 @@ SOURCE_OPERATOR_MARKERS = (
     "mythologyprospector@gmail.com",
     "mythos1",
     "/srv/organs",
+    "teresa-oracle",
     "profiles/jimmy.md",
 )
 
