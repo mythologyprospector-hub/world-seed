@@ -1,0 +1,35 @@
+{
+  "finding_id": "AUDIT-YYYYMMDD-001",
+  "title": "Short, specific finding title",
+  "scope": "repository",
+  "severity": "medium",
+  "confidence": "confirmed",
+  "status": "observed",
+  "affected_assets": ["owner/repository"],
+  "impact": "Describe the concrete risk or mission impact.",
+  "evidence": [
+    {
+      "description": "State what was observed and how it was verified.",
+      "uri": null,
+      "observed_at": "2026-10-19T00:00:00Z",
+      "commit": null
+    }
+  ],
+  "owner": "AI steward",
+  "first_observed": "2026-10-19T00:00:00Z",
+  "last_reviewed": "2026-10-19T00:00:00Z",
+  "remediation": {
+    "next_action": "Define the smallest safe next action.",
+    "issue_url": null,
+    "pull_request_url": null,
+    "accepted_risk_rationale": null,
+    "review_by": null
+  },
+  "verification": {
+    "verified": false,
+    "evidence": [],
+    "verified_at": null,
+    "verified_by": null
+  },
+  "related_findings": []
+}
