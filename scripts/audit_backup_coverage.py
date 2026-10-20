@@ -34,19 +34,33 @@ def audit_backup_coverage(root: Path) -> dict:
     governance_files = sorted(governance_dir.glob("governance-*.json")) if governance_dir.is_dir() else []
     governance_statuses = []
     governance_invalid = []
+    governance_repositories = []
     for governance_file in governance_files:
         try:
             payload = json.loads(governance_file.read_text(encoding="utf-8"))
             status = payload.get("overall_status")
+            repository_name = payload.get("repository")
+            if isinstance(repository_name, str) and repository_name:
+                governance_repositories.append(repository_name)
             if status not in {"captured", "partial", "unverified"}:
                 governance_invalid.append(governance_file.name)
             else:
                 governance_statuses.append(status)
         except (OSError, ValueError, AttributeError):
             governance_invalid.append(governance_file.name)
+    expected_repositories = {row[0] for row in repo_rows if row and "/" in row[0]}
+    exported_repositories = set(governance_repositories)
+    missing_governance_repositories = sorted(expected_repositories - exported_repositories)
+    unexpected_governance_repositories = sorted(exported_repositories - expected_repositories)
     if not governance_files:
         governance_status = "unverified"
-    elif governance_invalid or any(status != "captured" for status in governance_statuses):
+    elif (
+        governance_invalid
+        or any(status != "captured" for status in governance_statuses)
+        or not expected_repositories
+        or missing_governance_repositories
+        or unexpected_governance_repositories
+    ):
         governance_status = "partial"
     else:
         governance_status = "present"
@@ -80,7 +94,10 @@ def audit_backup_coverage(root: Path) -> dict:
             "export_count": len(governance_files),
             "invalid_or_unrecognized_exports": governance_invalid,
             "export_statuses": governance_statuses,
-            "note": "Captured exports are not proof of restoration or effective enforcement.",
+            "expected_repository_count": len(expected_repositories),
+            "missing_repositories": missing_governance_repositories,
+            "unexpected_repositories": unexpected_governance_repositories,
+            "note": "A present status requires one captured export per repository in manifest.tsv; exports are not proof of restoration or effective enforcement.",
         },
         "repository_and_organization_settings_permissions": {
             "status": "partial" if governance_status == "present" else "unverified",
