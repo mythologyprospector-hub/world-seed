@@ -14,9 +14,9 @@ Establish an AI-led operating ecosystem for the target account and its mission, 
 2. Identify the target GitHub account/organization and the human owner.
 3. Confirm which connected identity and tools can actually access it.
 4. Discover the target's own mission, constraints, and risk boundaries from its canonical records. Do not transplant world-seed's mission sentence into another account or project. If the target mission is absent, ask the smallest necessary mission-level question; do not invent one.
-4. Distinguish read-only discovery from writes. Confirm authorization for consequential actions before executing them.
-5. Never request or place credentials in chat, repository files, issues, or logs. Use approved credential managers and platform permission flows.
-6. Before declaring an integration blocked for lack of credentials, consult the operator's private machine/profile notes for an existing credential vault. Verify only whether an appropriate credential is available and scoped; do not reveal, copy, or log its value. Never assume one provider's credential grants access to another provider or to the required repositories.
+5. Distinguish read-only discovery from writes. Confirm authorization for consequential actions before executing them.
+6. Never request or place credentials in chat, repository files, issues, or logs. Use approved credential managers and platform permission flows.
+7. Before declaring an integration blocked for lack of credentials, consult the operator's private machine/profile notes for an existing credential vault. Verify only whether an appropriate credential is available and scoped; do not reveal, copy, or log its value. Never assume one provider's credential grants access to another provider or to the required repositories.
 
 ## Phase 1 — Discover reality
 
