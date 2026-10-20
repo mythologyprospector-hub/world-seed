@@ -44,7 +44,7 @@ The current `prepare_local_handoff_backup.sh` script covers repository checkouts
 ```bash
 python3 scripts/export_governance_settings.py \
   --repository OWNER/REPOSITORY \
-  --output-dir "$HOME/private-recovery/governance"
+  --output-dir "$HOME/private-recovery/records/governance"
 ```
 
 Treat the resulting JSON as sensitive account-operating data. Store it in private, access-controlled storage independent of the GitHub account being protected; do not commit it to this or any public repository. Review each control's status. HTTP 403/401 and other access failures remain unverified/error; HTTP 404 is recorded as not-reported, not proof that no effective protection exists. A partial export is not a backup-completeness pass.
