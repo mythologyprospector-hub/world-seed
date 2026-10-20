@@ -49,7 +49,10 @@ def collect_inventory(token: str, owner_filter: str | None = None) -> dict:
         if not isinstance(batch, list) or any(not isinstance(item, dict) for item in batch):
             raise ValueError("GitHub repository endpoint returned an unexpected page shape")
         for item in batch:
-            repository_owner = (item.get("owner") or {}).get("login", "")
+            owner_data = item.get("owner")
+            if not isinstance(owner_data, dict):
+                raise ValueError("GitHub repository entry has an unexpected owner shape")
+            repository_owner = owner_data.get("login")
             full_name = item.get("full_name")
             if not isinstance(full_name, str) or full_name.count("/") != 1 or not all(full_name.split("/")):
                 raise ValueError("GitHub repository entry is missing a valid full_name")
