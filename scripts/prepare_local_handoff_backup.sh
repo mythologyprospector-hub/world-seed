@@ -4,7 +4,11 @@
 set -Eeuo pipefail
 umask 077
 
-OWNER="${1:-mythologyprospector-hub}"
+if [[ -z "${1:-}" ]]; then
+  printf 'Usage: %s OWNER [DESTINATION]\n' "$0" >&2
+  exit 2
+fi
+OWNER="$1"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 DEST="${2:-$HOME/archive/github-handoff-$STAMP}"
 

@@ -13,6 +13,7 @@ PORTABLE_DOCS = (
     "CONSISTENCY_STANDARD.md",
     "CONSTITUTION.md",
     "HUMAN.md",
+    "LICENSE",
     "MACHINE_PROFILE.md",
     "MISSION.md",
     "ONBOARDING_PROMPT.md",
@@ -40,6 +41,17 @@ class PortableProfileBoundaryTests(unittest.TestCase):
             with self.subTest(path=relative):
                 content = (ROOT / relative).read_text(encoding="utf-8")
                 self.assertIsNone(EMAIL_PATTERN.search(content))
+
+    def test_portable_documents_do_not_embed_operator_identity(self):
+        for relative in PORTABLE_DOCS:
+            with self.subTest(path=relative):
+                content = (ROOT / relative).read_text(encoding="utf-8")
+                self.assertIsNone(OPERATOR_MARKERS.search(content))
+
+    def test_license_uses_replaceable_portable_holder(self):
+        content = (ROOT / "LICENSE").read_text(encoding="utf-8")
+        self.assertIn("<YEAR>", content)
+        self.assertIn("<COPYRIGHT HOLDER>", content)
 
     def test_human_guidance_uses_the_profile_loading_contract(self):
         content = (ROOT / "HUMAN.md").read_text(encoding="utf-8")

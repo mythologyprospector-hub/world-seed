@@ -160,7 +160,7 @@ The dependency-free `scripts/validate_audit_findings.py` enforces core required-
 
 ## Prepare a local handoff backup
 
-Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. The script uses an existing authenticated GitHub CLI session; verify the active identity before running it. It does not require creating a new account.
+Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. The script uses an existing authenticated GitHub CLI session; verify the active identity before running it. Choose the intended owner explicitly; do not assume the connected identity or target account.
 
 From a terminal:
 
@@ -172,9 +172,9 @@ git status --short --branch
 If this branch has the latest proposed seed work checked out, run:
 
 ```bash
-bash scripts/prepare_local_handoff_backup.sh
+bash scripts/prepare_local_handoff_backup.sh OWNER [DESTINATION]
 ```
 
-The script lists repositories visible under `mythologyprospector-hub`, then saves a checkout, a Git bundle, and a ZIP snapshot for each repository under a new timestamped directory in `~/archive`. It uses owner-only local permissions, refuses to overwrite an existing destination, records successes/failures in a local manifest, and does not change any GitHub repository. Review the output and manifest; investigate every failure before relying on the backup.
+The script lists repositories visible under the explicitly supplied GitHub owner, then saves a checkout, a Git bundle, and a ZIP snapshot for each repository under a new timestamped directory in `~/archive` (or the optional destination you supply). Replace `OWNER` with the intended GitHub username or organization. Review the destination carefully because these backups can contain private repository contents. It uses owner-only local permissions, refuses to overwrite an existing destination, records successes/failures in a local manifest, and does not change any GitHub repository. Review the output and manifest; investigate every failure before relying on the backup.
 
 This is a first preservation pass, not a complete GitHub account export. It does not preserve issues, pull-request discussions, Actions artifacts, releases, repository settings, or every account-level permission. Keep all original GitHub repositories intact until the handoff audit confirms what else must be preserved. Do not run repository deletion or archival as part of this step.
