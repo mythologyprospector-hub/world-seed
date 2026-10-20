@@ -39,7 +39,7 @@ A Git clone, Git bundle, or source ZIP preserves repository content to varying d
 
 An endpoint returning successfully proves only that the current identity could retrieve that endpoint at that time. It does not prove every record was paginated, every binary artifact was downloaded, or every setting was visible. Store detailed manifests and exports in access-controlled storage outside the public seed. Do not publish private repository names, private discussions, or security-sensitive configuration.
 
-The current `prepare_local_handoff_backup.sh` script covers repository checkouts, Git bundles, and source ZIP snapshots only. The separate `scripts/export_governance_settings.py` collector now preserves the full readable API payloads for repository metadata, classic default-branch protection, repository rulesets, and applicable organization rulesets. It writes to a caller-chosen local directory outside the seed checkout and attempts restrictive directory/file permissions. Use it with `GH_TOKEN` or `GITHUB_TOKEN` supplied through the environment, never as a command-line argument:
+The current `prepare_local_handoff_backup.sh` script covers repository checkouts, Git bundles, and source ZIP snapshots only. Run `scripts/export_github_operating_records.py` once per repository to preserve paginated issue/PR records, conversation comments, PR reviews and inline comments, releases and asset metadata, workflow-run metadata, and Actions artifact metadata. It writes dated private JSON snapshots and a private manifest. Binary artifact contents, release asset contents, discussions, and other unsupported records remain explicitly incomplete. The separate `scripts/export_governance_settings.py` collector preserves readable repository metadata, classic default-branch protection, repository rulesets, and applicable organization rulesets. It writes to a caller-chosen local directory outside the seed checkout and attempts restrictive directory/file permissions. Use it with `GH_TOKEN` or `GITHUB_TOKEN` supplied through the environment, never as a command-line argument:
 
 ```bash
 python3 scripts/export_governance_settings.py \
@@ -51,7 +51,15 @@ Treat the resulting JSON as sensitive account-operating data. Store it in privat
 
 This exporter is **capture-only**: it does not restore settings, cover every GitHub operating record, or certify effective enforcement. Restore must be a separate, deliberate, reviewable operation. Before declaring governance recoverable, recreate settings in an isolated test repository/account, reread the effective settings, compare them against the export, and document unsupported fields, missing permissions, and any differences. Never automatically apply an export to a live repository during routine audit or recovery discovery.
 
-Until the operating-record exports, governance restore procedure, coverage integration, and isolated recovery drill are verified, the account backup remains **incomplete for full GitHub reconstruction**. Do not delete, archive, or restructure source repositories on the strength of a source-only backup.
+
+
+For each repository in the backup inventory, run the metadata exporter with a private output directory outside the public seed checkout:
+
+`python3 scripts/export_github_operating_records.py --repository OWNER/REPOSITORY --output-dir "$HOME/private-recovery/records"`
+
+It uses `GH_TOKEN` or `GITHUB_TOKEN` from the environment, or an existing GitHub CLI login. Never pass or print a token. Review every endpoint status in the report and manifest; successful metadata collection is not a complete backup. Until exports are reviewed for every expected repository, governance restoration has been tested, coverage is integrated, and an isolated recovery drill has passed, the account backup remains **incomplete for full GitHub reconstruction**.
+
+Do not delete, archive, or restructure source repositories on the strength of a source-only backup.
 
 ## Never include
 
