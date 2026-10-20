@@ -30,6 +30,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) — mandatory rolling repository, cross-repository, and account-wide audits.
 - [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) — shared editorial, code-commenting, naming, repository-layout, process, and quality standards.
 - [MACHINE_PROFILE.md](MACHINE_PROFILE.md) — portable machine-discovery procedure.
+- [scripts/collect_machine_profile.py](scripts/collect_machine_profile.py) — local-only, allowlisted machine readiness report; no upload or secret collection.
 - [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md) — the canonical boundary between portable seed, private operator profile, and personal-data package.
 - [BASH_PROMPT.md](BASH_PROMPT.md) — the local prompt's role, limits, and safe integration into the operator workflow.
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
