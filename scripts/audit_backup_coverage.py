@@ -81,7 +81,7 @@ def audit_backup_coverage(root: Path) -> dict:
             "checkout_count": len(checkouts),
         },
         "issues_pull_requests_comments_reviews_releases_actions_metadata": {
-            "status": "partial" if record_ok else "unverified",
+            "status": "partial" if (record_ok or record_failed) else "unverified",
             "evidence": "records/manifest.tsv" if records_manifest.is_file() else None,
             "endpoint_exports_ok": record_ok,
             "endpoint_exports_failed": record_failed,
