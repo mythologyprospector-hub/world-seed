@@ -57,7 +57,7 @@ class BackupCoverageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "manifest.tsv").write_text(
-                "owner\\tvisibility\\tarchived\\tresult\\nowner/project\\tprivate\\tFalse\\tOK\\n",
+                "owner\tvisibility\tarchived\tresult\nowner/project\tprivate\tFalse\tOK\n",
                 encoding="utf-8",
             )
             governance = root / "records" / "governance"
