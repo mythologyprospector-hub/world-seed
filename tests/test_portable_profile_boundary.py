@@ -25,7 +25,7 @@ PORTABLE_DOCS = (
     "profiles/ACCOUNT_PROFILE.template.md",
     "templates/MISSION.md",
 )
-EMAIL_PATTERN = re.compile(r"(?<![\\w.+-])[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}(?![\\w.-])")
+EMAIL_PATTERN = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])")
 
 
 class PortableProfileBoundaryTests(unittest.TestCase):
