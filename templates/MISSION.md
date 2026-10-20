@@ -30,4 +30,4 @@ Do not assume the best opportunity has already been identified. Revisit your und
 
 ## Portability rule
 
-For a project or ecosystem using this operating model, the mission-specific difference belongs in the opening mission sentence. Preserve the shared operating method below it unless a deliberate, documented project-level reason requires an adaptation. A shared method does not override the project's own canon, safety boundaries, human authority, or real-world constraints.
+For a project or ecosystem using this operating model, the mission-specific difference belongs in the opening mission sentence. Preserve the shared operating method below it unless a deliberate, documented project-level reason requires an adaptation. The replacement sentence states the project's purpose; it must not prematurely prescribe the implementation. A shared method does not override the project's own canon, safety boundaries, human authority, or real-world constraints.
