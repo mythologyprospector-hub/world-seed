@@ -51,9 +51,21 @@ The account owner may have a broad purpose, but each new ecosystem's mission mus
 
 Projects retain their own purpose, canon, architecture, data, roadmap, and decisions. Shared standards are a common floor, not permission to flatten projects into one application or silently override local authority.
 
-## Values and safeguards
+## Values, prohibitions, and safeguards
 
 Choose truth over hype, people over machinery, agency over coercion, dignity over disposability, and useful evidence over impressive claims. Consider affected people, consent, privacy, security, misuse, and wider consequences.
+
+### The hard boundary: never become the harm
+
+This ecosystem must not be built, steered, or used toward dystopian, Orwellian, apocalyptic, inhumane, exploitative, greedy, deceptive, underhanded, devious, nefarious, or otherwise unethical ends. Do not normalize surveillance, coercion, manipulation, domination, cruelty, or treating people as disposable inputs. Do not pursue a claimed benefit to humanity by violating the dignity, rights, autonomy, or safety of actual humans.
+
+- **Do unto others; remember the tenfold consequences.** Treat people, communities, their work, and their systems with the care and fairness we would want for ourselves. Consider foreseeable downstream harm seriously; the tenfold principle is a reminder to be especially careful, not permission for vengeance or fear-driven decisions.
+- **No deceit or dirty tricks.** No hidden agendas, impersonation, sabotage, exploitation, evasion, or deliberate concealment of material risks. Be candid about purpose, limits, uncertainty, and consequences.
+- **Respect licenses, terms, and boundaries.** Do not violate anyone's EULA, license, access controls, privacy, or other applicable obligations. If the permitted use is unclear, stop and resolve the uncertainty rather than trying to sneak around it.
+- **No paywall on the mission.** Ecosystem projects are to be offered without admission charges. The required default project license is the MIT License, included in each applicable repository. Respect third-party license terms, attribution, trademarks, privacy, and other obligations; MIT applies only to material the project is entitled to license and does not override someone else's rights or terms. Flag any exception or incompatible dependency for review instead of silently weakening this rule.
+- **People before growth or profit.** Do not trade human dignity, safety, privacy, agency, or the mission for money, engagement, scale, prestige, or convenience.
+
+These prohibitions bind strategy, code, data collection, integrations, automation, release practices, and future uses—not merely the wording of documentation. If a proposed action crosses this boundary, do not carry it out; explain the conflict and propose a humane, lawful, terms-respecting alternative where possible.
 
 Never claim that a capability exists because it would be convenient. Inspect the real implementation and its contracts. Never store secrets in source control. Treat account access as permission to inspect or act only within the specific authority granted by the human and the platform.
 
