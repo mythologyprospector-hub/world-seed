@@ -41,17 +41,24 @@ def collect_inventory(token: str, owner_filter: str | None = None) -> dict:
     """Return visible repository metadata, explicitly not a completeness claim."""
     identity = api_get("/user", token)
     repositories = []
+    pages_fetched = 0
     for page in range(1, MAX_PAGES + 1):
         query = f"/user/repos?affiliation=owner%2Ccollaborator%2Corganization_member&per_page={PAGE_SIZE}&page={page}&sort=full_name&direction=asc"
         batch = api_get(query, token)
-        if not isinstance(batch, list):
-            raise ValueError("GitHub repository endpoint returned an unexpected response shape")
+        pages_fetched = page
+        if not isinstance(batch, list) or any(not isinstance(item, dict) for item in batch):
+            raise ValueError("GitHub repository endpoint returned an unexpected page shape")
         for item in batch:
             repository_owner = (item.get("owner") or {}).get("login", "")
+            full_name = item.get("full_name")
+            if not isinstance(full_name, str) or full_name.count("/") != 1 or not all(full_name.split("/")):
+                raise ValueError("GitHub repository entry is missing a valid full_name")
+            if not isinstance(repository_owner, str) or not repository_owner:
+                raise ValueError(f"GitHub repository entry has no valid owner: {full_name}")
             if owner_filter and repository_owner.casefold() != owner_filter.casefold():
                 continue
             repositories.append({
-                "full_name": item.get("full_name"),
+                "full_name": full_name,
                 "owner": repository_owner,
                 "visibility": item.get("visibility") or ("private" if item.get("private") else "public"),
                 "default_branch": item.get("default_branch"),
@@ -65,7 +72,11 @@ def collect_inventory(token: str, owner_filter: str | None = None) -> dict:
     else:
         raise RuntimeError(f"Repository pagination exceeded safety limit ({MAX_PAGES} pages)")
 
-    repositories.sort(key=lambda item: (item["full_name"] or "").casefold())
+    names = [item["full_name"].casefold() for item in repositories]
+    if len(names) != len(set(names)):
+        raise ValueError("GitHub repository inventory contained duplicate full_name entries; refusing an ambiguous report")
+
+    repositories.sort(key=lambda item: item["full_name"].casefold())
     return {
         "schema_version": 1,
         "audit_type": "accessible_repository_inventory",
@@ -74,6 +85,8 @@ def collect_inventory(token: str, owner_filter: str | None = None) -> dict:
         "requested_owner_filter": owner_filter,
         "source": "GitHub REST API GET /user/repos with owner, collaborator, and organization-member affiliations",
         "repository_count": len(repositories),
+        "pages_fetched": pages_fetched,
+        "pagination_complete": True,
         "visibility_counts": {
             visibility: sum(1 for item in repositories if item["visibility"] == visibility)
             for visibility in ("public", "private", "internal")
