@@ -93,6 +93,29 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
     }
 
 
+
+def attach_expected_inventory_reconciliation(report: dict, expected: dict) -> dict:
+    """Record inventory reconciliation without upgrading overall backup coverage."""
+    from reconcile_expected_inventory import reconcile_expected_inventory
+
+    reconciliation = reconcile_expected_inventory(report, expected)
+    coverage = report["coverage"]
+    coverage["expected_inventory_reconciliation"] = reconciliation
+    coverage["repository_inventory_reconciliation_status"] = reconciliation["status"]
+    coverage["repository_inventory_verified"] = reconciliation["repository_inventory_verified"]
+    # Inventory equality is one narrow dimension; it cannot certify the full
+    # account backup, settings, metadata, binaries, or an actual recovery drill.
+    coverage["account_completeness_verified"] = False
+    coverage["status"] = "partial-unverified"
+    coverage["note"] = (
+        f"Repository inventory reconciliation: {reconciliation['status']}. "
+        "Full account backup and recovery completeness remains unverified; "
+        "repository contents, operating records, settings, binary artifacts, "
+        "and isolated restoration require separate evidence."
+    )
+    return report
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", help="Keep only repositories owned by this user or organization login")
@@ -116,12 +139,8 @@ def main(argv: list[str] | None = None) -> int:
             expected_path = args.expected_inventory.expanduser().resolve()
             if expected_path == seed_root or seed_root in expected_path.parents:
                 raise ValueError("expected inventory must be outside the public world-seed repository")
-            from reconcile_expected_inventory import reconcile_expected_inventory
             expected = json.loads(expected_path.read_text(encoding="utf-8"))
-            report["coverage"]["expected_inventory_reconciliation"] = reconcile_expected_inventory(report, expected)
-            report["coverage"]["account_completeness_verified"] = report["coverage"]["expected_inventory_reconciliation"]["account_completeness_verified"]
-            report["coverage"]["status"] = report["coverage"]["expected_inventory_reconciliation"]["status"]
-            report["coverage"]["note"] = report["coverage"]["expected_inventory_reconciliation"]["note"]
+            report = attach_expected_inventory_reconciliation(report, expected)
         if args.expected_contracts:
             contracts_path = args.expected_contracts.expanduser().resolve()
             if contracts_path == seed_root or seed_root in contracts_path.parents:
