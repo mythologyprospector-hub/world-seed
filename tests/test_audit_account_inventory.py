@@ -27,6 +27,33 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(report["coverage"]["status"], "partial-unverified")
         self.assertFalse(report["coverage"]["account_completeness_verified"])
 
+    def test_pagination_count_is_recorded_and_completion_is_explicit(self):
+        one = {"full_name": "owner/one", "owner": {"login": "owner"}, "visibility": "public"}
+        two = {"full_name": "owner/two", "owner": {"login": "owner"}, "visibility": "private"}
+        with patch.object(AUDITOR, "api_get", side_effect=[{"login": "builder"}, [one], [two], []]):
+            with patch.object(AUDITOR, "PAGE_SIZE", 1):
+                report = AUDITOR.collect_inventory("test-token")
+        self.assertEqual(report["pages_fetched"], 3)
+        self.assertTrue(report["pagination_complete"])
+        self.assertEqual(report["repository_count"], 2)
+
+    def test_malformed_repository_page_fails_closed(self):
+        with patch.object(AUDITOR, "api_get", side_effect=[{"login": "builder"}, ["not-a-repository-object"]]):
+            with self.assertRaisesRegex(ValueError, "unexpected page shape"):
+                AUDITOR.collect_inventory("test-token")
+
+    def test_duplicate_repository_entries_fail_closed(self):
+        duplicate = {"full_name": "owner/repo", "owner": {"login": "owner"}, "visibility": "public"}
+        with patch.object(AUDITOR, "api_get", side_effect=[{"login": "builder"}, [duplicate, duplicate], []]):
+            with self.assertRaisesRegex(ValueError, "duplicate full_name"):
+                AUDITOR.collect_inventory("test-token")
+
+    def test_missing_full_name_fails_closed(self):
+        malformed = {"owner": {"login": "owner"}, "visibility": "public"}
+        with patch.object(AUDITOR, "api_get", side_effect=[{"login": "builder"}, [malformed]]):
+            with self.assertRaisesRegex(ValueError, "valid full_name"):
+                AUDITOR.collect_inventory("test-token")
+
     def test_owner_filter_limits_results(self):
         one = {"full_name": "wanted/repo", "owner": {"login": "wanted"}, "visibility": "public"}
         two = {"full_name": "other/repo", "owner": {"login": "other"}, "visibility": "public"}
