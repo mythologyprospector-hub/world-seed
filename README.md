@@ -33,6 +33,12 @@ It is deliberately **mission-portable and operator-aware**:
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
 - [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — template for a different operator/account.
 
+## Mission boundaries and license
+
+The seed's canonical constitution prohibits dystopian, Orwellian, apocalyptic, inhumane, exploitative, greedy, deceptive, underhanded, devious, nefarious, or otherwise unethical purposes and methods. It requires respect for human dignity, autonomy, privacy, licenses, EULAs, and applicable boundaries; it rejects pay-to-enter access and requires the MIT License for applicable project-owned material. See [CONSTITUTION.md](CONSTITUTION.md).
+
+This repository is distributed under the [MIT License](LICENSE). A repository's MIT license does not relicense third-party material or override third-party licenses, terms, privacy rights, trademarks, or other obligations. Check compatibility and required notices rather than assuming everything in a repository can be relicensed.
+
 ## Important boundaries
 
 This repository is a bootstrap source, not proof that a target account has been configured or recovered. Reading it is not execution. A file existing is not evidence that a workflow runs. Every bootstrap must report completed, verified, blocked, and unverified items separately.
