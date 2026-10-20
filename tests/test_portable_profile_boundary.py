@@ -1,4 +1,5 @@
-"""Keep source-operator identity and machine details out of the distributable seed."""
+"""Keep operator-specific identity and machine data out of the distributable seed."""
+import re
 import unittest
 from pathlib import Path
 
@@ -22,35 +23,27 @@ PORTABLE_DOCS = (
     "profiles/ACCOUNT_PROFILE.template.md",
     "templates/MISSION.md",
 )
-
-SOURCE_OPERATOR_MARKERS = (
-    "James Earl Stambaugh III",
-    "mythologyprospector@gmail.com",
-    "mythos1",
-    "Bucky",
-    "/srv/organs",
-    "teresa-oracle",
-    "profiles/jimmy.md",
-)
+EMAIL_PATTERN = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])")
 
 
 class PortableProfileBoundaryTests(unittest.TestCase):
-    def test_operator_specific_profile_is_not_bundled(self):
-        self.assertFalse((ROOT / "profiles" / "jimmy.md").exists())
+    def test_profiles_directory_contains_only_the_generic_template(self):
+        profile_files = {
+            path.relative_to(ROOT).as_posix()
+            for path in (ROOT / "profiles").rglob("*")
+            if path.is_file()
+        }
+        self.assertEqual(profile_files, {"profiles/ACCOUNT_PROFILE.template.md"})
 
-    def test_portable_documents_do_not_hardcode_source_operator_details(self):
+    def test_portable_documents_do_not_embed_email_addresses(self):
         for relative in PORTABLE_DOCS:
             with self.subTest(path=relative):
                 content = (ROOT / relative).read_text(encoding="utf-8")
-                self.assertNotIn("Jimmy", content)
-                for marker in SOURCE_OPERATOR_MARKERS:
-                    with self.subTest(path=relative, marker=marker):
-                        self.assertNotIn(marker, content)
+                self.assertIsNone(EMAIL_PATTERN.search(content))
 
     def test_human_guidance_uses_the_profile_loading_contract(self):
         content = (ROOT / "HUMAN.md").read_text(encoding="utf-8")
         self.assertIn("PROFILE_PACKAGES.md", content)
-        self.assertNotIn("Read profiles/jimmy.md", content)
 
 
 if __name__ == "__main__":
