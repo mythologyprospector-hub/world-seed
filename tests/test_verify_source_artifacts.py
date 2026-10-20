@@ -72,6 +72,19 @@ class SourceArtifactVerificationTests(unittest.TestCase):
         self.assertEqual(report["overall_status"], "partial")
         self.assertEqual(report["repository_results"][0]["source_zip"]["status"], "invalid")
 
+    def test_valid_zip_with_wrong_content_is_not_verified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_backup(root)
+            with zipfile.ZipFile(root / "zips" / "project.zip", "w") as archive:
+                archive.writestr("README.md", "different content\n")
+            report = verify_source_artifacts(root)
+        row = report["repository_results"][0]
+        self.assertEqual(report["overall_status"], "partial")
+        self.assertEqual(row["source_zip"]["status"], "tree-mismatch")
+        self.assertFalse(row["source_zip"]["checkout_tree_match"])
+        self.assertEqual(row["source_zip"]["content_mismatches"], ["README.md"])
+
     def test_duplicate_basenames_are_ambiguous(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
