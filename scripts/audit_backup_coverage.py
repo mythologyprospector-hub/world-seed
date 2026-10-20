@@ -25,7 +25,58 @@ def audit_backup_coverage(root: Path) -> dict:
     source_failed = sum(row[3] != "OK" for row in repo_rows)
     bundles = list((root / "bundles").glob("*.bundle")) if (root / "bundles").is_dir() else []
     zips = list((root / "zips").glob("*.zip")) if (root / "zips").is_dir() else []
-    checkouts = list((root / "checkouts").iterdir()) if (root / "checkouts").is_dir() else []
+    checkouts = [
+        path for path in (root / "checkouts").iterdir()
+        if path.is_dir()
+    ] if (root / "checkouts").is_dir() else []
+
+    # The backup collector names artifacts by repository basename. If two owners
+    # have repositories with the same basename, filenames alone cannot prove
+    # which repository an artifact belongs to; report that ambiguity conservatively.
+    expected_repositories = sorted({row[0] for row in repo_rows if row and "/" in row[0]})
+    repository_basenames = {
+        repository: repository.rsplit("/", 1)[1]
+        for repository in expected_repositories
+    }
+    basename_counts: dict[str, int] = {}
+    for basename in repository_basenames.values():
+        basename_counts[basename] = basename_counts.get(basename, 0) + 1
+    ambiguous_basenames = sorted(
+        basename for basename, count in basename_counts.items() if count > 1
+    )
+    bundle_stems = {path.name[:-len(".bundle")] for path in bundles}
+    zip_stems = {path.name[:-len(".zip")] for path in zips}
+    checkout_names = {path.name for path in checkouts}
+    missing_bundles = sorted(
+        repository for repository, basename in repository_basenames.items()
+        if basename not in bundle_stems
+    )
+    missing_zips = sorted(
+        repository for repository, basename in repository_basenames.items()
+        if basename not in zip_stems
+    )
+    missing_checkouts = sorted(
+        repository for repository, basename in repository_basenames.items()
+        if basename not in checkout_names
+    )
+    ambiguous_repositories = sorted(
+        repository for repository, basename in repository_basenames.items()
+        if basename in ambiguous_basenames
+    )
+    source_artifacts_complete = (
+        bool(expected_repositories)
+        and source_failed == 0
+        and not missing_bundles
+        and not missing_zips
+        and not missing_checkouts
+        and not ambiguous_repositories
+    )
+    if not repo_rows:
+        source_status = "missing"
+    elif source_artifacts_complete:
+        source_status = "present"
+    else:
+        source_status = "partial"
     records_root = root / "records"
     records_manifest = records_root / "manifest.tsv"
     record_lines = records_manifest.read_text(encoding="utf-8").splitlines() if records_manifest.is_file() else []
@@ -74,13 +125,20 @@ def audit_backup_coverage(root: Path) -> dict:
             "repository_rows": len(repo_rows),
         },
         "git_source_and_history": {
-            "status": "partial" if source_ok and (source_failed or not bundles or not zips) else ("present" if source_ok else "missing"),
+            "status": source_status,
             "evidence": "checkouts/, bundles/, zips/, manifest.tsv",
             "repository_rows_ok": source_ok,
             "repository_rows_failed": source_failed,
+            "expected_repository_count": len(expected_repositories),
+            "missing_bundle_repositories": missing_bundles,
+            "missing_source_zip_repositories": missing_zips,
+            "missing_checkout_repositories": missing_checkouts,
+            "ambiguous_repository_basenames": ambiguous_basenames,
+            "repositories_with_ambiguous_artifact_identity": ambiguous_repositories,
             "bundle_count": len(bundles),
             "source_zip_count": len(zips),
             "checkout_count": len(checkouts),
+            "note": "Artifact names are matched to manifest repository basenames; duplicate basenames are ambiguous. Bundle/ZIP integrity and restoration are not tested here.",
         },
         "issues_pull_requests_comments_reviews_releases_actions_metadata": {
             "status": "partial" if (record_ok or record_failed) else "unverified",
