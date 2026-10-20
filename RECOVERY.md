@@ -57,6 +57,23 @@ Until the operating-record exports, governance restore procedure, coverage integ
 
 Do not commit passwords, access tokens, private keys, recovery codes, session cookies, or secrets. Do not include sensitive private-repository contents in public profiles or manifests. Store credentials only in approved secure systems and document the safe procedure for reacquiring access.
 
+## Governance settings restoration protocol
+
+**Current implementation status:** export-only. There is not yet an automated settings-restoration command. Do not infer otherwise from the presence of an export.
+
+For every recovery, treat the governance export as evidence to review—not as an instruction to blindly apply settings:
+
+1. **Validate the source.** Confirm the export's repository identity, timestamp, schema version, and per-control status. Reject malformed, partial, or unverified exports as a complete source of truth. Confirm the inventory and default branch independently.
+2. **Choose an isolated target.** Restore into a dedicated test repository in a test organization/account where feasible. Never test destructive or potentially locking settings against the live account.
+3. **Build a reviewable change plan.** Compare classic protection fields, every ruleset's conditions/rules/enforcement/bypass actors, and applicable organization rulesets. Record fields that cannot be recreated, unsupported settings, identity-specific actor IDs, and permission gaps. Do not silently omit or weaken a control.
+4. **Require explicit human approval before writes.** The proposed settings and their intended target must be reviewed before applying any settings. No routine audit, inventory, or export command may perform restoration implicitly.
+5. **Apply deliberately.** Use GitHub's supported settings UI or API to recreate the reviewed policy on the isolated target. Keep the operation separate from the read-only exporter. Do not copy credentials or secrets from an export.
+6. **Read back and compare.** Retrieve the target's effective settings again. Compare required checks by their exact names, pull-request/review requirements, conversation resolution, admin enforcement, force-push/deletion controls, ruleset conditions, enforcement modes, and bypass actors. A successful write response alone is insufficient.
+7. **Test enforcement safely.** Verify expected allowed and blocked actions using a disposable test branch/repository and non-destructive test changes. Never attempt a live bypass or destructive test just to prove a rule works.
+8. **Record evidence and residual gaps.** Preserve source and target identities, timestamps, comparison results, safe test outcomes, and unresolved differences in private recovery storage. Keep the recovery status unverified until the drill passes.
+
+Restoration is proven only for the tested scope. A successful isolated drill does not establish that unrelated settings, permissions, environments, webhooks, secrets, or GitHub-only records are recoverable.
+
 ## Rebuild sequence
 
 1. Recover the independent seed copy.
