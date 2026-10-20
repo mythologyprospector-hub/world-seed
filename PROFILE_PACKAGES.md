@@ -72,4 +72,4 @@ Removing content from the current tree does not erase prior Git history or copie
 
 ## Approval and safety boundaries
 
-Creating a new repository or changing access controls requires explicit owner approval. For this migration, the private destination exists and the copied profile has been verified; keep the public-tree cleanup and private package reviewable until both boundaries are confirmed. Never make a private package public to simplify bootstrap, and never place credentials or secrets in either package.
+Creating a new repository or changing access controls requires explicit owner approval. For this migration, the private destination exists and the migration draft's presence and provenance have been checked. Its mutable machine facts were not live-verified, and the profile remains subject to owner review; keep the public-tree cleanup and private package reviewable until both boundaries are confirmed. Never make a private package public to simplify bootstrap, and never place credentials or secrets in either package.
