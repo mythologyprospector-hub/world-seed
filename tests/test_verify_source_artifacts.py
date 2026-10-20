@@ -47,6 +47,22 @@ class SourceArtifactVerificationTests(unittest.TestCase):
         self.assertEqual(report["repository_results"][0]["checkout"]["status"], "verified")
         self.assertIn("does not prove", report["note"])
 
+    def test_bundle_ref_mismatch_with_checkout_is_not_verified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_backup(root)
+            checkout = root / "checkouts" / "project"
+            subprocess.run(
+                ["git", "-C", str(checkout), "branch", "unexpected-local-branch"],
+                check=True,
+            )
+            report = verify_source_artifacts(root)
+        row = report["repository_results"][0]
+        self.assertEqual(report["overall_status"], "partial")
+        self.assertEqual(row["bundle"]["status"], "ref-mismatch")
+        self.assertFalse(row["bundle"]["ref_match_with_checkout"])
+        self.assertTrue(row["bundle"]["checkout_only_refs"])
+
     def test_corrupt_zip_is_not_verified(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
