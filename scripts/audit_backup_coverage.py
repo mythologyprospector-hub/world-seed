@@ -11,6 +11,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from private_report import write_private_json
+
 
 def audit_backup_coverage(root: Path) -> dict:
     root = root.expanduser().resolve()
@@ -129,17 +131,15 @@ def main() -> int:
     parser.add_argument("--backup-dir", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    output = args.output.expanduser().resolve()
+    requested_output = args.output.expanduser()
+    if requested_output.is_symlink():
+        parser.error("coverage report output must not be a symlink")
+    output = requested_output.resolve()
     root = args.backup_dir.expanduser().resolve()
     if output == root or root in output.parents:
         parser.error("coverage report must be written outside the backup directory being inspected")
     report = audit_backup_coverage(root)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    try:
-        output.chmod(0o600)
-    except OSError:
-        pass
+    write_private_json(output, report)
     print(f"Backup coverage: {report['overall_status']}")
     print(f"Report: {output}")
     return 0
