@@ -30,6 +30,26 @@ def audit_backup_coverage(root: Path) -> dict:
     record_rows = [line.split("\t") for line in record_lines[1:] if line.strip()]
     record_ok = sum(len(row) >= 3 and row[2] == "OK" for row in record_rows)
     record_failed = sum(len(row) >= 3 and row[2] != "OK" for row in record_rows)
+    governance_dir = records_root / "governance"
+    governance_files = sorted(governance_dir.glob("governance-*.json")) if governance_dir.is_dir() else []
+    governance_statuses = []
+    governance_invalid = []
+    for governance_file in governance_files:
+        try:
+            payload = json.loads(governance_file.read_text(encoding="utf-8"))
+            status = payload.get("overall_status")
+            if status not in {"captured", "partial", "unverified"}:
+                governance_invalid.append(governance_file.name)
+            else:
+                governance_statuses.append(status)
+        except (OSError, ValueError, AttributeError):
+            governance_invalid.append(governance_file.name)
+    if not governance_files:
+        governance_status = "unverified"
+    elif governance_invalid or any(status != "captured" for status in governance_statuses):
+        governance_status = "partial"
+    else:
+        governance_status = "present"
 
     categories = {
         "repository_inventory": {
@@ -54,7 +74,18 @@ def audit_backup_coverage(root: Path) -> dict:
         },
         "actions_binary_artifact_contents": {"status": "unverified", "evidence": None},
         "release_asset_contents": {"status": "unverified", "evidence": None},
-        "repository_and_organization_settings_permissions": {"status": "unverified", "evidence": None},
+        "branch_protection_and_ruleset_exports": {
+            "status": governance_status,
+            "evidence": "records/governance/governance-*.json" if governance_files else None,
+            "export_count": len(governance_files),
+            "invalid_or_unrecognized_exports": governance_invalid,
+            "export_statuses": governance_statuses,
+            "note": "Captured exports are not proof of restoration or effective enforcement.",
+        },
+        "repository_and_organization_settings_permissions": {
+            "status": "partial" if governance_status == "present" else "unverified",
+            "evidence": "Governance exports cover classic default-branch protection and repository/organization rulesets only; other settings, permissions, environments, and webhooks remain uncovered.",
+        },
         "discussions_webhooks_environments_and_other_operating_records": {"status": "unverified", "evidence": None},
         "secrets_and_credentials": {
             "status": "excluded-by-design",
