@@ -16,6 +16,11 @@ class ValidateSeedTests(unittest.TestCase):
             errors = VALIDATOR.validate(Path(temporary))
         self.assertTrue(any("required file missing: README.md" in item for item in errors))
 
+    def test_missing_mission_document_is_reported(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            errors = VALIDATOR.validate(Path(temporary))
+        self.assertTrue(any("required file missing: MISSION.md" in item for item in errors))
+
     def test_broken_local_link_is_reported(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
