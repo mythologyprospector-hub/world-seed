@@ -53,6 +53,21 @@ class BackupCoverageTests(unittest.TestCase):
         )
         self.assertEqual(result["overall_status"], "incomplete-unverified")
 
+    def test_partial_operating_record_export_is_evidence_but_not_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "records").mkdir()
+            (root / "records" / "manifest.tsv").write_text(
+                "repository\\tfile\\tresult\\tendpoint_status\\nowner/project\\trecords.json\\tPARTIAL\\tpartial\\n",
+                encoding="utf-8",
+            )
+            result = audit_backup_coverage(root)
+        category = result["categories"]["issues_pull_requests_comments_reviews_releases_actions_metadata"]
+        self.assertEqual(category["status"], "partial")
+        self.assertEqual(category["endpoint_exports_ok"], 0)
+        self.assertEqual(category["endpoint_exports_failed"], 1)
+        self.assertEqual(result["overall_status"], "incomplete-unverified")
+
     def test_governance_export_is_detected_but_does_not_certify_all_settings(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
