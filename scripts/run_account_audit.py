@@ -83,6 +83,7 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
                 "not_attempted": sum(item.get("document_inspection_status") == "not-attempted" for item in results),
             },
             "cross_repository_contracts_checked": False,
+            "cross_repository_contract_inventory_verified": False,
             "security_posture_verified": False,
             "note": "This covers only repositories visible to the token. Compare with an authoritative expected inventory and verify private/organization access before claiming completeness.",
         },
@@ -98,6 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", required=True, type=Path, help="Access-controlled local report path")
     parser.add_argument("--ledger-db", type=Path, help="Optional private SQLite findings ledger path outside this public repository")
     parser.add_argument("--expected-inventory", type=Path, help="Optional authoritative private JSON inventory outside this public repository")
+    parser.add_argument("--expected-contracts", type=Path, help="Optional private JSON cross-repository contract inventory outside this public repository")
     args = parser.parse_args(argv)
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -120,6 +122,16 @@ def main(argv: list[str] | None = None) -> int:
             report["coverage"]["account_completeness_verified"] = report["coverage"]["expected_inventory_reconciliation"]["account_completeness_verified"]
             report["coverage"]["status"] = report["coverage"]["expected_inventory_reconciliation"]["status"]
             report["coverage"]["note"] = report["coverage"]["expected_inventory_reconciliation"]["note"]
+        if args.expected_contracts:
+            contracts_path = args.expected_contracts.expanduser().resolve()
+            if contracts_path == seed_root or seed_root in contracts_path.parents:
+                raise ValueError("expected contracts inventory must be outside the public world-seed repository")
+            from inspect_cross_repository_contracts import inspect_expected_contracts
+            expected_contracts = json.loads(contracts_path.read_text(encoding="utf-8"))
+            contract_report = inspect_expected_contracts(report, expected_contracts, token)
+            report["cross_repository_contracts"] = contract_report
+            report["coverage"]["cross_repository_contracts_checked"] = True
+            report["coverage"]["cross_repository_contract_inventory_verified"] = contract_report["cross_repository_contract_inventory_verified"]
         output.parent.mkdir(parents=True, exist_ok=True)
         write_private_json(output, report)
         ledger_summary = None
