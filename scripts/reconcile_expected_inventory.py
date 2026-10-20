@@ -42,7 +42,8 @@ def reconcile_expected_inventory(observed_report: dict, expected: dict) -> dict:
     missing = sorted((name for name in names if name.casefold() not in observed_set), key=str.casefold)
     unexpected = sorted((name for name in observed_names if name.casefold() not in expected_set), key=str.casefold)
     matches = not missing and not unexpected and len(observed_names) == len(observed_set)
-    verified = bool(expected["authoritative"] and matches and not observed_report.get("requested_owner_filter"))
+    pagination_complete = observed_report.get("pagination_complete") is True
+    verified = bool(expected["authoritative"] and matches and pagination_complete and not observed_report.get("requested_owner_filter"))
     return {
         "status": "verified-match" if verified else ("mismatch" if missing or unexpected else "partial-unverified"),
         "repository_inventory_verified": verified,
@@ -54,8 +55,9 @@ def reconcile_expected_inventory(observed_report: dict, expected: dict) -> dict:
         "missing_from_observed": missing,
         "unexpected_in_observed": unexpected,
         "owner_filter_applied": bool(observed_report.get("requested_owner_filter")),
+        "pagination_complete": pagination_complete,
         "reconciled_at": datetime.now(timezone.utc).isoformat(),
         "note": ("Exact match to the supplied authoritative inventory; repository inventory is verified, but full account backup/recovery completeness is not."
                  if verified else
-                 "Inventory is not verified complete. Review mismatches, expected-inventory authority, and any owner filter; inaccessible resources remain unknown."),
+                 "Inventory is not verified complete. Review mismatches, expected-inventory authority, pagination evidence, and any owner filter; inaccessible resources remain unknown."),
     }
