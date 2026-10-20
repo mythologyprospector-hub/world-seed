@@ -31,7 +31,8 @@ def reconcile_expected_inventory(observed_report: dict, expected: dict) -> dict:
     verified = bool(expected["authoritative"] and matches and not observed_report.get("requested_owner_filter"))
     return {
         "status": "verified-match" if verified else ("mismatch" if missing or unexpected else "partial-unverified"),
-        "account_completeness_verified": verified,
+        "repository_inventory_verified": verified,
+        "account_completeness_verified": False,
         "expected_inventory_authoritative": expected["authoritative"],
         "expected_inventory_reviewed_at": expected["reviewed_at"],
         "expected_repository_count": len(normalized),
@@ -40,7 +41,7 @@ def reconcile_expected_inventory(observed_report: dict, expected: dict) -> dict:
         "unexpected_in_observed": unexpected,
         "owner_filter_applied": bool(observed_report.get("requested_owner_filter")),
         "reconciled_at": datetime.now(timezone.utc).isoformat(),
-        "note": ("Exact match to the supplied authoritative inventory; this verifies only the declared repository inventory and does not certify repository contents or security."
+        "note": ("Exact match to the supplied authoritative inventory; repository inventory is verified, but full account backup/recovery completeness is not."
                  if verified else
                  "Inventory is not verified complete. Review mismatches, expected-inventory authority, and any owner filter; inaccessible resources remain unknown."),
     }
