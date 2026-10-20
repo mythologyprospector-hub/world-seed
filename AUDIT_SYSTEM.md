@@ -40,6 +40,12 @@ Inspect the seams between repositories, not only each repository in isolation:
 
 A shared template or shared service is a dependency to verify, not proof of conformity. Track the version or commit each consumer uses where practical. Validate the actual installed service and its interfaces; do not infer runtime health from repository documentation.
 
+### Explicit contract inventory and evidence boundary
+
+The account auditor accepts an optional private expected-contract inventory. Each entry explicitly names a contract ID, producer repository, consumer repository, and producer-side canonical artifact path. The collector checks that both endpoints are observed and that the declared producer artifact is readable, retaining its blob hash and status rather than its body. A 404 is reported as `not-found-or-not-visible`, never as proof that no contract exists. The inventory must declare whether it is authoritative and when it was reviewed; keep it outside the public seed checkout.
+
+A verified artifact inventory is only a discovery gate. It does not prove consumer adoption, semantic/API/event compatibility, version alignment, integration-test coverage, or runtime health. Those require separate checks against actual implementation and evidence. Do not label cross-repository compatibility verified from file presence alone.
+
 ### 3. Account and ecosystem integrity
 
 Inspect:
