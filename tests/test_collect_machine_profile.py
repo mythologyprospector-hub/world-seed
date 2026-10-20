@@ -50,7 +50,7 @@ class CollectMachineProfileTests(unittest.TestCase):
                 with self.assertRaises(SystemExit) as raised:
                     COLLECTOR.main()
         self.assertEqual(raised.exception.code, 2)
-        self.assertEqual(output.read_text(encoding="utf-8"), "keep")
+            self.assertEqual(output.read_text(encoding="utf-8"), "keep")
 
 
 if __name__ == "__main__":
