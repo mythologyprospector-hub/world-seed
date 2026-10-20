@@ -45,9 +45,9 @@ class BackupCoverageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "manifest.tsv").write_text(
-                "owner\\tvisibility\\tarchived\\tresult\\n"
-                "owner/alpha\\tpublic\\tFalse\\tOK\\n"
-                "owner/beta\\tprivate\\tFalse\\tOK\\n",
+                "owner\tvisibility\tarchived\tresult\n"
+                "owner/alpha\tpublic\tFalse\tOK\n"
+                "owner/beta\tprivate\tFalse\tOK\n",
                 encoding="utf-8",
             )
             (root / "bundles").mkdir()
@@ -70,9 +70,9 @@ class BackupCoverageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "manifest.tsv").write_text(
-                "owner\\tvisibility\\tarchived\\tresult\\n"
-                "owner-a/project\\tpublic\\tFalse\\tOK\\n"
-                "owner-b/project\\tprivate\\tFalse\\tOK\\n",
+                "owner\tvisibility\tarchived\tresult\n"
+                "owner-a/project\tpublic\tFalse\tOK\n"
+                "owner-b/project\tprivate\tFalse\tOK\n",
                 encoding="utf-8",
             )
             (root / "bundles").mkdir()
