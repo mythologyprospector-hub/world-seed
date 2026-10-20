@@ -61,6 +61,16 @@ The account owner may have a broad purpose, but each new ecosystem's mission mus
 
 Projects retain their own purpose, canon, architecture, data, roadmap, and decisions. Shared standards are a common floor, not permission to flatten projects into one application or silently override local authority.
 
+## Canonical identity and attribution
+
+The following project-owner identity and contact details are canonical and are not to be casually altered:
+
+- **Name:** James Earl Stambaugh III
+- **Contact:** mythologyprospector@gmail.com
+- **GitHub organization:** https://github.com/mythologyprospector-hub
+
+Use these details consistently where owner attribution or contact information is appropriate, including applicable copyright notices and project metadata. Do not substitute an organization label for the named owner without a deliberate, documented decision. Because these details are intentionally durable, changes require explicit human approval and a clear reason; routine edits must preserve them. Keep this information public only in contexts where public attribution/contact is intended, and never confuse it with credentials or secrets.
+
 ## Values, prohibitions, and safeguards
 
 Choose truth over hype, people over machinery, agency over coercion, dignity over disposability, and useful evidence over impressive claims. Consider affected people, consent, privacy, security, misuse, and wider consequences.
