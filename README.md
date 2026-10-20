@@ -1,24 +1,26 @@
 # world-seed
 
-**Portable genesis for AI-led project ecosystems, with a real operator profile.**
+**Portable genesis for AI-led project ecosystems, with a shared mission-driven operating method and explicit privacy boundaries for operator profiles.**
 
 world-seed preserves the reusable operating system for starting and governing a whole GitHub account: the constitution, AI leadership mandate, human approval boundaries, repository architecture, onboarding, automation standards, machine profile, and recovery procedure.
 
 It is deliberately **mission-portable and operator-aware**:
 - The core works with any GitHub account, mission, repository set, and capable AI builder.
-- The included Jimmy profile records the known local environment and working preferences without pretending those facts apply to other operators.
+- The distributable seed defines how to discover and load an authorized operator profile without embedding a real operator's personal or machine details.
 - Account-specific mission, inventory, credentials, and current state are discovered at bootstrap; they are not guessed from this seed.
 
 ## Start here
 
 1. Give the AI builder the repository URL and the instructions in [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md).
-2. The builder reads [AGENTS.md](AGENTS.md), [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), and [BOOTSTRAP.md](BOOTSTRAP.md).
+2. The builder reads [AGENTS.md](AGENTS.md), [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), [BOOTSTRAP.md](BOOTSTRAP.md), and [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md).
 3. It inspects the target account and environment before changing anything.
 4. It prepares an evidence-backed plan and proceeds within the authority already granted, stopping only at real approval gates.
 5. It leaves durable records and verifies what it actually did.
 
 ## Contents
 
+- [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
+- [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
 - [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
 - [CONSTITUTION.md](CONSTITUTION.md) — governance, leadership, Rule #1, Rule #2, authority, and safeguards.
 - [HUMAN.md](HUMAN.md) — the intended working relationship and communication style.
@@ -28,12 +30,13 @@ It is deliberately **mission-portable and operator-aware**:
 - [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) — mandatory rolling repository, cross-repository, and account-wide audits.
 - [templates/expected-inventory.template.json](templates/expected-inventory.template.json) and [templates/expected-contracts.template.json](templates/expected-contracts.template.json) — non-authoritative starting points for private audit inventories.
 - [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) — shared editorial, code-commenting, naming, repository-layout, process, and quality standards.
-- [MACHINE_PROFILE.md](MACHINE_PROFILE.md) — how to discover an environment and the known Jimmy profile.
+- [MACHINE_PROFILE.md](MACHINE_PROFILE.md) — portable machine-discovery procedure.
+- [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md) — the canonical boundary between portable seed, private operator profile, and personal-data package.
 - [BASH_PROMPT.md](BASH_PROMPT.md) — the local prompt's role, limits, and safe integration into the operator workflow.
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
 - [scripts/export_github_operating_records.py](scripts/export_github_operating_records.py) — read-only, paginated export of supported GitHub operating-record metadata to private storage.
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
-- [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — template for a different operator/account.
+- [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — a template to copy into an operator-approved, access-controlled location.
 
 ## Mission boundaries and license
 
@@ -49,7 +52,7 @@ Never store credentials, tokens, private keys, recovery codes, or other secrets 
 
 ## Evolution
 
-When a reusable rule changes, update its canonical document here and record the rationale. Do not silently let temporary chat context become policy. Keep operator-specific details in the profile, not in the universal constitution.
+When a reusable rule changes, update its canonical document here and record the rationale. Do not silently let temporary chat context become policy. Keep operator-specific details in an authorized private profile package, not in the distributable seed. Keep deeply personal records in a separate personal-data package. See [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md).
 
 
 ### Local backup coverage inventory
@@ -156,12 +159,12 @@ The dependency-free `scripts/validate_audit_findings.py` enforces core required-
 
 ## Prepare a local handoff backup
 
-Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. On Jimmy's Bucky machine, this script uses the existing GitHub CLI login; it does not require switching accounts or creating a new one.
+Before a fresh builder assesses retirement or restructuring, preserve the GitHub repositories locally. The script uses an existing authenticated GitHub CLI session; verify the active identity before running it. It does not require creating a new account.
 
 From a terminal:
 
 ```bash
-cd ~/projects/world-seed
+cd /path/to/world-seed  # replace with the actual checkout path
 git status --short --branch
 ```
 
