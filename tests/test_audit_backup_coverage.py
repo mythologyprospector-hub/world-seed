@@ -41,6 +41,56 @@ class BackupCoverageTests(unittest.TestCase):
         self.assertEqual(categories["isolated_recovery_drill"]["status"], "not-tested")
         self.assertEqual(result["overall_status"], "incomplete-unverified")
 
+    def test_source_coverage_requires_artifacts_for_every_repository(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "manifest.tsv").write_text(
+                "owner\\tvisibility\\tarchived\\tresult\\n"
+                "owner/alpha\\tpublic\\tFalse\\tOK\\n"
+                "owner/beta\\tprivate\\tFalse\\tOK\\n",
+                encoding="utf-8",
+            )
+            (root / "bundles").mkdir()
+            (root / "bundles" / "alpha.bundle").write_bytes(b"not-validated-here")
+            (root / "zips").mkdir()
+            (root / "zips" / "alpha.zip").write_bytes(b"not-validated-here")
+            (root / "checkouts").mkdir()
+            (root / "checkouts" / "alpha").mkdir()
+            result = audit_backup_coverage(root)
+
+        category = result["categories"]["git_source_and_history"]
+        self.assertEqual(category["status"], "partial")
+        self.assertEqual(category["expected_repository_count"], 2)
+        self.assertEqual(category["missing_bundle_repositories"], ["owner/beta"])
+        self.assertEqual(category["missing_source_zip_repositories"], ["owner/beta"])
+        self.assertEqual(category["missing_checkout_repositories"], ["owner/beta"])
+        self.assertIn("not tested", category["note"])
+
+    def test_duplicate_repository_basenames_are_not_counted_as_proven_coverage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "manifest.tsv").write_text(
+                "owner\\tvisibility\\tarchived\\tresult\\n"
+                "owner-a/project\\tpublic\\tFalse\\tOK\\n"
+                "owner-b/project\\tprivate\\tFalse\\tOK\\n",
+                encoding="utf-8",
+            )
+            (root / "bundles").mkdir()
+            (root / "bundles" / "project.bundle").write_bytes(b"not-validated-here")
+            (root / "zips").mkdir()
+            (root / "zips" / "project.zip").write_bytes(b"not-validated-here")
+            (root / "checkouts").mkdir()
+            (root / "checkouts" / "project").mkdir()
+            result = audit_backup_coverage(root)
+
+        category = result["categories"]["git_source_and_history"]
+        self.assertEqual(category["status"], "partial")
+        self.assertEqual(category["ambiguous_repository_basenames"], ["project"])
+        self.assertEqual(
+            category["repositories_with_ambiguous_artifact_identity"],
+            ["owner-a/project", "owner-b/project"],
+        )
+
     def test_operating_record_export_does_not_claim_full_coverage(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
