@@ -19,7 +19,6 @@ class ExpectedInventoryTests(unittest.TestCase):
                   "requested_owner_filter": None}
         result = reconcile_expected_inventory(report, self.expected)
         self.assertTrue(result["repository_inventory_verified"])
-        self.assertFalse(result["repository_inventory_verified"])
         self.assertFalse(result["account_completeness_verified"])
         self.assertEqual(result["status"], "verified-match")
         self.assertIn("full account backup/recovery completeness is not", result["note"])
@@ -46,6 +45,7 @@ class ExpectedInventoryTests(unittest.TestCase):
         report = {"repositories": [], "requested_owner_filter": None}
         result = reconcile_expected_inventory(report, template)
         self.assertFalse(template["authoritative"])
+        self.assertFalse(result["repository_inventory_verified"])
         self.assertFalse(result["account_completeness_verified"])
 
     def test_duplicate_or_malformed_expected_names_rejected(self):
