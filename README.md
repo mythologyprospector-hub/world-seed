@@ -19,7 +19,8 @@ It is deliberately **mission-portable and operator-aware**:
 
 ## Contents
 
-- [MISSION.md](MISSION.md) — open-ended mission and shared discovery method; projects change the opening mission sentence while preserving the common operating approach.
+- [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
+- [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
 - [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
 - [CONSTITUTION.md](CONSTITUTION.md) — governance, leadership, Rule #1, Rule #2, authority, and safeguards.
 - [HUMAN.md](HUMAN.md) — the intended working relationship and communication style.
