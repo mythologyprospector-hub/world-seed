@@ -96,6 +96,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", help="Keep only repositories owned by this user or organization login")
     parser.add_argument("--output", required=True, type=Path, help="Access-controlled local report path")
+    parser.add_argument("--ledger-db", type=Path, help="Optional private SQLite findings ledger path outside this public repository")
     args = parser.parse_args(argv)
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -110,11 +111,23 @@ def main(argv: list[str] | None = None) -> int:
         report = build_report(token, args.owner)
         output.parent.mkdir(parents=True, exist_ok=True)
         write_private_json(output, report)
+        ledger_summary = None
+        if args.ledger_db:
+            from audit_findings_ledger import open_ledger
+            from audit_report_findings import ingest_report
+            ledger_path = args.ledger_db.expanduser().resolve()
+            if ledger_path == seed_root or seed_root in ledger_path.parents:
+                raise ValueError("ledger database must be outside the public world-seed repository")
+            ledger_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            with open_ledger(ledger_path) as connection:
+                ledger_summary = ingest_report(connection, report)
     except (HTTPError, URLError, TimeoutError, OSError, ValueError, RuntimeError) as exc:
         print(f"BLOCKED: baseline scan failed ({type(exc).__name__}); no clean result is implied.", file=sys.stderr)
         return 2
     document_status = report["coverage"]["document_inspection_status_counts"]
     print(f"Baseline report written to the chosen local path: {report['repository_count_inspected']} layouts inspected, {report['repository_count_blocked']} layout inspections blocked; document inspections: {document_status['inspected']} complete, {document_status['partial']} partial, {document_status['blocked']} blocked. Coverage remains partial-unverified.")
+    if args.ledger_db:
+        print(f"Private findings ledger updated: {ledger_summary['observations_upserted']} current observations; {ledger_summary['verified_resolutions_reopened_by_new_evidence']} previously resolved findings reopened; no absent findings auto-resolved.")
     return 0 if not report["repository_count_blocked"] and not report["document_inspections_blocked"] and not document_status["partial"] else 1
 
 if __name__ == "__main__":
