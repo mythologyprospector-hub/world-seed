@@ -53,6 +53,22 @@ class BackupCoverageTests(unittest.TestCase):
         )
         self.assertEqual(result["overall_status"], "incomplete-unverified")
 
+    def test_governance_export_is_detected_but_does_not_certify_all_settings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            governance = root / "records" / "governance"
+            governance.mkdir(parents=True)
+            (governance / "governance-owner_project.json").write_text(
+                '{"overall_status":"captured","controls":{}}',
+                encoding="utf-8",
+            )
+            result = audit_backup_coverage(root)
+        categories = result["categories"]
+        self.assertEqual(categories["branch_protection_and_ruleset_exports"]["status"], "present")
+        self.assertEqual(categories["branch_protection_and_ruleset_exports"]["export_count"], 1)
+        self.assertEqual(categories["repository_and_organization_settings_permissions"]["status"], "partial")
+        self.assertEqual(result["overall_status"], "incomplete-unverified")
+
 
 if __name__ == "__main__":
     unittest.main()
