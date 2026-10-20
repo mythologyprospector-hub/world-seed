@@ -63,6 +63,8 @@ def build_report(token: str, owner_filter: str | None = None) -> dict:
         "authenticated_identity": inventory["authenticated_identity"],
         "requested_owner_filter": owner_filter,
         "repository_count_discovered": inventory["repository_count"],
+        "pages_fetched": inventory.get("pages_fetched"),
+        "pagination_complete": inventory.get("pagination_complete") is True,
         "repository_count_inspected": sum(item["inspection_status"] == "inspected" for item in results),
         "repository_count_blocked": len(blocked),
         "document_inspections_blocked": len(document_blocked),
