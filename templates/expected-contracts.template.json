@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "authoritative": false,
+  "reviewed_at": "YYYY-MM-DD",
+  "contracts": [
+    {
+      "contract_id": "EXAMPLE-CONTRACT",
+      "producer": "OWNER/PRODUCER",
+      "consumer": "OWNER/CONSUMER",
+      "path": "path/to/canonical-contract.md"
+    }
+  ]
+}
