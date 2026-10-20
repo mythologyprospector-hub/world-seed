@@ -246,7 +246,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         report = export_repository(args.repository, token)
         safe_name = args.repository.replace("/", "__")
-        output = output_dir / f"operating-records-{safe_name}.json"
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        output = output_dir / f"operating-records-{safe_name}-{stamp}.json"
         write_private_json(output, report)
         endpoint_statuses = [item["status"] for item in report["endpoints"].values()]
         endpoint_statuses += [
