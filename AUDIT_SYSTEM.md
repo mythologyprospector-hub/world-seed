@@ -42,6 +42,8 @@ A shared template or shared service is a dependency to verify, not proof of conf
 
 ### Explicit contract inventory and evidence boundary
 
+Use [templates/expected-inventory.template.json](templates/expected-inventory.template.json) to prepare the target account's expected repository list and [templates/expected-contracts.template.json](templates/expected-contracts.template.json) to declare cross-repository seams. Copy and complete these templates in access-controlled storage outside the public checkout; never put the live private inventory in this repository. Keep `authoritative` false until a responsible human has reviewed the list against an appropriate source of truth. A placeholder template is not evidence of actual account coverage.
+
 The account auditor accepts an optional private expected-contract inventory. Each entry explicitly names a contract ID, producer repository, consumer repository, and producer-side canonical artifact path. The collector checks that both endpoints are observed and that the declared producer artifact is readable, retaining its blob hash and status rather than its body. A 404 is reported as `not-found-or-not-visible`, never as proof that no contract exists. The inventory must declare whether it is authoritative and when it was reviewed; keep it outside the public seed checkout.
 
 A verified artifact inventory is only a discovery gate. It does not prove consumer adoption, semantic/API/event compatibility, version alignment, integration-test coverage, or runtime health. Those require separate checks against actual implementation and evidence. Do not label cross-repository compatibility verified from file presence alone.
