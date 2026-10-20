@@ -1,7 +1,7 @@
 # Account and Operator Profile
 
-**Status:** Template — copy and complete for a target operator.
-**Governs:** Account-specific mission, preferences, environment, and recovery facts. Universal policy lives in the world-seed constitution.
+**Status:** Template — copy to an operator-approved, access-controlled location and complete for the target operator.
+**Governs:** Minimal operator/account context needed for bootstrap. Universal policy lives in the world-seed constitution; sensitive personal history belongs in a separate personal-data package.
 **Last verified:** YYYY-MM-DD
 
 ## Owner and target
@@ -39,6 +39,15 @@
 - External dependencies:
 - Independent backup location and recovery owner:
 
+## Profile provenance and disclosure
+
+- Package version/ref:
+- Sensitivity classification:
+- Last reviewed:
+- Sections approved for use in this task:
+- Disclosure restrictions:
+- Fields that must be verified before use:
+
 ## Privacy and permissions
 
 - Private repository handling:
@@ -54,4 +63,4 @@
 - Open questions:
 - Next justified action:
 
-Do not place credentials, tokens, private keys, recovery codes, or other secrets in this file. Avoid naming private repositories in any public version of this profile.
+Do not place credentials, tokens, private keys, recovery codes, or other secrets in this file. This template belongs in an operator-approved, access-controlled location, not in the distributable world-seed with real values filled in. Avoid naming private repositories in any public version. Do not include genealogy, birth information, family records, AI exports, or other personal archives here; store those separately with stricter access and purpose limits.

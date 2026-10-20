@@ -10,9 +10,10 @@ Establish an AI-led operating ecosystem for the target account and its mission, 
 
 ## Phase 0 — Establish authority and target
 
-1. Identify the target GitHub account/organization and the human owner.
-2. Confirm which connected identity and tools can actually access it.
-3. Read the owner's stated mission, constraints, and risk boundaries. If absent, ask the smallest necessary mission-level question; do not invent a mission.
+1. Read [MISSION.md](MISSION.md) to understand the open-ended discovery method and this seed's own purpose.
+2. Identify the target GitHub account/organization and the human owner.
+3. Confirm which connected identity and tools can actually access it.
+4. Discover the target's own mission, constraints, and risk boundaries from its canonical records. Do not transplant world-seed's mission sentence into another account or project. If the target mission is absent, ask the smallest necessary mission-level question; do not invent one.
 4. Distinguish read-only discovery from writes. Confirm authorization for consequential actions before executing them.
 5. Never request or place credentials in chat, repository files, issues, or logs. Use approved credential managers and platform permission flows.
 6. Before declaring an integration blocked for lack of credentials, consult the operator's private machine/profile notes for an existing credential vault. Verify only whether an appropriate credential is available and scoped; do not reveal, copy, or log its value. Never assume one provider's credential grants access to another provider or to the required repositories.
@@ -25,10 +26,11 @@ Inventory:
 - canonical governance and project documents;
 - reusable templates, seeds, shared services, and cross-repository contracts;
 - account/team permission boundaries available to the current tools;
+- the existence, access scope, and version of an authorized operator profile package, if any;
 - local machines, clone locations, installed runtimes, and required tools where accessible;
 - independent backups and recovery dependencies.
 
-Label every finding as observed, inferred, or unknown. Do not imply a complete inventory when permissions or API coverage prevent it. Avoid exposing private repository names or details in public files.
+Label every finding as observed, inferred, or unknown. Do not imply a complete inventory when permissions or API coverage prevent it. Avoid exposing private repository names or details in public files. Follow [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md): load only relevant authorized profile sections, verify mutable facts, and keep personal-data records separate from the operator profile. If a profile is inaccessible, continue safely and mark its facts unknown rather than guessing.
 
 ## Phase 2 — Assess the operating machinery
 
