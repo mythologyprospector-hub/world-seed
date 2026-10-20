@@ -164,9 +164,43 @@ def verify_source_artifacts(root: Path) -> dict:
             result["checkout"] = {"status": "missing-or-unsafe"}
         else:
             ok, output = _run(["git", "-C", str(checkout), "rev-parse", "--is-inside-work-tree"])
+            checkout_status = "verified" if ok and output.splitlines()[0:1] == ["true"] else "invalid"
+            checkout_detail = output
+            if checkout_status == "verified" and result["source_zip"]["status"] == "verified":
+                with tempfile.TemporaryDirectory(prefix="world-seed-zip-compare-") as temp:
+                    expected_zip = Path(temp) / "checkout-head.zip"
+                    archive_ok, archive_output = _run([
+                        "git", "-C", str(checkout), "archive",
+                        "--format=zip", f"--output={expected_zip}", "HEAD",
+                    ])
+                    if not archive_ok:
+                        result["source_zip"]["checkout_tree_match"] = False
+                        result["source_zip"]["comparison_detail"] = archive_output
+                        result["source_zip"]["status"] = "comparison-blocked"
+                    else:
+                        try:
+                            with zipfile.ZipFile(source_zip) as actual, zipfile.ZipFile(expected_zip) as expected:
+                                actual_names = sorted(name for name in actual.namelist() if not name.endswith("/"))
+                                expected_names = sorted(name for name in expected.namelist() if not name.endswith("/"))
+                                names_match = actual_names == expected_names
+                                content_mismatches = []
+                                if names_match:
+                                    for member in actual_names:
+                                        if actual.read(member) != expected.read(member):
+                                            content_mismatches.append(member)
+                                tree_match = names_match and not content_mismatches
+                                result["source_zip"]["checkout_tree_match"] = tree_match
+                                result["source_zip"]["content_mismatches"] = content_mismatches
+                                result["source_zip"]["entry_names_match"] = names_match
+                                if not tree_match:
+                                    result["source_zip"]["status"] = "tree-mismatch"
+                        except (OSError, zipfile.BadZipFile, KeyError, RuntimeError) as exc:
+                            result["source_zip"]["checkout_tree_match"] = False
+                            result["source_zip"]["comparison_detail"] = type(exc).__name__
+                            result["source_zip"]["status"] = "comparison-invalid"
             result["checkout"] = {
-                "status": "verified" if ok and output.splitlines()[0:1] == ["true"] else "invalid",
-                "detail": output,
+                "status": checkout_status,
+                "detail": checkout_detail,
             }
 
         checks = [result["bundle"]["status"], result["source_zip"]["status"], result["checkout"]["status"]]
