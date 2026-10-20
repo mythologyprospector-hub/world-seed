@@ -26,6 +26,32 @@ Do not assume that a machine is online, a tool is installed, a checkout is clean
 
 For interactive-shell discovery and the role/limits of the local prompt, follow [BASH_PROMPT.md](BASH_PROMPT.md). Record useful local context signals, but do not overwrite shell configuration or assume a prompt is an enforcement mechanism. Ask before changing operator-owned startup files.
 
+## Local collector
+
+Use `scripts/collect_machine_profile.py` for a first-pass, local-only machine readiness report. It is deliberately an allowlist, not a general system dump.
+
+Run from a world-seed checkout:
+
+```bash
+python3 scripts/collect_machine_profile.py
+```
+
+This prints a small JSON report to the terminal. To save a new report locally:
+
+```bash
+python3 scripts/collect_machine_profile.py --output ./machine-report.json
+```
+
+Repository names and local paths are omitted unless explicitly requested:
+
+```bash
+python3 scripts/collect_machine_profile.py --include-repositories
+```
+
+The optional repository scan checks immediate child Git checkouts under `~/projects` (or a supplied `--projects-root`). It records names, paths, current branch, and whether tracked changes exist. It does not collect remote URLs, file names, diffs, commit contents, or untracked-file names.
+
+The collector does not upload data, read credential files, inspect environment-variable values, run authentication commands, or overwrite an existing report. Its output is not automatically safe for public publication: review it before sharing, and place operator-specific output only in an authorized private destination. This first version reports platform and selected tool availability/version; it does not configure the machine, change shell files, test network access, or prove service health.
+
 ## Operator profile unavailable
 
 If no authorized profile package is present or accessible, continue with universal rules and safe discovery. Treat operator-specific paths, preferences, tools, and service details as unknown until verified. Do not ask the human to reconstruct routine details that can be safely discovered from the actual environment.
