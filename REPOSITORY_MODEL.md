@@ -6,7 +6,7 @@
 
 ## Separate responsibilities
 
-- **world-seed** bootstraps the account/ecosystem operating model: governance, AI leadership, account orientation, repository relationships, shared automation standards, profile-loading procedures, and recovery.
+- **world-seed** bootstraps the account/ecosystem operating model: governance, AI leadership, account orientation, repository relationships, shared automation standards, profile-loading procedures, and recovery. [MISSION.md](MISSION.md) provides the shared discovery method; when adopting that method, each project changes the opening mission sentence to its own purpose and preserves the common operating approach.
 - **Operator profile package** holds the relevant operator's working preferences, approved identity/attribution details, environment facts, and account-specific operational notes in an operator-approved access-controlled location.
 - **Personal-data package** holds genealogy, birth information, personal history, AI exports, family records, and other personal material under stricter access and disclosure rules.
 - **Project seed** bootstraps an individual repository's reusable working relationship and document conventions. It does not decide the project's mission or architecture.
