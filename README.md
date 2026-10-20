@@ -36,7 +36,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
 - [scripts/export_github_operating_records.py](scripts/export_github_operating_records.py) — read-only, paginated export of supported GitHub operating-record metadata to private storage.
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
-- [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — a template to copy into an operator-approved, access-controlled location.
+- [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — a generic template to copy into an operator-approved, access-controlled location. Real operator profiles do not belong in the distributable seed.
 
 ## Mission boundaries and license
 
