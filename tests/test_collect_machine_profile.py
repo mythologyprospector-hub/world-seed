@@ -49,7 +49,7 @@ class CollectMachineProfileTests(unittest.TestCase):
             with patch.object(COLLECTOR.sys, "argv", ["collect_machine_profile.py", "--output", str(output)]):
                 with self.assertRaises(SystemExit) as raised:
                     COLLECTOR.main()
-        self.assertEqual(raised.exception.code, 2)
+            self.assertEqual(raised.exception.code, 2)
             self.assertEqual(output.read_text(encoding="utf-8"), "keep")
 
 
