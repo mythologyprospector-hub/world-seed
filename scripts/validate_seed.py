@@ -9,6 +9,7 @@ REQUIRED_FILES = (
     "PROFILE_PACKAGES.md",
     "templates/MISSION.md",
     "tests/test_mission_template.py",
+    "tests/test_portable_profile_boundary.py",
     "README.md",
     "LICENSE",
     "AGENTS.md",
