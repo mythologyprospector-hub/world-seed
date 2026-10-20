@@ -1,6 +1,8 @@
 """Tests for the safe, local-only machine discovery collector."""
 import importlib.util
 import json
+import os
+import stat
 import tempfile
 import unittest
 from pathlib import Path
@@ -51,6 +53,16 @@ class CollectMachineProfileTests(unittest.TestCase):
                     COLLECTOR.main()
             self.assertEqual(raised.exception.code, 2)
             self.assertEqual(output.read_text(encoding="utf-8"), "keep")
+
+    @unittest.skipUnless(os.name == "posix", "POSIX file mode semantics required")
+    def test_saved_report_has_owner_only_permissions(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "private" / "report.json"
+            with patch.object(COLLECTOR, "command_version", return_value={"available": False}):
+                with patch.object(COLLECTOR.sys, "argv", ["collect_machine_profile.py", "--output", str(output)]):
+                    self.assertEqual(COLLECTOR.main(), 0)
+            self.assertEqual(stat.S_IMODE(output.stat().st_mode), 0o600)
+            self.assertIn('"schema_version": 1', output.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
