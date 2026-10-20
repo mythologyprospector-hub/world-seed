@@ -4,6 +4,7 @@ import stat
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -96,7 +97,7 @@ class BackupCoverageTests(unittest.TestCase):
             root = Path(tmp) / "backup"
             root.mkdir()
             output = Path(tmp) / "coverage.json"
-            with unittest.mock.patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(output)]):
+            with patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(output)]):
                 self.assertEqual(main(), 0)
             self.assertEqual(stat.S_IMODE(output.stat().st_mode), 0o600)
 
