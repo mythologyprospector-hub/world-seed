@@ -74,6 +74,33 @@ class AccountBaselineTests(unittest.TestCase):
         self.assertEqual(report["repositories"][0]["document_inspection_status"], "partial")
         self.assertEqual(report["coverage"]["document_inspection_status_counts"]["partial"], 1)
 
+    def test_matching_inventory_does_not_upgrade_full_backup_status(self):
+        report = {
+            "repositories": [
+                {"full_name": "owner/project-a"},
+                {"full_name": "owner/project-b"},
+            ],
+            "requested_owner_filter": None,
+            "coverage": {
+                "status": "partial-unverified",
+                "account_completeness_verified": False,
+            },
+        }
+        expected = {
+            "schema_version": 1,
+            "authoritative": True,
+            "reviewed_at": "2026-10-20T00:00:00+00:00",
+            "repositories": ["owner/project-a", "owner/project-b"],
+        }
+
+        result = AUDITOR.attach_expected_inventory_reconciliation(report, expected)
+
+        self.assertEqual(result["coverage"]["repository_inventory_reconciliation_status"], "verified-match")
+        self.assertTrue(result["coverage"]["repository_inventory_verified"])
+        self.assertFalse(result["coverage"]["account_completeness_verified"])
+        self.assertEqual(result["coverage"]["status"], "partial-unverified")
+        self.assertIn("isolated restoration", result["coverage"]["note"])
+
     def test_blocked_repository_is_counted_and_not_silently_omitted(self):
         inventory = {
             "authenticated_identity": "builder", "requested_owner_filter": None,
