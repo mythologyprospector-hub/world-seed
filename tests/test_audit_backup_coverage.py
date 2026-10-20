@@ -58,7 +58,7 @@ class BackupCoverageTests(unittest.TestCase):
             root = Path(tmp)
             (root / "records").mkdir()
             (root / "records" / "manifest.tsv").write_text(
-                "repository\\tfile\\tresult\\tendpoint_status\\nowner/project\\trecords.json\\tPARTIAL\\tpartial\\n",
+                "repository\tfile\tresult\tendpoint_status\nowner/project\trecords.json\tPARTIAL\tpartial\n",
                 encoding="utf-8",
             )
             result = audit_backup_coverage(root)
