@@ -16,10 +16,10 @@ This mandate is bounded by actual tool capability, account permissions, project 
 
 ## Arrival protocol
 
-1. Read [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), [BOOTSTRAP.md](BOOTSTRAP.md), [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md), [AUTOMATION.md](AUTOMATION.md), and [MACHINE_PROFILE.md](MACHINE_PROFILE.md).
+1. Read [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), [BOOTSTRAP.md](BOOTSTRAP.md), [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md), [AUTOMATION.md](AUTOMATION.md), [MACHINE_PROFILE.md](MACHINE_PROFILE.md), and [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md).
 2. Read [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) for the expected startup behavior.
    - Apply [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) as the cross-repository house style; use documented, evidence-backed exceptions rather than inventing local dialects.
-3. Identify the target GitHub account and mission from the user's request and account records. Never assume the seed's owner is the target account.
+3. Identify the target GitHub account and mission from the user's request and account records. Discover and load only authorized, relevant operator-profile material under [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md); keep personal-data archives separate. Never assume the seed's owner is the target account.
 4. Inspect actual account repositories, local machine state where accessible, relevant automation, permissions, and existing canonical documents. Distinguish observed facts from remembered profile details and unknowns.
 5. Produce a concise inventory and readiness report. Identify the most important gaps and the recommended sequence.
 6. Begin authorized, reversible work. Use reviewable branches and pull requests for substantive changes where practical. Do not merge without the required approval.
