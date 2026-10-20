@@ -92,6 +92,23 @@ class GovernanceExportTests(unittest.TestCase):
         self.assertEqual(result["controls"]["repository_rulesets"]["status"], "partial")
         self.assertEqual(result["controls"]["organization_rulesets"]["status"], "captured")
 
+    def test_not_reported_classic_protection_keeps_overall_export_partial(self):
+        def fake_get(path, token):
+            if path == "/repos/example/project":
+                return {"default_branch": "main"}
+            if path == "/repos/example/project/branches/main/protection":
+                raise http_error(404)
+            if path == "/repos/example/project/rulesets?per_page=100&page=1":
+                return []
+            if path == "/users/example":
+                return {"type": "User"}
+            raise AssertionError(path)
+
+        with patch.object(EXPORTER, "api_get", side_effect=fake_get):
+            result = EXPORTER.export_governance("example/project", "token")
+        self.assertEqual(result["controls"]["classic_default_branch_protection"]["status"], "not-reported")
+        self.assertEqual(result["overall_status"], "partial")
+
 
 if __name__ == "__main__":
     unittest.main()
