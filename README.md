@@ -93,6 +93,8 @@ python scripts/run_account_audit.py --owner YOUR_ACCOUNT_OR_ORG --output /secure
 
 Set `GH_TOKEN` or `GITHUB_TOKEN` in the environment. The output must remain outside this public repository and in access-controlled storage. Repositories that cannot be inspected are recorded as blocked rather than silently omitted. A zero blocked count still does **not** prove complete account coverage, repository-content quality, security posture, or cross-repository compatibility; the report deliberately remains `partial-unverified`.
 
+To check declared cross-repository contract artifacts, maintain a **private local JSON inventory** outside this public repository and pass it to the combined runner with `--expected-contracts /secure/private/path/contracts.json`. The inventory uses `schema_version: 1`, an explicit `authoritative` boolean, `reviewed_at`, and a non-empty `contracts` list. Each contract names a unique `contract_id`, `producer` and `consumer` as `owner/name`, and a repository-relative `path` for the producer's canonical artifact. The auditor records artifact status and blob hash only; it does not retain contract bodies. A missing or inaccessible artifact remains unverified. Even a verified result proves only that declared producer artifacts exist and both endpoints were observed—not that consumers use them correctly or that APIs, events, versions, or runtime behavior are compatible. Keep private repository names out of the public inventory and public reports.
+
 The safeguard collector can also be run directly for a single repository:
 
 ```bash
