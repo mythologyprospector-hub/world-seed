@@ -252,7 +252,7 @@ def main(argv: list[str] | None = None) -> int:
             output_dir.chmod(0o700)
         report = export_repository(args.repository, token)
         safe_name = args.repository.replace("/", "__")
-        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
         output = output_dir / f"operating-records-{safe_name}-{stamp}.json"
         write_private_json(output, report)
         endpoint_statuses = [item["status"] for item in report["endpoints"].values()]
