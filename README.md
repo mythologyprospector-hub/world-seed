@@ -44,6 +44,18 @@ Never store credentials, tokens, private keys, recovery codes, or other secrets 
 When a reusable rule changes, update its canonical document here and record the rationale. Do not silently let temporary chat context become policy. Keep operator-specific details in the profile, not in the universal constitution.
 
 
+### Local backup coverage inventory
+
+After creating a handoff backup, generate a private coverage report outside the backup directory:
+
+```bash
+python scripts/audit_backup_coverage.py \
+  --backup-dir "$HOME/archive/PATH-TO-BACKUP" \
+  --output "$HOME/archive/backup-coverage.json"
+```
+
+This report inventories visible evidence for source/history and optional GitHub operating-record exports. It deliberately leaves settings/permissions, binary artifacts, release assets, and isolated recovery unverified unless a future evidence collector covers them. A coverage report is not a restore test, and its overall status remains `incomplete-unverified` until the separate gaps are closed.
+
 ## Local quality gate
 
 Run the dependency-free baseline checks and unit tests from the repository root:
