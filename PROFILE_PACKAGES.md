@@ -64,7 +64,7 @@ A legacy operator-specific profile is being removed from the proposed distributa
 - establish an authorized, private destination for the operator package;
 - preserve and verify the needed profile information there;
 - replace bundled operator-specific content in the distributable seed with a generic template or loading instructions;
-- remove Jimmy-specific assumptions from universal procedures and tests;
+- remove source-operator-specific assumptions from universal procedures and tests;
 - inspect the final public tree and generated artifacts for personal or private operational data;
 - confirm that a fresh builder can bootstrap with the private package absent, and with it present when authorized.
 
@@ -72,4 +72,4 @@ Removing content from the current tree does not erase prior Git history or copie
 
 ## Approval and safety boundaries
 
-Creating a new repository or changing access controls requires explicit owner approval. Until a private destination is authorized, preserve the current profile rather than risking its loss; mark migration as incomplete. Never make a private package public to simplify bootstrap, and never place credentials or secrets in either package.
+Creating a new repository or changing access controls requires explicit owner approval. For this migration, the private destination exists and the copied profile has been verified; keep the public-tree cleanup and private package reviewable until both boundaries are confirmed. Never make a private package public to simplify bootstrap, and never place credentials or secrets in either package.
