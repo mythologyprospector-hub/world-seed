@@ -136,6 +136,9 @@ def main() -> int:
         parser.error("coverage report output must not be a symlink")
     output = requested_output.resolve()
     root = args.backup_dir.expanduser().resolve()
+    seed_root = Path(__file__).resolve().parents[1]
+    if output == seed_root or seed_root in output.parents:
+        parser.error("coverage report must be written outside the public world-seed checkout")
     if output == root or root in output.parents:
         parser.error("coverage report must be written outside the backup directory being inspected")
     report = audit_backup_coverage(root)
