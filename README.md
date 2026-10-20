@@ -32,6 +32,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md) — the canonical boundary between portable seed, private operator profile, and personal-data package.
 - [BASH_PROMPT.md](BASH_PROMPT.md) — the local prompt's role, limits, and safe integration into the operator workflow.
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
+- [scripts/export_github_operating_records.py](scripts/export_github_operating_records.py) — read-only, paginated export of supported GitHub operating-record metadata to private storage.
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
 - [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — a template to copy into an operator-approved, access-controlled location.
 
@@ -62,7 +63,7 @@ python scripts/audit_backup_coverage.py \
   --output "$HOME/archive/backup-coverage.json"
 ```
 
-This report inventories visible evidence for source/history and optional GitHub operating-record exports. It deliberately leaves settings/permissions, binary artifacts, release assets, and isolated recovery unverified unless a future evidence collector covers them. A coverage report is not a restore test, and its overall status remains `incomplete-unverified` until the separate gaps are closed.
+This report inventories visible evidence for source/history and optional GitHub operating-record exports. The operating-record exporter captures paginated issue/PR records, comments, reviews, release metadata, workflow-run metadata, and artifact metadata; binary contents, discussions, uncovered settings/permissions, and isolated recovery remain incomplete or unverified. A coverage report is not a restore test, and its overall status remains `incomplete-unverified` until the separate gaps are closed.
 
 ## Local quality gate
 
