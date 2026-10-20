@@ -25,10 +25,11 @@ Inventory:
 - canonical governance and project documents;
 - reusable templates, seeds, shared services, and cross-repository contracts;
 - account/team permission boundaries available to the current tools;
+- the existence, access scope, and version of an authorized operator profile package, if any;
 - local machines, clone locations, installed runtimes, and required tools where accessible;
 - independent backups and recovery dependencies.
 
-Label every finding as observed, inferred, or unknown. Do not imply a complete inventory when permissions or API coverage prevent it. Avoid exposing private repository names or details in public files.
+Label every finding as observed, inferred, or unknown. Do not imply a complete inventory when permissions or API coverage prevent it. Avoid exposing private repository names or details in public files. Follow [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md): load only relevant authorized profile sections, verify mutable facts, and keep personal-data records separate from the operator profile. If a profile is inaccessible, continue safely and mark its facts unknown rather than guessing.
 
 ## Phase 2 — Assess the operating machinery
 
