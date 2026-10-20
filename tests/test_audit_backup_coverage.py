@@ -109,11 +109,24 @@ class BackupCoverageTests(unittest.TestCase):
             target.write_text("preserve", encoding="utf-8")
             link = Path(tmp) / "coverage.json"
             link.symlink_to(target)
-            with unittest.mock.patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(link)]):
+            with patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(link)]):
                 with self.assertRaises(SystemExit) as raised:
                     main()
             self.assertEqual(raised.exception.code, 2)
             self.assertEqual(target.read_text(encoding="utf-8"), "preserve")
+
+
+    def test_cli_refuses_report_inside_public_seed_checkout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "backup"
+            root.mkdir()
+            repo_root = Path(__file__).resolve().parents[1]
+            output = repo_root / ".coverage-report-must-not-be-created.json"
+            with patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(output)]):
+                with self.assertRaises(SystemExit) as raised:
+                    main()
+            self.assertEqual(raised.exception.code, 2)
+            self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":
