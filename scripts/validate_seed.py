@@ -21,6 +21,7 @@ REQUIRED_FILES = (
     "AUDIT_SYSTEM.md",
     "CONSISTENCY_STANDARD.md",
     "MACHINE_PROFILE.md",
+    "scripts/collect_machine_profile.py",
     "BASH_PROMPT.md",
     "RECOVERY.md",
     "ONBOARDING_PROMPT.md",
@@ -65,6 +66,7 @@ REQUIRED_FILES = (
     "tests/test_run_account_audit.py",
     "tests/test_validate_audit_findings.py",
     "tests/test_validate_audit_schema.py",
+    "tests/test_collect_machine_profile.py",
     "tests/test_validate_seed.py",
 )
 
