@@ -1,6 +1,6 @@
 # world-seed
 
-**Portable genesis for AI-led project ecosystems, with explicit privacy boundaries for operator profiles.**
+**Portable genesis for AI-led project ecosystems, with a shared mission-driven operating method and explicit privacy boundaries for operator profiles.**
 
 world-seed preserves the reusable operating system for starting and governing a whole GitHub account: the constitution, AI leadership mandate, human approval boundaries, repository architecture, onboarding, automation standards, machine profile, and recovery procedure.
 
@@ -19,6 +19,7 @@ It is deliberately **mission-portable and operator-aware**:
 
 ## Contents
 
+- [MISSION.md](MISSION.md) — open-ended mission and shared discovery method; projects change the opening mission sentence while preserving the common operating approach.
 - [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
 - [CONSTITUTION.md](CONSTITUTION.md) — governance, leadership, Rule #1, Rule #2, authority, and safeguards.
 - [HUMAN.md](HUMAN.md) — the intended working relationship and communication style.
