@@ -26,6 +26,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md) — ecosystem vs project responsibilities and the role of lower-level seeds.
 - [AUTOMATION.md](AUTOMATION.md) — workflow and automation requirements.
 - [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) — mandatory rolling repository, cross-repository, and account-wide audits.
+- [templates/expected-inventory.template.json](templates/expected-inventory.template.json) and [templates/expected-contracts.template.json](templates/expected-contracts.template.json) — non-authoritative starting points for private audit inventories.
 - [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) — shared editorial, code-commenting, naming, repository-layout, process, and quality standards.
 - [MACHINE_PROFILE.md](MACHINE_PROFILE.md) — how to discover an environment and the known Jimmy profile.
 - [BASH_PROMPT.md](BASH_PROMPT.md) — the local prompt's role, limits, and safe integration into the operator workflow.
