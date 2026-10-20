@@ -1,4 +1,4 @@
-"Keep operator-specific identity and machine data out of the distributable seed."""
+"""Keep operator-specific identity and machine data out of the distributable seed."""
 import re
 import unittest
 from pathlib import Path
