@@ -236,7 +236,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-dir", required=True, type=Path, help="Private recovery directory outside the seed checkout")
     args = parser.parse_args(argv)
     root = Path(__file__).resolve().parents[1]
-    output_dir = args.output_dir.expanduser().resolve()
+    requested_output_dir = args.output_dir.expanduser()
+    if requested_output_dir.is_symlink():
+        parser.error("output directory must not be a symlink")
+    output_dir = requested_output_dir.resolve()
     if output_dir == root or root in output_dir.parents:
         parser.error("output directory must be outside the public world-seed checkout")
     token = _token()
@@ -244,6 +247,9 @@ def main(argv: list[str] | None = None) -> int:
         print("BLOCKED: set GH_TOKEN/GITHUB_TOKEN or authenticate GitHub CLI with gh auth login.", file=sys.stderr)
         return 2
     try:
+        output_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if hasattr(output_dir, "chmod"):
+            output_dir.chmod(0o700)
         report = export_repository(args.repository, token)
         safe_name = args.repository.replace("/", "__")
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
