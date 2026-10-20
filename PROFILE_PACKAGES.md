@@ -59,7 +59,7 @@ Keep the package portable across storage providers. Its canonical home and acces
 
 ## Migration and acceptance
 
-The current foundation branch contains legacy Jimmy-specific profile material. Do not call the boundary complete merely because this architecture document exists. Before the foundation is accepted for distribution:
+A legacy operator-specific profile is being removed from the proposed distributable tree in a reviewable privacy-cleanup change. Do not call the boundary complete merely because this architecture document exists. Before the foundation is accepted for distribution:
 
 - establish an authorized, private destination for the operator package;
 - preserve and verify the needed profile information there;
