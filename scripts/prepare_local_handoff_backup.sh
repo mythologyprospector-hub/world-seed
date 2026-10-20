@@ -24,7 +24,7 @@ if ! gh auth status >/dev/null 2>&1; then
   exit 2
 fi
 
-if [[ -e "$DEST" ]]; then
+if [[ -e "$DEST" || -L "$DEST" ]]; then
   printf 'ERROR: destination already exists; refusing to overwrite: %s\n' "$DEST" >&2
   exit 2
 fi
