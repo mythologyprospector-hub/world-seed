@@ -59,7 +59,15 @@ class SourceArtifactVerificationTests(unittest.TestCase):
     def test_duplicate_basenames_are_ambiguous(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            self.make_backup(root, ("owner-a/project", "owner-b/project"))
+            (root / "bundles").mkdir()
+            (root / "zips").mkdir()
+            (root / "checkouts").mkdir()
+            (root / "manifest.tsv").write_text(
+                "owner\\tvisibility\\tarchived\\tresult\\n"
+                "owner-a/project\\tpublic\\tFalse\\tOK\\n"
+                "owner-b/project\\tprivate\\tFalse\\tOK\\n",
+                encoding="utf-8",
+            )
             report = verify_source_artifacts(root)
         self.assertEqual(report["overall_status"], "partial")
         self.assertEqual(report["repository_count"], 2)
