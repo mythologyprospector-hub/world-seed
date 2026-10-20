@@ -163,7 +163,7 @@ Before a fresh builder assesses retirement or restructuring, preserve the GitHub
 From a terminal:
 
 ```bash
-cd ~/projects/world-seed
+cd /path/to/world-seed  # replace with the actual checkout path
 git status --short --branch
 ```
 
