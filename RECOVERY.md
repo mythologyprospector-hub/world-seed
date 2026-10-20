@@ -22,6 +22,25 @@ A GitHub repository alone is not an independent backup of itself.
 
 Keep project data and project-specific backups according to each project's needs. This seed does not replace those backups.
 
+## Backup coverage is not one thing
+
+A Git clone, Git bundle, or source ZIP preserves repository content to varying degrees; it does **not** preserve the full GitHub operating record. Every backup set must carry a coverage manifest that distinguishes at least these categories:
+
+| Category | Required evidence |
+|---|---|
+| Git source and history | Repository/ref list, bundle integrity check, and isolated restore test |
+| Issues and pull requests | Export status and record counts, including closed records |
+| Issue comments and pull-request reviews/comments | Export status and record counts; identify unsupported or inaccessible endpoints |
+| Releases and attached assets | Release metadata plus separate asset-preservation status |
+| GitHub Actions | Workflow-run metadata, artifact metadata, and separate status for downloading binary artifact contents |
+| Repository/organization configuration | Exported settings, rulesets, branch protections, environments, webhooks, and permission coverage where authorized |
+| Secrets and credentials | Never copied into a general backup; document approved recreation/rotation steps instead |
+| Discussions and other GitHub-only records | Explicitly included, excluded, or unverified—never silently assumed covered |
+
+An endpoint returning successfully proves only that the current identity could retrieve that endpoint at that time. It does not prove every record was paginated, every binary artifact was downloaded, or every setting was visible. Store detailed manifests and exports in access-controlled storage outside the public seed. Do not publish private repository names, private discussions, or security-sensitive configuration.
+
+The current `prepare_local_handoff_backup.sh` script covers repository checkouts, Git bundles, and source ZIP snapshots only. Until a separately verified operating-record export and configuration-coverage procedure exists, the account backup remains **incomplete for full GitHub reconstruction**. Do not delete, archive, or restructure source repositories on the strength of a source-only backup.
+
 ## Never include
 
 Do not commit passwords, access tokens, private keys, recovery codes, session cookies, or secrets. Do not include sensitive private-repository contents in public profiles or manifests. Store credentials only in approved secure systems and document the safe procedure for reacquiring access.
