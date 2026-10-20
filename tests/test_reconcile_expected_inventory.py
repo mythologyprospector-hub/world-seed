@@ -18,14 +18,17 @@ class ExpectedInventoryTests(unittest.TestCase):
         report = {"repositories": [{"full_name": "owner/public"}, {"full_name": "owner/private"}],
                   "requested_owner_filter": None}
         result = reconcile_expected_inventory(report, self.expected)
-        self.assertTrue(result["account_completeness_verified"])
+        self.assertTrue(result["repository_inventory_verified"])
+        self.assertFalse(result["repository_inventory_verified"])
+        self.assertFalse(result["account_completeness_verified"])
         self.assertEqual(result["status"], "verified-match")
-        self.assertIn("does not certify repository contents", result["note"])
+        self.assertIn("full account backup/recovery completeness is not", result["note"])
 
     def test_missing_and_unexpected_repositories_prevent_verification(self):
         report = {"repositories": [{"full_name": "owner/public"}, {"full_name": "other/extra"}],
                   "requested_owner_filter": None}
         result = reconcile_expected_inventory(report, self.expected)
+        self.assertFalse(result["repository_inventory_verified"])
         self.assertFalse(result["account_completeness_verified"])
         self.assertEqual(result["missing_from_observed"], ["owner/private"])
         self.assertEqual(result["unexpected_in_observed"], ["other/extra"])
@@ -33,10 +36,10 @@ class ExpectedInventoryTests(unittest.TestCase):
     def test_owner_filter_and_non_authoritative_list_never_verify(self):
         report = {"repositories": [{"full_name": "owner/public"}, {"full_name": "owner/private"}],
                   "requested_owner_filter": "owner"}
-        self.assertFalse(reconcile_expected_inventory(report, self.expected)["account_completeness_verified"])
+        self.assertFalse(reconcile_expected_inventory(report, self.expected)["repository_inventory_verified"])
         expected = dict(self.expected, authoritative=False)
         report["requested_owner_filter"] = None
-        self.assertFalse(reconcile_expected_inventory(report, expected)["account_completeness_verified"])
+        self.assertFalse(reconcile_expected_inventory(report, expected)["repository_inventory_verified"])
 
     def test_canonical_template_is_valid_but_not_authoritative(self):
         template = json.loads((Path(__file__).resolve().parents[1] / "templates" / "expected-inventory.template.json").read_text(encoding="utf-8"))
