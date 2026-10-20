@@ -1,11 +1,13 @@
 """Tests for conservative backup coverage reporting."""
+import os
+import stat
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from audit_backup_coverage import audit_backup_coverage
+from audit_backup_coverage import audit_backup_coverage, main
 
 
 class BackupCoverageTests(unittest.TestCase):
@@ -87,6 +89,30 @@ class BackupCoverageTests(unittest.TestCase):
         self.assertEqual(categories["branch_protection_and_ruleset_exports"]["export_count"], 1)
         self.assertEqual(categories["repository_and_organization_settings_permissions"]["status"], "partial")
         self.assertEqual(result["overall_status"], "incomplete-unverified")
+
+    @unittest.skipUnless(os.name == "posix", "POSIX file mode semantics required")
+    def test_cli_writes_coverage_report_owner_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "backup"
+            root.mkdir()
+            output = Path(tmp) / "coverage.json"
+            with unittest.mock.patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(output)]):
+                self.assertEqual(main(), 0)
+            self.assertEqual(stat.S_IMODE(output.stat().st_mode), 0o600)
+
+    def test_cli_refuses_symlink_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "backup"
+            root.mkdir()
+            target = Path(tmp) / "target.json"
+            target.write_text("preserve", encoding="utf-8")
+            link = Path(tmp) / "coverage.json"
+            link.symlink_to(target)
+            with unittest.mock.patch.object(sys, "argv", ["audit_backup_coverage.py", "--backup-dir", str(root), "--output", str(link)]):
+                with self.assertRaises(SystemExit) as raised:
+                    main()
+            self.assertEqual(raised.exception.code, 2)
+            self.assertEqual(target.read_text(encoding="utf-8"), "preserve")
 
 
 if __name__ == "__main__":
