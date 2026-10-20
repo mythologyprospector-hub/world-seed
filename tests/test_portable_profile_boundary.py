@@ -25,6 +25,7 @@ PORTABLE_DOCS = (
     "templates/MISSION.md",
 )
 EMAIL_PATTERN = re.compile(r"(?<![\w.+-])[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}(?![\w.-])")
+OPERATOR_MARKERS = re.compile(r"James Earl Stambaugh|jimmydev|mythologyprospector-hub|Copyright \\(c\\) 2026 James", re.IGNORECASE)
 
 
 class PortableProfileBoundaryTests(unittest.TestCase):
