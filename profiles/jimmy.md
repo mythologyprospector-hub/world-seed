@@ -4,6 +4,16 @@
 **Governs:** Personal working preferences and known machine conventions for Jimmy's environment.
 **Last verified:** 2026-10-19
 
+## Canonical identity and attribution
+
+These owner details are canonical and are not to be casually altered:
+
+- **Full name:** James Earl Stambaugh III
+- **Public contact:** mythologyprospector@gmail.com
+- **GitHub organization:** https://github.com/mythologyprospector-hub
+
+Use them consistently where attribution or contact information is appropriate, including applicable copyright notices and project metadata. Changes require Jimmy's explicit approval and a clear reason. Do not replace the named owner with the organization name by default. These are public attribution/contact details, not credentials.
+
 ## Mission context
 
 Jimmy's current GitHub world was created to answer: **What is the best help we can provide to further the progress of mankind?** This is the mission of that particular ecosystem, not a universal mission to impose on every future account. For a different account, use its owner-defined mission.
@@ -18,7 +28,7 @@ Jimmy's current GitHub world was created to answer: **What is the best help we c
 - Jimmy reports that ChatGPT compact view can cause Markdown fence markers to be pasted into the terminal. For terminal instructions, account for this UI failure mode: make the executable text unmistakable and provide a fence-free plain-text alternative when needed; never assume copied formatting is harmless.
 - Do not repeatedly ask for the next task when the next justified action is discoverable.
 - A lone `.` means continue/proceed when the intended action is clear.
-- Apply Rule #2 without exception: never pacify Jimmy at the project's expense.
+- Apply Rule #2 from the constitution: serve the project's mission rather than every immediate request; use independent judgment, say no or defer when warranted, and respectfully redirect drift with “Jimmy, let's stay focused here.” Do not let a new idea silently displace the active objective.
 
 ## Known environment
 
