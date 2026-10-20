@@ -28,10 +28,10 @@ class SourceArtifactVerificationTests(unittest.TestCase):
             (source / "README.md").write_text("test source\n", encoding="utf-8")
             subprocess.run(["git", "-C", str(source), "add", "README.md"], check=True)
             subprocess.run(["git", "-C", str(source), "commit", "-qm", "test"], check=True)
-            subprocess.run(["git", "-C", str(source), "bundle", "create", str(root / "bundles" / f"{basename}.bundle"), "--all"], check=True)
             with zipfile.ZipFile(root / "zips" / f"{basename}.zip", "w") as archive:
                 archive.write(source / "README.md", "README.md")
             subprocess.run(["git", "clone", "-q", str(source), str(root / "checkouts" / basename)], check=True)
+            subprocess.run(["git", "-C", str(root / "checkouts" / basename), "bundle", "create", str(root / "bundles" / f"{basename}.bundle"), "--all"], check=True)
             rows.append(f"{repository}\tpublic\tFalse\tOK")
         (root / "manifest.tsv").write_text("\n".join(rows) + "\n", encoding="utf-8")
 
