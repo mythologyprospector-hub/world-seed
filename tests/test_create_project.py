@@ -14,6 +14,13 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class CreateProjectTests(unittest.TestCase):
+    def test_installed_release_directory_preserves_commit_provenance_without_git(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            revision = "d" * 40
+            release = Path(temporary) / revision
+            release.mkdir()
+            self.assertEqual(GENERATOR.source_revision(release), revision)
+
     def test_generates_complete_bundle_and_provenance_manifest(self):
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / "example-project"
