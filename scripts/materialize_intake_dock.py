@@ -44,7 +44,7 @@ def _private_directory(path: Path, label: str) -> None:
             raise ValueError(f"{label} is not private; secure it before retrying")
 
 
-def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, object]:
+def preflight(template_root: Path, destination: Path, lane: str) -> dict[str, object]:
     if not LANE_PATTERN.fullmatch(lane):
         raise ValueError("lane must be a lowercase repository-style slug (letters, digits, hyphens)")
     templates = load_templates(template_root)
@@ -76,6 +76,25 @@ def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, 
             missing_files.append(name)
 
     missing_dirs = [str(directory.relative_to(destination)) for directory in expected_dirs if not directory.exists()]
+    return {
+        "templates": templates,
+        "destination": destination,
+        "lane": lane,
+        "expected_dirs": expected_dirs,
+        "missing_files": missing_files,
+        "missing_dirs": missing_dirs,
+    }
+
+
+def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, object]:
+    checked = preflight(template_root, destination, lane)
+    templates = checked["templates"]
+    destination = checked["destination"]
+    lane = str(checked["lane"])
+    expected_dirs = checked["expected_dirs"]
+    missing_files = checked["missing_files"]
+    missing_dirs = checked["missing_dirs"]
+
     created_files: list[Path] = []
     created_dirs: list[Path] = []
     try:
@@ -109,7 +128,6 @@ def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, 
         raise
 
     return {"files_added": missing_files, "directories_added": missing_dirs, "destination": str(destination), "lane": lane}
-
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Initialize a local private Intake Dock lane; no GitHub access or upload.")

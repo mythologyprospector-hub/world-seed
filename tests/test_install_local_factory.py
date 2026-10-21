@@ -61,6 +61,11 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             environment = os.environ.copy()
             environment.pop("WORLD_SEED_OPERATOR_PROFILE_DESTINATION", None)
             environment.pop("WORLD_SEED_PERSONAL_DATA_DESTINATION", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_DESTINATION", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_LANE", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_REMOTE_OWNER", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_REMOTE_REPOSITORY", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_REMOTE_CONFIRM_TARGET", None)
             environment.update({
                 "HOME": str(home),
                 "PATH": f"{fake_bin}:{environment['PATH']}",
@@ -94,6 +99,8 @@ class LocalFactoryInstallerTests(unittest.TestCase):
                 "WORLD_SEED_STATE_HOME": str(second_state_home),
                 "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(operator_destination),
                 "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(personal_destination),
+                "WORLD_SEED_INTAKE_DOCK_DESTINATION": str(root / "private-intake-dock"),
+                "WORLD_SEED_INTAKE_DOCK_LANE": "episteme",
             })
             configured_result = subprocess.run(
                 ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
@@ -103,12 +110,111 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             self.assertEqual(configured_result.returncode, 0, configured_result.stdout + configured_result.stderr)
             self.assertTrue((operator_destination / "PREFERENCES.md").is_file())
             self.assertTrue((personal_destination / "manifest.json").is_file())
+            dock_destination = root / "private-intake-dock"
+            self.assertTrue((dock_destination / "projects" / "episteme" / "incoming").is_dir())
+            self.assertTrue((dock_destination / "projects" / "episteme" / "inventory").is_dir())
             configured_manifests = list(second_state_home.glob("install-*.tsv"))
             self.assertEqual(len(configured_manifests), 1)
-            self.assertIn(
-                "profile_packages\tmaterialized",
-                configured_manifests[0].read_text(encoding="utf-8"),
+            configured_manifest = configured_manifests[0].read_text(encoding="utf-8")
+            self.assertIn("profile_packages\tmaterialized", configured_manifest)
+            self.assertIn("intake_dock\tmaterialized_local_only", configured_manifest)
+            self.assertIn("intake_dock_remote\tnot_configured", configured_manifest)
+
+            # Remote provisioning uses a fake gh client; no network or real repository is touched.
+            fake_gh = fake_bin / "gh"
+            shutil.copyfile(REPO_ROOT / "tests" / "fixtures" / "fake_gh_cli.py", fake_gh)
+            fake_gh.chmod(0o755)
+            fake_remote_state = root / "fake-remote-repository.json"
+            remote_environment = configured_environment.copy()
+            remote_environment.update({
+                "WORLD_SEED_STATE_HOME": str(root / "remote-provision-state"),
+                "WORLD_SEED_INTAKE_DOCK_REMOTE_OWNER": "mythologyprospector-hub",
+                "WORLD_SEED_INTAKE_DOCK_REMOTE_REPOSITORY": "intake-dock",
+                "WORLD_SEED_INTAKE_DOCK_REMOTE_CONFIRM_TARGET": "mythologyprospector-hub/intake-dock",
+                "FAKE_GH_STATE": str(fake_remote_state),
+            })
+            remote_result = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=remote_environment, check=False,
+                capture_output=True, text=True, timeout=30,
             )
+            self.assertEqual(remote_result.returncode, 0, remote_result.stdout + remote_result.stderr)
+            self.assertEqual(
+                __import__("json").loads(fake_remote_state.read_text(encoding="utf-8")),
+                {"full_name": "mythologyprospector-hub/intake-dock", "private": True},
+            )
+            remote_manifests = list((root / "remote-provision-state").glob("install-*.tsv"))
+            self.assertEqual(len(remote_manifests), 1)
+            self.assertIn("intake_dock_remote\tverified_private", remote_manifests[0].read_text(encoding="utf-8"))
+            self.assertNotIn("mythologyprospector-hub/intake-dock", remote_manifests[0].read_text(encoding="utf-8"))
+
+            incomplete_environment = configured_environment.copy()
+            incomplete_environment.pop("WORLD_SEED_INTAKE_DOCK_LANE", None)
+            incomplete_environment["WORLD_SEED_STATE_HOME"] = str(root / "state-incomplete-dock")
+            incomplete = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=incomplete_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(incomplete.returncode, 2)
+            self.assertIn("set both WORLD_SEED_INTAKE_DOCK_DESTINATION and WORLD_SEED_INTAKE_DOCK_LANE", incomplete.stderr)
+
+            # A conflicting Dock template must be discovered before profile packages are created.
+            conflict_operator = root / "preflight-conflict-profile"
+            conflict_personal = root / "preflight-conflict-personal"
+            conflict_dock = root / "preflight-conflict-dock"
+            conflict_dock.mkdir(mode=0o700)
+            (conflict_dock / "README.md").write_text("operator-owned conflicting content", encoding="utf-8")
+            conflict_environment = configured_environment.copy()
+            conflict_environment.update({
+                "WORLD_SEED_STATE_HOME": str(root / "preflight-conflict-state"),
+                "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(conflict_operator),
+                "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(conflict_personal),
+                "WORLD_SEED_INTAKE_DOCK_DESTINATION": str(conflict_dock),
+                "WORLD_SEED_INTAKE_DOCK_LANE": "episteme",
+            })
+            conflict = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=conflict_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(conflict.returncode, 2, conflict.stdout + conflict.stderr)
+            self.assertIn("existing file differs from template", conflict.stderr)
+            self.assertFalse(conflict_operator.exists())
+            self.assertFalse(conflict_personal.exists())
+            self.assertEqual(
+                (conflict_dock / "README.md").read_text(encoding="utf-8"),
+                "operator-owned conflicting content",
+            )
+
+            # A timestamp collision must be refused before any selected package destination changes.
+            fixed_date = fake_bin / "date"
+            fixed_date.write_text("\n".join(["#!/usr/bin/env bash", "printf '%s' '20000101T000000Z'", ""]), encoding="utf-8")
+            fixed_date.chmod(0o755)
+            collision_state = root / "collision-state"
+            collision_state.mkdir()
+            (collision_state / "install-20000101T000000Z.tsv").write_text("preserve me", encoding="utf-8")
+            collision_environment = configured_environment.copy()
+            collision_environment.update({
+                "WORLD_SEED_STATE_HOME": str(collision_state),
+                "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(root / "collision-profile"),
+                "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(root / "collision-personal"),
+                "WORLD_SEED_INTAKE_DOCK_DESTINATION": str(root / "collision-dock"),
+            })
+            collision = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=collision_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(collision.returncode, 2, collision.stdout + collision.stderr)
+            self.assertIn("generated output path already exists", collision.stderr)
+            self.assertEqual(
+                (collision_state / "install-20000101T000000Z.tsv").read_text(encoding="utf-8"),
+                "preserve me",
+            )
+            self.assertFalse((root / "collision-profile").exists())
+            self.assertFalse((root / "collision-personal").exists())
+            self.assertFalse((root / "collision-dock").exists())
 
 
 if __name__ == "__main__":

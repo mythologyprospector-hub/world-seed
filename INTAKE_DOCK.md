@@ -1,6 +1,6 @@
 # Intake Dock
 
-**Status:** Local workspace scaffolding, guarded private-repository provisioning, manifest-backed local packaging, and an explicitly confirmed transfer helper are implemented as separate building blocks. End-to-end factory integration and Codex discoverability remain unproven.
+**Status:** Local workspace scaffolding, guarded private-repository provisioning, manifest-backed local packaging, and an explicitly confirmed transfer helper exist. The factory installer now has an opt-in exact-target private-repository create/verify step. End-to-end file handoff, Codex discoverability, and full recovery remain unproven.
 
 ## Purpose
 
@@ -17,7 +17,7 @@ mkdir -m 700 -p "$HOME/private-intake-dock"
 python3 scripts/materialize_intake_dock.py --destination "$HOME/private-intake-dock" --lane episteme
 ```
 
-Replace `episteme` with the one intended lowercase repository-style lane name. The materializer rejects path traversal and invalid lane names. It creates root guidance plus `projects/<lane>/incoming/`, `inventory/`, `working/`, and `reports/`. On POSIX systems it uses owner-only permissions. Reruns are idempotent: identical template files are accepted, missing paths are added, unrelated owner material is preserved, and conflicting files or unsafe paths are refused.
+Replace `episteme` with the one intended lowercase repository-style lane name. The materializer rejects path traversal and invalid lane names. The factory installer can perform this local-only step when both `WORLD_SEED_INTAKE_DOCK_DESTINATION` and `WORLD_SEED_INTAKE_DOCK_LANE` are set; see [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md). It creates root guidance plus `projects/<lane>/incoming/`, `inventory/`, `working/`, and `reports/`. On POSIX systems it uses owner-only permissions. Reruns are idempotent: identical template files are accepted, missing paths are added, unrelated owner material is preserved, and conflicting files or unsafe paths are refused.
 
 ## Folder meanings and handling
 
@@ -59,7 +59,7 @@ Replace every example path with files you have explicitly reviewed and intend to
 
 `scripts/transfer_intake_dock_handoff.py --package PATH --target OWNER/REPOSITORY` validates the archive and prints a plan without network calls. Live transfer requires both `--apply` and `--confirm-target OWNER/REPOSITORY`; the target must already exist, match the authenticated personal GitHub account, and be private. The helper rechecks manifest target/lane, paths, archive entries, sizes, hashes, and likely private-key/GitHub-token markers. It writes only the named lane’s `incoming/` files plus a deterministic receipt under `inventory/`, refuses conflicting remote files, and pushes a commit to the target repository. Identical content is not overwritten. All behavior can be exercised against a local fake repository in tests. `tests/test_intake_dock_synthetic_handoff.py` now runs the full synthetic path—source file → manifest-backed ZIP → guarded transfer → local bare Git repository → checkout and receipt verification—and checks idempotent reruns and wrong-owner refusal. This proves only the local synthetic path; it does not prove a live GitHub transfer, Codex discovery, installer integration, or recovery acceptance.
 
-This helper is not called automatically by the factory installer. A successful test does not authorize a live transfer. Before any real use, inspect the exact package and target; use synthetic files first. Credential detection is heuristic and cannot guarantee a package contains no secrets. The tool does not create repositories, change visibility/access controls, or prove Codex discoverability. End-to-end factory integration and isolated recovery acceptance remain open.
+The transfer helper is not called automatically by the factory installer. The installer's optional remote-provisioning step creates/verifies only the empty private repository; it does not call this transfer helper or send files. A successful test does not authorize a live transfer. Before any real use, inspect the exact package and target; use synthetic files first. Credential detection is heuristic and cannot guarantee a package contains no secrets. The tool does not create repositories, change visibility/access controls, or prove Codex discoverability. End-to-end factory integration and isolated recovery acceptance remain open.
 
 ## Acceptance
 

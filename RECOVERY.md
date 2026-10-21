@@ -204,7 +204,7 @@ The Intake Dock's **local workspace structure** is regenerable from `INTAKE_DOCK
 
 ## Private Intake Dock provisioning gate
 
-The local Dock structure and remote repository container are separate regenerable layers. `scripts/provision_intake_dock.py` is dry-run by default; its live path requires an exact target confirmation, verifies the authenticated personal-account owner, creates only a private repository if absent, and re-reads it to verify persisted visibility. It refuses an existing public repository and fails closed on permission/authentication errors. This helper is not yet integrated into the factory installer and does not upload preserved userdata, initialize remote project lanes, or establish Codex handoff. Those are separate capabilities and must pass mocked tests and a synthetic end-to-end transfer drill before any real user data is sent. No live repo creation or transfer is implied by a successful dry run or unit test.
+The local Dock structure and remote repository container are separate regenerable layers. `scripts/provision_intake_dock.py` is dry-run by default; its live path requires an exact target confirmation, verifies the authenticated personal-account owner, creates only a private repository if absent, and re-reads it to verify persisted visibility. It refuses an existing public repository and fails closed on permission/authentication errors. The factory installer now supports this helper as an opt-in step only when the local Dock destination/lane, remote owner/repository, and exact `OWNER/REPOSITORY` confirmation are all configured. This verifies or creates the empty private repository only; it does not upload preserved userdata, initialize remote project lanes, or establish Codex handoff. Mocked installer integration and the synthetic end-to-end transfer drill must pass before any real user data is sent. No live repo creation or transfer is implied by a successful dry run or unit test.
 
 
 ## Intake Dock handoff package boundary
@@ -218,3 +218,6 @@ The separate `scripts/transfer_intake_dock_handoff.py` validates a manifest-back
 
 
 The synthetic Intake Dock acceptance test `tests/test_intake_dock_synthetic_handoff.py` exercises packaging, transfer, Git commit/push to a local bare repository, checkout verification, receipt/hash binding, idempotent rerun, and wrong-owner refusal. It uses synthetic data and local Git only. It is not evidence of a successful live GitHub transfer, remote Codex discovery, or full post-wipe recovery.
+
+
+The factory installer now has an opt-in local Intake Dock regeneration step controlled by `WORLD_SEED_INTAKE_DOCK_DESTINATION` and `WORLD_SEED_INTAKE_DOCK_LANE`. It records only whether the Dock was locally materialized, not its private destination path. This regenerates folders and generic instructions, not the remote repository, staged files, personal data, or Codex access. Remote provisioning and transfer remain separate explicit actions.
