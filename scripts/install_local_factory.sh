@@ -46,6 +46,23 @@ if [[ -e "$REPORT" || -L "$REPORT" || -e "$MANIFEST" || -L "$MANIFEST" ]]; then
   exit 2
 fi
 
+# Validate every configured destination together before creating the release pointer or writing any package.
+PREFLIGHT_ARGS=(
+  --template-root "$SOURCE_ROOT/templates"
+  --factory-home "$FACTORY_HOME"
+  --state-home "$STATE_HOME"
+  --intake-dock-template-root "$SOURCE_ROOT/templates/intake-dock"
+)
+if [[ -n "$OPERATOR_PROFILE_DESTINATION" && -n "$PERSONAL_DATA_DESTINATION" ]]; then
+  PREFLIGHT_ARGS+=(--operator-destination "$OPERATOR_PROFILE_DESTINATION")
+  PREFLIGHT_ARGS+=(--personal-data-destination "$PERSONAL_DATA_DESTINATION")
+fi
+if [[ -n "$INTAKE_DOCK_DESTINATION" && -n "$INTAKE_DOCK_LANE" ]]; then
+  PREFLIGHT_ARGS+=(--intake-dock-destination "$INTAKE_DOCK_DESTINATION")
+  PREFLIGHT_ARGS+=(--intake-dock-lane "$INTAKE_DOCK_LANE")
+fi
+python3 "$SOURCE_ROOT/scripts/preflight_factory_destinations.py" "${PREFLIGHT_ARGS[@]}"
+
 mkdir -p "$FACTORY_HOME/releases" "$STATE_HOME"
 chmod 700 "$STATE_HOME"
 
