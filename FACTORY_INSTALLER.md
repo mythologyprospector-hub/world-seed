@@ -12,6 +12,22 @@ The installer archives the exact committed seed tree into a versioned local rele
 
 The machine profile is allowlisted and does not read credential files, inspect environment-variable values, or upload data. The private report can include platform and tool versions. Repository names and paths are not collected unless the collector is separately run with its explicit repository-scan option.
 
+## Optional private package initialization
+
+The installer can initialize the generic operator-profile and personal-data package structures in two explicitly chosen local destinations. Set **both** environment variables, or neither:
+
+```bash
+export WORLD_SEED_OPERATOR_PROFILE_DESTINATION="$HOME/path-you-have-chosen/operator-profile"
+export WORLD_SEED_PERSONAL_DATA_DESTINATION="$HOME/path-you-have-chosen/personal-data"
+bash scripts/install_local_factory.sh
+```
+
+Replace the example paths with destinations you have deliberately selected. Do not paste private records or credentials into these commands. If neither variable is set, package initialization is skipped. Setting only one is an error.
+
+For new destinations, the materializer creates owner-only directories and files on POSIX systems. Existing destinations must already be private. Byte-identical template files are accepted on reruns; unrelated files are preserved; conflicting files cause a safe refusal rather than an overwrite. The install manifest records only whether package initialization was configured, not the private destination paths.
+
+This step initializes **local package structure only**. It does not create GitHub repositories, push data, collect personal records, or prove that existing private packages are backed up. Keep source exports separate and use the explicit recovery tooling for any capture/restore operation.
+
 ## Explicit non-goals
 
 This first installer does **not** install or reconfigure Organs, start services, create API credentials, alter shell startup files, push private data to GitHub, or configure remote delivery. It only records whether `/srv/organs` exists. Those actions require a discovered service contract, explicit destination and authorization, and separate verification. Never treat a successful bootstrap as proof that APIs, BUS, or project recovery are working.
@@ -20,6 +36,6 @@ This first installer does **not** install or reconfigure Organs, start services,
 
 - Reinstallable: this installer and the allowlisted collector, from a trusted seed checkout.
 - Preserved locally: timestamped machine profile and install manifest, with owner-only permissions.
-- Not yet configured: project/user-data collection beyond the machine profile, secure delivery destination, API/BUS wiring, credential provisioning, and restore acceptance tests.
+- Not yet configured: collection of actual project/user data, secure remote delivery, API/BUS wiring, credential provisioning, and end-to-end restore acceptance. Optional local package initialization creates only generic directory structure; it is not a data backup.
 
-The next factory increment is to define a private, explicit data manifest and delivery adapter that can validate destination permissions before any transfer. Do not upload raw machine profiles or private inventory to a public repository.
+The next factory increment is to connect an owner-approved private destination and explicit data manifest to verified capture/restore. Do not upload raw machine profiles or private inventory to a public repository.
