@@ -20,6 +20,10 @@ Run from a trusted checkout:
 
 Replace example paths only after reviewing the target and storage permissions. Do not run this against a real subject until the target and preservation scope have been explicitly identified. Review the full inventory and exclusions before relying on a payload.
 
+## Relationship to factory bootstrap
+
+The local factory installer has a separate read-only destination preflight for operator/personal-data packages and the Intake Dock. That preflight checks destination conflicts before package materialization; it does **not** inventory a project, choose recovery roots, capture userdata, preserve Git history, or prove a restore. Project-tree capture remains a separate explicitly scoped rehearsal, and its omissions must be reviewed.
+
 ## Inclusion and exclusion contract
 
 - Ordinary regular files are included recursively beneath each explicitly named top-level file/directory, including nested source, binary assets, dotfiles, and empty directories. Include roots must be direct children of the project root; select each root deliberately.
