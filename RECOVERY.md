@@ -105,6 +105,20 @@ Restoration is proven only for the tested scope. A successful isolated drill doe
 
 ## Recovery drill
 
+The automated `scripts/run_local_recovery_drill.py` is the first small acceptance test. It creates a temporary synthetic Git repository, creates and verifies a bundle, clones the bundle into a fresh directory, deliberately damages a tracked file, restores the known checkpoint, and verifies a clean working tree. It uses no network and does not touch real project files. Run it with:
+
+```bash
+python3 scripts/run_local_recovery_drill.py
+```
+
+It can optionally write a private JSON report to a new path whose parent directory already exists:
+
+```bash
+python3 scripts/run_local_recovery_drill.py --output "$HOME/private-recovery/local-drill.json"
+```
+
+The report explicitly limits its claim to this synthetic local Git exercise. A passing result is **not** proof of real-project recovery, complete backup coverage, independent account recovery, or GitHub metadata/settings restoration. Those require separate acceptance tests.
+
 At a chosen cadence, perform a safe recovery drill in an isolated test account or environment. Verify that the seed can be retrieved without the original GitHub account and that a fresh builder can follow the instructions. Do not test destructive recovery against the live account.
 
 Record the drill date, seed version, scope, results, and remaining gaps. A written recovery plan without a demonstrated drill is planned recovery, not proven recovery.
