@@ -49,6 +49,7 @@ REQUIRED_FILES = (
     "scripts/reconcile_expected_inventory.py",
     "scripts/run_account_audit.py",
     "scripts/prepare_local_handoff_backup.sh",
+    "scripts/verify_source_artifacts.py",
     "tests/test_audit_account_inventory.py",
     "tests/test_audit_backup_coverage.py",
     "tests/test_audit_branch_safeguards.py",
@@ -67,6 +68,10 @@ REQUIRED_FILES = (
     "tests/test_validate_audit_findings.py",
     "tests/test_validate_audit_schema.py",
     "tests/test_collect_machine_profile.py",
+    "tests/test_prepare_local_handoff_backup.py",
+    "tests/test_reconcile_inventory_input_validation.py",
+    "tests/test_reconcile_requires_pagination.py",
+    "tests/test_verify_source_artifacts.py",
     "tests/test_validate_seed.py",
 )
 
