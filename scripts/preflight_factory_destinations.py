@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+import shutil
 import sys
 from typing import Sequence
 
@@ -13,6 +14,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 import materialize_intake_dock as dock
 import materialize_profile_packages as profiles
+import provision_intake_dock as remote_dock
 
 
 def check_non_overlapping(paths: dict[str, Path]) -> None:
@@ -39,6 +41,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--intake-dock-template-root", type=Path, required=True)
     parser.add_argument("--intake-dock-destination", type=Path)
     parser.add_argument("--intake-dock-lane")
+    parser.add_argument("--remote-dock-owner")
+    parser.add_argument("--remote-dock-repository")
+    parser.add_argument("--remote-dock-confirm-target")
     args = parser.parse_args(argv)
 
     try:
@@ -60,6 +65,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             selected["Intake Dock"] = args.intake_dock_destination
 
         check_non_overlapping(selected)
+
+        remote_values = (args.remote_dock_owner, args.remote_dock_repository, args.remote_dock_confirm_target)
+        remote_set = any(value is not None and value != "" for value in remote_values)
+        if remote_set:
+            if not all(value is not None and value != "" for value in remote_values):
+                raise ValueError("remote Intake Dock provisioning requires owner, repository, and exact confirmation together")
+            target = remote_dock._validate_target(args.remote_dock_owner, args.remote_dock_repository)
+            if args.remote_dock_confirm_target != target:
+                raise ValueError("remote confirmation must exactly match " + target)
+            if shutil.which("gh") is None:
+                raise ValueError("remote Intake Dock provisioning is configured but GitHub CLI (gh) is unavailable")
 
         if profile_set:
             packages = profiles.load_templates(args.template_root)
