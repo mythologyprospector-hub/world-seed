@@ -22,7 +22,7 @@ Replace example paths only after reviewing the target and storage permissions. D
 
 ## Relationship to factory bootstrap
 
-The local factory installer has a separate read-only destination preflight for operator/personal-data packages and the Intake Dock. That preflight checks destination conflicts before package materialization; it does **not** inventory a project, choose recovery roots, capture userdata, preserve Git history, or prove a restore. Project-tree capture remains a separate explicitly scoped rehearsal, and its omissions must be reviewed.
+The local factory installer has a separate read-only destination preflight for operator/personal-data packages and the Intake Dock. When explicitly configured with an owner, repository name, and exact `OWNER/REPOSITORY` confirmation, it can also create-or-verify that private GitHub repository using the already authenticated personal account. This provisions only an empty remote container; it does not upload user files or configure Codex. Destination preflight checks local conflicts before package materialization. None of these factory steps inventories a project, chooses recovery roots, captures userdata, preserves Git history, or proves a restore. Project-tree capture remains a separate explicitly scoped rehearsal, and its omissions must be reviewed.
 
 ## Inclusion and exclusion contract
 
