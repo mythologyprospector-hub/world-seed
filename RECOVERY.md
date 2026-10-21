@@ -210,3 +210,8 @@ The local Dock structure and remote repository container are separate regenerabl
 ## Intake Dock handoff package boundary
 
 The local `scripts/package_intake_dock_handoff.py` packages only explicitly selected files, records provenance metadata and SHA-256 hashes, and verifies the resulting ZIP. It never changes source files and marks the package `not_uploaded`. Its credential checks are heuristic rather than comprehensive. A generated archive is a transport candidate, not a backup or a transfer: preserve original sources, review the manifest and contents, and require a separate explicit target/authorization gate for any future remote upload.
+
+
+## Guarded Intake Dock transfer
+
+The separate `scripts/transfer_intake_dock_handoff.py` validates a manifest-backed package locally by default. Live transfer requires exact target confirmation, verifies the authenticated personal-account owner and private visibility, rechecks file paths and hashes, screens for common credential markers, refuses conflicting content, and records a receipt with the uploaded files. It is not integrated into the installer and is not itself a backup/restore mechanism. Secret scanning is heuristic; a human must review the exact package and target before any real transfer. Synthetic end-to-end testing and isolated recovery acceptance remain required.
