@@ -129,11 +129,11 @@ class LocalFactoryInstallerTests(unittest.TestCase):
 
             # A timestamp collision must be refused before any selected package destination changes.
             fixed_date = fake_bin / "date"
-            fixed_date.write_text("#!/usr/bin/env bash\\nprintf '20000101T000000Z\\n'\\n", encoding="utf-8")
+            fixed_date.write_text("\n".join(["#!/usr/bin/env bash", "printf '%s' '20000101T000000Z'", ""]), encoding="utf-8")
             fixed_date.chmod(0o755)
             collision_state = root / "collision-state"
             collision_state.mkdir()
-            (collision_state / "install-20000101T000000Z.tsv").write_text("preserve me\\n", encoding="utf-8")
+            (collision_state / "install-20000101T000000Z.tsv").write_text("preserve me", encoding="utf-8")
             collision_environment = configured_environment.copy()
             collision_environment.update({
                 "WORLD_SEED_STATE_HOME": str(collision_state),
@@ -150,7 +150,7 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             self.assertIn("generated output path already exists", collision.stderr)
             self.assertEqual(
                 (collision_state / "install-20000101T000000Z.tsv").read_text(encoding="utf-8"),
-                "preserve me\\n",
+                "preserve me",
             )
             self.assertFalse((root / "collision-profile").exists())
             self.assertFalse((root / "collision-personal").exists())
