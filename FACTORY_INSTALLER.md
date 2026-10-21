@@ -39,3 +39,8 @@ This first installer does **not** install or reconfigure Organs, start services,
 - Not yet configured: collection of actual project/user data, secure remote delivery, API/BUS wiring, credential provisioning, and end-to-end restore acceptance. Optional local package initialization creates only generic directory structure; it is not a data backup.
 
 The next factory increment is to connect an owner-approved private destination and explicit data manifest to verified capture/restore. Do not upload raw machine profiles or private inventory to a public repository.
+
+
+## Intake Dock local scaffold (separate capability)
+
+`scripts/materialize_intake_dock.py --destination "$HOME/private-intake-dock"` initializes the local private staging folders and generic handoff instructions. It is not yet called by `install_local_factory.sh`, and it does not create a GitHub repository, configure remote access, or upload/download files. Treat this as a tested local building block only; remote provisioning and the synthetic handoff acceptance under issue #17 remain open.
