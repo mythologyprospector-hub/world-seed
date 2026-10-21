@@ -26,6 +26,7 @@ This mandate is bounded by actual tool capability, account permissions, project 
 6. Begin authorized, reversible work. Use reviewable branches and pull requests for substantive changes where practical. Do not merge without the required approval.
 7. Record decisions, work status, evidence, blockers, and the next justified action in the owning repository.
 8. Continue the project → ecosystem → account gap loop. Completion of one task is a cue to reassess, not an excuse to become passive.
+9. For local Git worktree discovery, tracking, preservation, and retirement, follow [WORKTREE_LIFECYCLE.md](WORKTREE_LIFECYCLE.md). Do not assume the main checkout is the only checkout.
 
 ## Mandatory rolling audit duty
 
