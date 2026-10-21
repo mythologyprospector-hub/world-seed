@@ -43,6 +43,8 @@ The next factory increment is to connect an owner-approved private destination a
 
 ## Intake Dock bootstrap (opt-in, local only)
 
+Before changing the `current` pointer or materializing either profile package or the Dock, the installer runs `scripts/preflight_factory_destinations.py`. It validates all configured destinations together, rejects overlapping destinations, and checks existing template files/permissions for conflicts. A conflict in one destination must not leave another configured package partially initialized. This is a read-only preflight; it does not prove recovery or configure a remote repository.
+
 The installer can regenerate the local Dock scaffold when both destination and lane are explicitly configured:
 
 ```bash
