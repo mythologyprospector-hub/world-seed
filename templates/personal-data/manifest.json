@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "package_type": "personal-data",
+  "intended_owner": "unknown",
+  "created_at": "unknown",
+  "last_reviewed_at": "unknown",
+  "sensitivity": "highly-private",
+  "records": [],
+  "retention_policy": "owner-defined",
+  "disclosure_rules": [
+    "Use only records relevant to an authorized task",
+    "Do not include personal records in public artifacts or unrelated prompts",
+    "Preserve originals and record provenance",
+    "Never claim records were recovered unless restore and integrity checks succeeded"
+  ],
+  "provenance": "template; no personal records included"
+}
