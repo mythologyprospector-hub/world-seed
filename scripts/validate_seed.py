@@ -11,6 +11,7 @@ REQUIRED_FILES = (
     "templates/MISSION.md",
     "templates/project/PROJECT_TEMPLATE_VERSION",
     "templates/project/AGENTS.md",
+    "templates/project/LICENSE",
     "templates/project/CONSTITUTION.md",
     "templates/project/DOCS.md",
     "templates/project/HUMAN.md",
