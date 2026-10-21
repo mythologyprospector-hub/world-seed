@@ -47,6 +47,7 @@ class LocalPrivateRepo:
         git(["-C", str(seed), "commit", "-m", "Initialize synthetic Dock"])
         git(["-C", str(seed), "remote", "add", "origin", str(self.remote)])
         git(["-C", str(seed), "push", "--set-upstream", "origin", "main"])
+        git(["--git-dir", str(self.remote), "symbolic-ref", "HEAD", "refs/heads/main"])
 
     def authenticated_login(self):
         self.calls.append("identity")
