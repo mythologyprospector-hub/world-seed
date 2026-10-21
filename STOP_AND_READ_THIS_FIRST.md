@@ -60,7 +60,8 @@ Run and record explicit acceptance tests for:
 - discovery and reconciliation of the actual account inventory, including private repositories and pagination;
 - preservation of operator preferences and personal data independently of project repositories and chat history;
 - backup of repository source/refs and relevant GitHub-only operating records/settings that are accessible and supported, with unsupported or inaccessible categories explicitly recorded;
-- verification of backup integrity and coverage;\n- a scope-bounded recovery statement listing what can be restored, what cannot, the consequences, and any residual risk that must be explicitly accepted;
+- verification of backup integrity and coverage;
+- a scope-bounded recovery statement listing what can be restored, what cannot, the consequences, and any residual risk that must be explicitly accepted;
 - an isolated restoration drill that reconstructs a usable environment and proves the restored result;
 - a disposable factory acceptance test from a blank starting point, only after the factory itself is ready;
 - professional-quality gates appropriate to that test project's purpose;
