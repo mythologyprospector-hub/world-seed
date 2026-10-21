@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Capture and restore a bounded project tree into a new isolated destination.
 
-Git metadata is intentionally separate: .git directories are recorded as exclusions.
-All other paths are included unless explicitly excluded. Unsafe paths fail closed.
+Git metadata is intentionally separate: .git entries are recorded as exclusions.
+Only explicitly selected top-level roots are included; unsafe selected paths fail closed.
 """
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def _inventory_tree(source: Path, includes: set[str], excluded: set[str]) -> tup
     not_captured = [
         {"path": item.name, "reason": "not selected by explicit capture roots"}
         for item in sorted(source.iterdir(), key=lambda item: item.name)
-        if item.name not in selected_top and item.name != ".git"
+        if item.name not in selected_top and item.name != ".git" and item.name not in {value.split("/", 1)[0] for value in excluded}
     ]
     for current, dirnames, filenames in os.walk(source, topdown=True, followlinks=False):
         current_path = Path(current)
@@ -69,10 +69,6 @@ def _inventory_tree(source: Path, includes: set[str], excluded: set[str]) -> tup
         for name in sorted(dirnames):
             path = current_path / name
             rel = (Path(relative_dir) / name).as_posix() if relative_dir else name
-            if path.is_symlink():
-                raise ValueError(f"symlink directory is not allowed: {rel}")
-            if not path.is_dir():
-                raise ValueError(f"non-directory entry in directory inventory: {rel}")
             if name == ".git":
                 exclusions.append({"path": rel, "reason": "Git history and metadata are a separate recovery category"})
                 continue
@@ -84,6 +80,10 @@ def _inventory_tree(source: Path, includes: set[str], excluded: set[str]) -> tup
             ancestor_of_selection = any(item.startswith(rel + "/") for item in includes)
             if not selected and not ancestor_of_selection:
                 continue
+            if path.is_symlink():
+                raise ValueError(f"symlink directory is not allowed: {rel}")
+            if not path.is_dir():
+                raise ValueError(f"non-directory entry in directory inventory: {rel}")
             if secret_like(rel):
                 raise ValueError(f"credential-like path requires review and cannot be captured: {rel}")
             kept_dirs.append(name)
