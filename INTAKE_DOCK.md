@@ -1,6 +1,6 @@
 # Intake Dock
 
-**Status:** Local workspace scaffolding implemented; remote GitHub provisioning and transfer are not implemented.
+**Status:** Local workspace scaffolding, guarded remote repository provisioning, and manifest-backed local handoff packaging are implemented as separate building blocks. Remote file transfer and end-to-end Codex handoff are not implemented.
 
 ## Purpose
 
