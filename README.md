@@ -28,6 +28,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [BOOTSTRAP.md](BOOTSTRAP.md) — account-level discovery and genesis sequence.
 - [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md) — ecosystem vs project responsibilities and the factory boundary.
 - [PROJECT_SEED_ABSORPTION.md](PROJECT_SEED_ABSORPTION.md) — audited migration map and acceptance gates for absorbing Project Seed capabilities into the World Seed factory.
+- [PROJECT_GENERATION.md](PROJECT_GENERATION.md) — local project-generation interface, generated bundle, and current limitations.
 - [AUTOMATION.md](AUTOMATION.md) — workflow and automation requirements.
 - [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) — mandatory rolling repository, cross-repository, and account-wide audits.
 - [templates/expected-inventory.template.json](templates/expected-inventory.template.json) and [templates/expected-contracts.template.json](templates/expected-contracts.template.json) — non-authoritative starting points for private audit inventories.
