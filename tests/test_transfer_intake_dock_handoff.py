@@ -37,9 +37,10 @@ def make_package(root: Path, *, target="owner/episteme", lane="episteme", files=
 class FakeClient:
     def __init__(self):
         self.calls = []
+        self.login = "owner"
     def authenticated_login(self):
         self.calls.append("identity")
-        return "owner"
+        return self.login
     def get_repository(self, target):
         self.calls.append(("repository", target))
         return {"full_name": target, "private": True, "default_branch": "main"}
