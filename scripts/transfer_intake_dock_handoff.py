@@ -23,6 +23,9 @@ import zipfile
 
 MAX_FILE_BYTES = 50 * 1024 * 1024
 MAX_PACKAGE_BYTES = 200 * 1024 * 1024
+MAX_MANIFEST_BYTES = 2 * 1024 * 1024
+PRIVATE_KEY_MARKERS = (b"-----BEGIN PRIVATE KEY-----", b"-----BEGIN RSA PRIVATE KEY-----", b"-----BEGIN OPENSSH PRIVATE KEY-----", b"-----BEGIN EC PRIVATE KEY-----")
+GITHUB_TOKEN_PATTERN = re.compile(rb"gh[pousr]_[A-Za-z0-9]{30,}")
 LANE_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\Z")
 TARGET_PATTERN = re.compile(r"[A-Za-z0-9-]+/[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\Z")
 
@@ -55,8 +58,13 @@ def validate_package(package_path: Path, target: str) -> dict[str, Any]:
         names = [item.filename for item in infos]
         if len(names) != len(set(names)):
             raise TransferError("package contains duplicate ZIP entries")
+        if sum(item.file_size for item in infos) > MAX_PACKAGE_BYTES + MAX_MANIFEST_BYTES:
+            raise TransferError("uncompressed package content exceeds the maximum size")
+        info_by_name = {item.filename: item for item in infos}
         if "manifest.json" not in names:
             raise TransferError("package manifest.json is missing")
+        if info_by_name["manifest.json"].file_size > MAX_MANIFEST_BYTES:
+            raise TransferError("package manifest exceeds the maximum size")
         try:
             manifest = json.loads(archive.read("manifest.json").decode("utf-8"))
         except (UnicodeError, json.JSONDecodeError, KeyError) as exc:
@@ -95,7 +103,11 @@ def validate_package(package_path: Path, target: str) -> dict[str, Any]:
                 raise TransferError("manifest contains an unsafe destination path")
             if relative not in names:
                 raise TransferError(f"package is missing declared file: {source_name}")
+            if info_by_name[relative].file_size > MAX_FILE_BYTES:
+                raise TransferError(f"file exceeds the size limit: {source_name}")
             data = archive.read(relative)
+            if any(marker in data for marker in PRIVATE_KEY_MARKERS) or GITHUB_TOKEN_PATTERN.search(data):
+                raise TransferError(f"content resembles a private key or GitHub token: {source_name}")
             size = entry.get("size_bytes")
             digest = entry.get("sha256")
             if not isinstance(size, int) or size < 0 or size > MAX_FILE_BYTES or len(data) != size:
