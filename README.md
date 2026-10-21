@@ -179,3 +179,8 @@ bash scripts/prepare_local_handoff_backup.sh OWNER [DESTINATION]
 The script lists repositories visible under the explicitly supplied GitHub owner, then saves a checkout, a Git bundle, and a ZIP snapshot for each repository under a new timestamped directory in `~/archive` (or the optional destination you supply). Replace `OWNER` with the intended GitHub username or organization. Review the destination carefully because these backups can contain private repository contents. It uses owner-only local permissions, refuses to overwrite an existing destination, records successes/failures in a local manifest, and does not change any GitHub repository. Review the output and manifest; investigate every failure before relying on the backup.
 
 This is a first preservation pass, not a complete GitHub account export. It does not preserve issues, pull-request discussions, Actions artifacts, releases, repository settings, or every account-level permission. Keep all original GitHub repositories intact until the handoff audit confirms what else must be preserved. Do not run repository deletion or archival as part of this step.
+
+
+## Local factory bootstrap
+
+The first safe local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented by [scripts/install_local_factory.sh](scripts/install_local_factory.sh). It installs a versioned local bootstrap and a private machine-profile report. It does not configure API/BUS services or remote delivery yet; those remain explicit factory acceptance gaps.
