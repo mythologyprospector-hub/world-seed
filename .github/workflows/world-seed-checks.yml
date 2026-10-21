@@ -1,0 +1,44 @@
+name: world-seed quality checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "23 8 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: world-seed-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate seed structure and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact revision
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate seed and run tests when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f scripts/validate_seed.py ]]; then
+            echo "::notice::Bootstrap-only revision: seed validation activates when the seed implementation is present."
+            exit 0
+          fi
+          bash -n scripts/prepare_local_handoff_backup.sh
+          python scripts/validate_seed.py
+          python -m pip install -r requirements-dev.txt
+          python scripts/validate_audit_findings.py templates/audit-finding.template.json
+          python scripts/validate_audit_schema.py templates/audit-finding.template.json
+          python -m unittest discover -s tests -v
