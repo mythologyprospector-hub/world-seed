@@ -17,7 +17,7 @@ mkdir -m 700 -p "$HOME/private-intake-dock"
 python3 scripts/materialize_intake_dock.py --destination "$HOME/private-intake-dock" --lane episteme
 ```
 
-Replace `episteme` with the one intended lowercase repository-style lane name. The materializer rejects path traversal and invalid lane names. It creates root guidance plus `projects/<lane>/incoming/`, `inventory/`, `working/`, and `reports/`. On POSIX systems it uses owner-only permissions. Reruns are idempotent: identical template files are accepted, missing paths are added, unrelated owner material is preserved, and conflicting files or unsafe paths are refused.
+Replace `episteme` with the one intended lowercase repository-style lane name. The materializer rejects path traversal and invalid lane names. The factory installer can perform this local-only step when both `WORLD_SEED_INTAKE_DOCK_DESTINATION` and `WORLD_SEED_INTAKE_DOCK_LANE` are set; see [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md). It creates root guidance plus `projects/<lane>/incoming/`, `inventory/`, `working/`, and `reports/`. On POSIX systems it uses owner-only permissions. Reruns are idempotent: identical template files are accepted, missing paths are added, unrelated owner material is preserved, and conflicting files or unsafe paths are refused.
 
 ## Folder meanings and handling
 
