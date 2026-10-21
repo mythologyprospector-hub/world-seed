@@ -81,6 +81,32 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             self.assertEqual(manifests[0].stat().st_mode & 0o777, 0o600)
             self.assertEqual(state_home.stat().st_mode & 0o777, 0o700)
             self.assertIn("remote_delivery\tnot_configured", manifests[0].read_text(encoding="utf-8"))
+            self.assertIn("profile_packages\tnot_configured", manifests[0].read_text(encoding="utf-8"))
+
+            # A second run reuses the exact release and initializes only explicitly selected destinations.
+            operator_destination = root / "private-operator-profile"
+            personal_destination = root / "private-personal-data"
+            second_state_home = root / "private-state-with-packages"
+            configured_environment = environment.copy()
+            configured_environment.update({
+                "WORLD_SEED_STATE_HOME": str(second_state_home),
+                "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(operator_destination),
+                "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(personal_destination),
+            })
+            configured_result = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=configured_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(configured_result.returncode, 0, configured_result.stdout + configured_result.stderr)
+            self.assertTrue((operator_destination / "PREFERENCES.md").is_file())
+            self.assertTrue((personal_destination / "manifest.json").is_file())
+            configured_manifests = list(second_state_home.glob("install-*.tsv"))
+            self.assertEqual(len(configured_manifests), 1)
+            self.assertIn(
+                "profile_packages\tmaterialized",
+                configured_manifests[0].read_text(encoding="utf-8"),
+            )
 
 
 if __name__ == "__main__":
