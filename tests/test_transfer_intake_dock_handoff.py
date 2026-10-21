@@ -135,6 +135,24 @@ class TransferPackageTests(unittest.TestCase):
             self.assertTrue(any(call[0] == "git" and call[1][0] == "push" for call in client.calls if isinstance(call, tuple)))
             self.assertEqual(len(payload), 1)
 
+
+    def test_empty_repository_is_initialized_even_when_default_branch_is_reported(self):
+        with tempfile.TemporaryDirectory() as temp:
+            package, _, _ = make_package(Path(temp))
+            client = FakeClient()
+            def clone_empty(target, destination):
+                import subprocess
+                destination.mkdir()
+                remote = destination.parent / "remote.git"
+                subprocess.run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
+                subprocess.run(["git", "-C", str(destination), "init", "-b", "main"], check=True, capture_output=True)
+                subprocess.run(["git", "-C", str(destination), "remote", "add", "origin", str(remote)], check=True)
+            client.clone = clone_empty
+            result = TRANSFER.transfer(package, "owner/episteme", apply=True,
+                                       confirmed_target="owner/episteme", client=client)
+            self.assertEqual(result["status"], "transferred-and-committed")
+            self.assertTrue(any(call[0] == "git" and call[1][0] == "push" for call in client.calls if isinstance(call, tuple)))
+
     def test_conflicting_existing_remote_path_is_refused(self):
         with tempfile.TemporaryDirectory() as temp:
             package, _, _ = make_package(Path(temp))
