@@ -76,7 +76,7 @@ class CreateProjectTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / "new-project"
             with self.assertRaises(GENERATOR.ProjectGenerationError):
-                GENERATOR.create_project(ROOT, "new-project", "First line\\nSecond line", destination)
+                GENERATOR.create_project(ROOT, "new-project", "First line" + chr(10) + "Second line", destination)
             with self.assertRaises(GENERATOR.ProjectGenerationError):
                 GENERATOR.create_project(ROOT, "new-project", "A mission.", destination, revision="not-a-sha")
 
