@@ -127,6 +127,35 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             self.assertEqual(incomplete.returncode, 2)
             self.assertIn("set both WORLD_SEED_INTAKE_DOCK_DESTINATION and WORLD_SEED_INTAKE_DOCK_LANE", incomplete.stderr)
 
+            # A timestamp collision must be refused before any selected package destination changes.
+            fixed_date = fake_bin / "date"
+            fixed_date.write_text("#!/usr/bin/env bash\\nprintf '20000101T000000Z\\n'\\n", encoding="utf-8")
+            fixed_date.chmod(0o755)
+            collision_state = root / "collision-state"
+            collision_state.mkdir()
+            (collision_state / "install-20000101T000000Z.tsv").write_text("preserve me\\n", encoding="utf-8")
+            collision_environment = configured_environment.copy()
+            collision_environment.update({
+                "WORLD_SEED_STATE_HOME": str(collision_state),
+                "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(root / "collision-profile"),
+                "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(root / "collision-personal"),
+                "WORLD_SEED_INTAKE_DOCK_DESTINATION": str(root / "collision-dock"),
+            })
+            collision = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=collision_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(collision.returncode, 2, collision.stdout + collision.stderr)
+            self.assertIn("generated output path already exists", collision.stderr)
+            self.assertEqual(
+                (collision_state / "install-20000101T000000Z.tsv").read_text(encoding="utf-8"),
+                "preserve me\\n",
+            )
+            self.assertFalse((root / "collision-profile").exists())
+            self.assertFalse((root / "collision-personal").exists())
+            self.assertFalse((root / "collision-dock").exists())
+
 
 if __name__ == "__main__":
     unittest.main()
