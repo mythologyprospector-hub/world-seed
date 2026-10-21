@@ -33,6 +33,8 @@ def safe_name(name: str) -> bool:
         bool(name)
         and not path.is_absolute()
         and len(path.parts) == 1
+        and "/" not in name
+        and "\\" not in name
         and name not in {".", "..", PAYLOAD_MANIFEST, "world-seed-manifest.json"}
         and not name.startswith(".")
         and not any(word in folded for word in SECRET_WORDS)
@@ -68,6 +70,11 @@ def capture(source: Path, output: Path, includes: Sequence[str]) -> dict[str, ob
             shutil.copyfile(source / str(item["path"]), temporary / str(item["path"]), follow_symlinks=False)
             if os.name == "posix":
                 os.chmod(temporary / str(item["path"]), 0o600)
+            copied = temporary / str(item["path"])
+            if copied.is_symlink() or not copied.is_file():
+                raise ValueError(f"captured file is not a regular file: {item['path']}")
+            if copied.stat().st_size != item["size_bytes"] or sha256_file(copied) != item["sha256"]:
+                raise ValueError(f"captured file verification failed: {item['path']}")
         project_manifest = source / "world-seed-manifest.json"
         source_revision = "unknown"
         if project_manifest.is_file() and not project_manifest.is_symlink():
