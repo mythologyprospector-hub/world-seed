@@ -103,7 +103,7 @@ REQUIRED_FILES = (
     "templates/intake-dock/DROP_HERE.md",
     "templates/intake-dock/manifest.json",
     "scripts/materialize_intake_dock.py",
-    "tests/test_materialize_intake_dock.py",
+    "tests/test_materialize_intake_dock.py",\n    "scripts/provision_intake_dock.py",\n    "tests/test_provision_intake_dock.py",
 )
 
 def validate(root: Path) -> list[str]:
