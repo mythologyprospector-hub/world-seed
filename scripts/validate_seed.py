@@ -108,6 +108,8 @@ REQUIRED_FILES = (
     "tests/test_provision_intake_dock.py",
     "scripts/package_intake_dock_handoff.py",
     "tests/test_package_intake_dock_handoff.py",
+    "scripts/transfer_intake_dock_handoff.py",
+    "tests/test_transfer_intake_dock_handoff.py",
 )
 
 def validate(root: Path) -> list[str]:
