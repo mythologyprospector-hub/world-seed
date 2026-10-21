@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""Initialize a private local Intake Dock without overwriting supplied material."""
+"""Initialize a private local Intake Dock lane without overwriting supplied material."""
 from __future__ import annotations
 
 import argparse
 import json
 import os
 from pathlib import Path
+import re
 import stat
 from typing import Sequence
 
 DOCK_FILES = ("README.md", "DROP_HERE.md", "manifest.json")
-DOCK_DIRS = ("incoming", "originals", "working-copies", "outputs")
+LANE_DIRS = ("incoming", "inventory", "working", "reports")
+LANE_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\Z")
 
 
 def load_templates(template_root: Path) -> dict[str, bytes]:
@@ -32,59 +34,52 @@ def load_templates(template_root: Path) -> dict[str, bytes]:
     return files
 
 
-def materialize(template_root: Path, destination: Path) -> dict[str, object]:
+def _private_directory(path: Path, label: str) -> None:
+    if path.is_symlink():
+        raise ValueError(f"refusing symlink at {label}")
+    if path.exists():
+        if not path.is_dir():
+            raise ValueError(f"expected a directory at {label}")
+        if os.name == "posix" and stat.S_IMODE(path.stat().st_mode) & 0o077:
+            raise ValueError(f"{label} is not private; secure it before retrying")
+
+
+def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, object]:
+    if not LANE_PATTERN.fullmatch(lane):
+        raise ValueError("lane must be a lowercase repository-style slug (letters, digits, hyphens)")
     templates = load_templates(template_root)
     destination = destination.expanduser().absolute()
-    if destination.is_symlink():
-        raise ValueError("Intake Dock destination must not be a symlink")
-    if destination.exists() and not destination.is_dir():
-        raise ValueError("Intake Dock destination exists but is not a directory")
-    if destination.exists() and os.name == "posix":
-        mode = stat.S_IMODE(destination.stat().st_mode)
-        if mode & 0o077:
-            raise ValueError(f"Intake Dock destination is not private (mode {mode:04o}); secure it before retrying")
+    _private_directory(destination, "Intake Dock destination")
+
+    lane_root = destination / "projects" / lane
+    expected_dirs = [destination / "projects", lane_root, *(lane_root / name for name in LANE_DIRS)]
+    for directory in expected_dirs:
+        _private_directory(directory, f"Intake Dock directory: {directory.relative_to(destination)}")
 
     missing_files: list[str] = []
-    missing_dirs: list[str] = []
-    if destination.exists():
-        for name in DOCK_FILES:
-            target = destination / name
-            if target.is_symlink():
-                raise ValueError(f"refusing symlink at Intake Dock template file: {name}")
-            if target.exists():
-                if not target.is_file() or target.read_bytes() != templates[name]:
-                    raise ValueError(f"existing file differs from template; preserving it and refusing changes: {name}")
-            else:
-                missing_files.append(name)
-        for name in DOCK_DIRS:
-            target = destination / name
-            if target.is_symlink():
-                raise ValueError(f"refusing symlink at Intake Dock directory: {name}")
-            if target.exists():
-                if not target.is_dir():
-                    raise ValueError(f"expected a directory but found another file type: {name}")
-                if os.name == "posix" and stat.S_IMODE(target.stat().st_mode) & 0o077:
-                    raise ValueError(f"Intake Dock subdirectory is not private: {name}")
-            else:
-                missing_dirs.append(name)
-    else:
-        missing_files = list(DOCK_FILES)
-        missing_dirs = list(DOCK_DIRS)
+    for name in DOCK_FILES:
+        target = destination / name
+        if target.is_symlink():
+            raise ValueError(f"refusing symlink at Intake Dock template file: {name}")
+        if target.exists():
+            if not target.is_file() or target.read_bytes() != templates[name]:
+                raise ValueError(f"existing file differs from template; preserving it and refusing changes: {name}")
+        else:
+            missing_files.append(name)
 
+    missing_dirs = [str(directory.relative_to(destination)) for directory in expected_dirs if not directory.exists()]
     created_files: list[Path] = []
     created_dirs: list[Path] = []
     try:
-        if not destination.exists():
-            destination.mkdir(parents=True, mode=0o700)
-            created_dirs.append(destination)
-        if os.name == "posix":
-            os.chmod(destination, 0o700)
-        for name in missing_dirs:
-            path = destination / name
-            path.mkdir(mode=0o700)
-            created_dirs.append(path)
+        for directory in expected_dirs:
+            if not directory.exists():
+                directory.mkdir(mode=0o700)
+                created_dirs.append(directory)
             if os.name == "posix":
-                os.chmod(path, 0o700)
+                os.chmod(directory, 0o700)
+        if not destination.exists():
+            # A destination with missing ancestors is not silently created; keep path ownership explicit.
+            raise ValueError("Intake Dock destination must already exist or have an existing private parent")
         for name in missing_files:
             path = destination / name
             descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
@@ -108,19 +103,20 @@ def materialize(template_root: Path, destination: Path) -> dict[str, object]:
                 pass
         raise
 
-    return {"files_added": missing_files, "directories_added": missing_dirs, "destination": str(destination)}
+    return {"files_added": missing_files, "directories_added": missing_dirs, "destination": str(destination), "lane": lane}
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Initialize a local private Intake Dock; no GitHub access or upload.")
+    parser = argparse.ArgumentParser(description="Initialize a local private Intake Dock lane; no GitHub access or upload.")
     parser.add_argument("--template-root", type=Path, default=Path(__file__).resolve().parents[1] / "templates" / "intake-dock")
     parser.add_argument("--destination", type=Path, required=True)
+    parser.add_argument("--lane", required=True, help="explicit lowercase repository-style project lane slug")
     args = parser.parse_args(argv)
     try:
-        result = materialize(args.template_root, args.destination)
+        result = materialize(args.template_root, args.destination, args.lane)
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
-    print(f"Intake Dock initialized locally: files added={len(result['files_added'])}; directories added={len(result['directories_added'])}.")
+    print(f"Intake Dock initialized locally for lane {result['lane']}: files added={len(result['files_added'])}; directories added={len(result['directories_added'])}.")
     print("Existing unrelated material was preserved. No GitHub repository was created and no data was uploaded.")
     return 0
 
