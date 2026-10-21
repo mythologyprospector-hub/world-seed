@@ -122,3 +122,26 @@ The report explicitly limits its claim to this synthetic local Git exercise. A p
 At a chosen cadence, perform a safe recovery drill in an isolated test account or environment. Verify that the seed can be retrieved without the original GitHub account and that a fresh builder can follow the instructions. Do not test destructive recovery against the live account.
 
 Record the drill date, seed version, scope, results, and remaining gaps. A written recovery plan without a demonstrated drill is planned recovery, not proven recovery.
+
+
+## Selective recovery payload: preserve state, regenerate machinery
+
+The primary recovery set is **not a copy of every repository or of the whole world**. It is a small, explicit payload of irreplaceable user/project state plus the metadata and recipes needed to reconstruct the operating system and regenerate disposable projects.
+
+Classify each item before backup:
+
+- **Preserve as userdata:** operator preferences and approved personal records; project-specific decisions, specifications, datasets, authored material, provenance, and other details that cannot be recovered from an authoritative source. Keep personal-data and operator-profile packages separate from public seed material.
+- **Record as recovery metadata:** repository identities and roles, canonical source locations and revisions, project-generation parameters, dependency/service contracts, ownership and permission requirements, configuration schemas, restore order, and verification procedures. Metadata must say where the source of truth lives and whether it was actually checked.
+- **Regenerate after bootstrap:** the factory itself, World Seed from its trusted source, APIs/BUS components, dependencies, generated project repositories, and other machinery—provided the factory can fetch their authoritative source, provision them safely, and verify the result.
+- **Discard or rebuild as cache:** temporary files, generated indexes, downloaded build artifacts, and other replaceable outputs.
+- **Re-provision separately:** credentials and secrets. Store neither in general backups nor public manifests. Record the approved method to reacquire them without exposing their values.
+
+A project repository is disposable by default. Do not preserve its entire Git history merely because it exists. Preserve its unique user/project details and a recipe that can recreate it. If an audit establishes that some repository contains unique material not captured elsewhere, classify that material as userdata before any reset; never infer that deletion is safe from the word “disposable.” A repository marked as a required source of truth must be independently reachable or separately preserved before relying on regeneration.
+
+The seed itself is bootstrap machinery, not userdata and not part of each project-data backup. Because it is needed to recover from loss of the target GitHub account, keep a small independent copy of the seed/bootstrap entry point outside that account. This is a separate bootstrap safeguard, not a reason to bundle the whole seed, all private repositories, or all project source into every recovery payload.
+
+Every recovery manifest must identify the preservation class, source of truth, capture time/revision, sensitivity, verification method, and restore action for each included item. The default project backup should contain the selective payload and manifest, not full repository clones/bundles/ZIPs. Full source snapshots are opt-in exceptions when the project has a documented reason. The factory must refuse destructive reset while required unique state is unclassified, missing, or unverified.
+
+## Local factory bootstrap status
+
+The first local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented in `scripts/install_local_factory.sh`. It installs a versioned local bootstrap and saves a private machine profile. It is deliberately not yet the full factory: project-specific userdata collection, private profile restoration, API/BUS wiring, secure delivery, repository regeneration, and a clean-environment end-to-end recovery acceptance drill remain open gates.
