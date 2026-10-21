@@ -59,14 +59,14 @@ Run and record explicit acceptance tests for:
 - clean bootstrap on a fresh or isolated environment;
 - discovery and reconciliation of the actual account inventory, including private repositories and pagination;
 - preservation of operator preferences and personal data independently of project repositories and chat history;
-- backup of repository source, refs, and relevant GitHub-only operating records/settings;
-- verification of backup integrity and coverage;
+- backup of repository source/refs and relevant GitHub-only operating records/settings that are accessible and supported, with unsupported or inaccessible categories explicitly recorded;
+- verification of backup integrity and coverage;\n- a scope-bounded recovery statement listing what can be restored, what cannot, the consequences, and any residual risk that must be explicitly accepted;
 - an isolated restoration drill that reconstructs a usable environment and proves the restored result;
 - a disposable factory acceptance test from a blank starting point, only after the factory itself is ready;
 - professional-quality gates appropriate to that test project's purpose;
 - durable handoff to a new AI builder who has not seen the prior conversation.
 
-A passing unit test, successful export, backup file, green workflow, or written plan is useful evidence—but none alone proves complete account recovery or a working factory. State exactly what each test proves and what remains unverified.
+A passing unit test, successful export, backup file, green workflow, or written plan is useful evidence—but none alone proves complete account recovery or a working factory. State exactly what each test proves and what remains unverified. **Do not make perfect full-account backup a prerequisite when GitHub's tier or permissions make it impossible.** The factory must preserve and test the essential supported scope, expose unsupported gaps and their consequences, and avoid claiming restoration of anything it cannot restore.
 
 ### 3. Preserve evidence, not every living project
 
@@ -74,7 +74,7 @@ Maintain two separate records:
 - **Observed account inventory:** everything currently found, with visibility and access limitations recorded.
 - **Essential preservation inventory:** the minimum source, operating records, settings, operator profile, personal data, and recovery evidence required to rebuild the system.
 
-Projects may be archived or removed after the essential material is backed up, integrity-checked, and the required recovery tests pass. Do not destroy the only copy of a lesson, decision, data set, or artifact that the factory needs to reproduce success. Prefer reversible steps when practical. Do not call the inventory complete until it has been reconciled against an explicitly authoritative expected inventory and access limitations are understood.
+Projects may be archived or removed only after the essential material is preserved and integrity-checked, the required recovery tests pass for the claimed scope, and any unsupported or unrecoverable categories and their consequences are explicitly documented and accepted. Do not destroy the only copy of a lesson, decision, data set, or artifact that the factory needs to reproduce success. Prefer reversible steps when practical. Do not call the inventory complete until it has been reconciled against an explicitly authoritative expected inventory and access limitations are understood.
 
 ### 4. Reboot only when the gates pass
 
