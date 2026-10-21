@@ -127,6 +127,34 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             self.assertEqual(incomplete.returncode, 2)
             self.assertIn("set both WORLD_SEED_INTAKE_DOCK_DESTINATION and WORLD_SEED_INTAKE_DOCK_LANE", incomplete.stderr)
 
+            # A conflicting Dock template must be discovered before profile packages are created.
+            conflict_operator = root / "preflight-conflict-profile"
+            conflict_personal = root / "preflight-conflict-personal"
+            conflict_dock = root / "preflight-conflict-dock"
+            conflict_dock.mkdir(mode=0o700)
+            (conflict_dock / "README.md").write_text("operator-owned conflicting content", encoding="utf-8")
+            conflict_environment = configured_environment.copy()
+            conflict_environment.update({
+                "WORLD_SEED_STATE_HOME": str(root / "preflight-conflict-state"),
+                "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(conflict_operator),
+                "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(conflict_personal),
+                "WORLD_SEED_INTAKE_DOCK_DESTINATION": str(conflict_dock),
+                "WORLD_SEED_INTAKE_DOCK_LANE": "episteme",
+            })
+            conflict = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=conflict_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(conflict.returncode, 2, conflict.stdout + conflict.stderr)
+            self.assertIn("existing file differs from template", conflict.stderr)
+            self.assertFalse(conflict_operator.exists())
+            self.assertFalse(conflict_personal.exists())
+            self.assertEqual(
+                (conflict_dock / "README.md").read_text(encoding="utf-8"),
+                "operator-owned conflicting content",
+            )
+
             # A timestamp collision must be refused before any selected package destination changes.
             fixed_date = fake_bin / "date"
             fixed_date.write_text("\n".join(["#!/usr/bin/env bash", "printf '%s' '20000101T000000Z'", ""]), encoding="utf-8")
