@@ -193,7 +193,7 @@ This is a first preservation pass, not a complete GitHub account export. It does
 
 ## Local factory bootstrap
 
-The first safe local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented by [scripts/install_local_factory.sh](scripts/install_local_factory.sh). It installs a versioned local bootstrap and a private machine-profile report. It does not configure API/BUS services or remote delivery yet; those remain explicit factory acceptance gaps.
+The first safe local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented by [scripts/install_local_factory.sh](scripts/install_local_factory.sh). It installs a versioned local bootstrap and a private machine-profile report. An optional exact-target-confirmed step can create or verify an empty private Intake Dock repository; it does not transfer files, configure Codex, or configure API/BUS services. Remote handoff and Codex discovery remain explicit factory acceptance gaps.
 
 ## Current factory-first mission
 
