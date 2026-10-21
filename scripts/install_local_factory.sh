@@ -26,11 +26,11 @@ PERSONAL_DATA_DESTINATION="${WORLD_SEED_PERSONAL_DATA_DESTINATION:-}"
 INTAKE_DOCK_DESTINATION="${WORLD_SEED_INTAKE_DOCK_DESTINATION:-}"
 INTAKE_DOCK_LANE="${WORLD_SEED_INTAKE_DOCK_LANE:-}"
 if [[ -n "$OPERATOR_PROFILE_DESTINATION" && -z "$PERSONAL_DATA_DESTINATION" ]] || [[ -z "$OPERATOR_PROFILE_DESTINATION" && -n "$PERSONAL_DATA_DESTINATION" ]]; then
-  printf 'ERROR: set both WORLD_SEED_OPERATOR_PROFILE_DESTINATION and WORLD_SEED_PERSONAL_DATA_DESTINATION, or neither.\\n' >&2
+  printf 'ERROR: set both WORLD_SEED_OPERATOR_PROFILE_DESTINATION and WORLD_SEED_PERSONAL_DATA_DESTINATION, or neither.\n' >&2
   exit 2
 fi
 if [[ -n "$INTAKE_DOCK_DESTINATION" && -z "$INTAKE_DOCK_LANE" ]] || [[ -z "$INTAKE_DOCK_DESTINATION" && -n "$INTAKE_DOCK_LANE" ]]; then
-  printf 'ERROR: set both WORLD_SEED_INTAKE_DOCK_DESTINATION and WORLD_SEED_INTAKE_DOCK_LANE, or neither.\\n' >&2
+  printf 'ERROR: set both WORLD_SEED_INTAKE_DOCK_DESTINATION and WORLD_SEED_INTAKE_DOCK_LANE, or neither.\n' >&2
   exit 2
 fi
 PROFILE_PACKAGES_STATUS="not_configured"
@@ -42,7 +42,7 @@ MANIFEST="$STATE_HOME/install-$STAMP.tsv"
 
 # Refuse timestamp collisions before changing the release pointer or materializing destinations.
 if [[ -e "$REPORT" || -L "$REPORT" || -e "$MANIFEST" || -L "$MANIFEST" ]]; then
-  printf 'ERROR: generated output path already exists; refusing to overwrite.\\n' >&2
+  printf 'ERROR: generated output path already exists; refusing to overwrite.\n' >&2
   exit 2
 fi
 
