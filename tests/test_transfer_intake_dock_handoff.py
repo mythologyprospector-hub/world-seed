@@ -156,7 +156,7 @@ class TransferPackageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             package, _, _ = make_package(Path(temp))
             client = FakeClient()
-            client.authenticated_login = lambda: "someone-else"
+            client.login = "someone-else"
             with self.assertRaisesRegex(ValueError, "authenticated personal GitHub"):
                 TRANSFER.transfer(package, "owner/episteme", apply=True,
                                   confirmed_target="owner/episteme", client=client)
