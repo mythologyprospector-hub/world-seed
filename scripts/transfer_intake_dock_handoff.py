@@ -218,11 +218,19 @@ def transfer(package_path: Path, target: str, *, apply: bool = False,
         checkout = Path(temporary) / "repo"
         client.clone(target, checkout)
         default_branch = repository.get("default_branch")
-        if isinstance(default_branch, str) and default_branch:
-            client.git(checkout, ["checkout", "--quiet", default_branch])
-            branch = default_branch
+        head_check = client.git(checkout, ["rev-parse", "--verify", "HEAD"], allow_failure=True)
+        if head_check.returncode == 0:
+            if isinstance(default_branch, str) and default_branch:
+                client.git(checkout, ["checkout", "--quiet", default_branch])
+                branch = default_branch
+            else:
+                branch_result = client.git(checkout, ["symbolic-ref", "--short", "HEAD"])
+                branch = branch_result.stdout.strip()
+                if not branch:
+                    raise RuntimeError("could not identify the existing repository branch")
         else:
-            # A newly provisioned private repo can be completely empty.
+            # A newly provisioned private repo can be empty even if GitHub
+            # already reports its intended default-branch name.
             client.git(checkout, ["symbolic-ref", "HEAD", "refs/heads/main"])
             branch = "main"
 
