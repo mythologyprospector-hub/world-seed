@@ -142,6 +142,8 @@ The seed itself is bootstrap machinery, not userdata and not part of each projec
 
 Every recovery manifest must identify the preservation class, source of truth, capture time/revision, sensitivity, verification method, and restore action for each included item. The default project backup should contain the selective payload and manifest, not full repository clones/bundles/ZIPs. Full source snapshots are opt-in exceptions when the project has a documented reason. The factory must refuse destructive reset while required unique state is unclassified, missing, or unverified.
 
+The experimental [PROJECT_TREE_RECOVERY.md](PROJECT_TREE_RECOVERY.md) helper supports a reviewed, explicit set of top-level project roots when a source-tree rehearsal is needed. It is not the default userdata payload and does not replace preservation-class decisions, Git history capture, GitHub operating-record exports, or a restore test. Include only roots approved for that rehearsal; review its `not_captured` and `exclusions` manifest entries before relying on it. Do not treat its existence or synthetic CI result as authorization to reset or delete a real project.
+
 ## Local factory bootstrap status
 
 The first local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented in `scripts/install_local_factory.sh`. It installs a versioned local bootstrap and saves a private machine profile. It is deliberately not yet the full factory: project-specific userdata collection, private profile restoration, API/BUS wiring, secure delivery, repository regeneration, and a clean-environment end-to-end recovery acceptance drill remain open gates.
