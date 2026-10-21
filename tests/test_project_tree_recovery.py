@@ -65,6 +65,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             (source / "src").mkdir(parents=True)
             (source / "README.md").write_text("keep", encoding="utf-8")
             (source / "src" / "generated.txt").write_text("exclude", encoding="utf-8")
+            (source / "not-selected.txt").write_text("not selected", encoding="utf-8")
             payload = root / "payload"
             manifest = RECOVERY.capture(source, payload, ["README.md", "src"], ["src/generated.txt"])
             self.assertEqual(manifest["exclusions"], [{
@@ -73,6 +74,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             }])
             self.assertFalse((payload / "src" / "generated.txt").exists())
             self.assertTrue((payload / "src").is_dir())
+            self.assertEqual(manifest["not_captured"], [{"path": "not-selected.txt", "reason": "not selected by explicit capture roots"}])
 
     def test_capture_refuses_symlinks_and_credential_like_paths(self):
         with tempfile.TemporaryDirectory() as temporary:
