@@ -205,3 +205,8 @@ The Intake Dock's **local workspace structure** is regenerable from `INTAKE_DOCK
 ## Private Intake Dock provisioning gate
 
 The local Dock structure and remote repository container are separate regenerable layers. `scripts/provision_intake_dock.py` is dry-run by default; its live path requires an exact target confirmation, verifies the authenticated personal-account owner, creates only a private repository if absent, and re-reads it to verify persisted visibility. It refuses an existing public repository and fails closed on permission/authentication errors. This helper is not yet integrated into the factory installer and does not upload preserved userdata, initialize remote project lanes, or establish Codex handoff. Those are separate capabilities and must pass mocked tests and a synthetic end-to-end transfer drill before any real user data is sent. No live repo creation or transfer is implied by a successful dry run or unit test.
+
+
+## Intake Dock handoff package boundary
+
+The local `scripts/package_intake_dock_handoff.py` packages only explicitly selected files, records provenance metadata and SHA-256 hashes, and verifies the resulting ZIP. It never changes source files and marks the package `not_uploaded`. Its credential checks are heuristic rather than comprehensive. A generated archive is a transport candidate, not a backup or a transfer: preserve original sources, review the manifest and contents, and require a separate explicit target/authorization gate for any future remote upload.
