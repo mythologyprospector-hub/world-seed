@@ -23,6 +23,7 @@ class LocalFactoryInstallerTests(unittest.TestCase):
         self.assertIn("chmod 600", source)
         self.assertIn("remote_delivery", source)
         self.assertIn("api_bus_changes", source)
+        self.assertIn('git -C "$SOURCE_ROOT" archive "$REV"', source)
         self.assertNotIn("gh auth token", source)
         self.assertNotIn("git push", source)
 
@@ -37,15 +38,41 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             subprocess.run(["git", "-C", str(checkout), "config", "user.name", "Factory Test"], check=True)
             subprocess.run(["git", "-C", str(checkout), "add", "."], check=True)
             subprocess.run(["git", "-C", str(checkout), "commit", "-qm", "fixture"], check=True)
+
+            fake_bin = root / "fake-bin"
+            fake_bin.mkdir()
+            fake_uv = fake_bin / "uv"
+            fake_uv.write_text(
+                "#!/usr/bin/env bash\n"
+                "set -e\n"
+                "if [[ \"$1\" == \"venv\" ]]; then\n"
+                "  shift; [[ \"$1\" != \"--python\" ]] || shift 2\n"
+                "  exec python3 -m venv \"$1\"\n"
+                "fi\n"
+                "if [[ \"$1\" == \"pip\" && \"$2\" == \"install\" ]]; then exit 0; fi\n"
+                "exit 2\n",
+                encoding="utf-8",
+            )
+            fake_uv.chmod(0o755)
             home = root / "home"
             home.mkdir()
             factory_home = root / "installed-factory"
             state_home = root / "private-state"
             environment = os.environ.copy()
-            environment.update({"HOME": str(home), "WORLD_SEED_FACTORY_HOME": str(factory_home), "WORLD_SEED_STATE_HOME": str(state_home)})
-            result = subprocess.run(["bash", str(checkout / "scripts" / "install_local_factory.sh")], cwd=checkout, env=environment, check=False, capture_output=True, text=True, timeout=20)
+            environment.update({
+                "HOME": str(home),
+                "PATH": f"{fake_bin}:{environment['PATH']}",
+                "WORLD_SEED_FACTORY_HOME": str(factory_home),
+                "WORLD_SEED_STATE_HOME": str(state_home),
+            })
+            result = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=environment, check=False, capture_output=True, text=True, timeout=30,
+            )
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertTrue((factory_home / "current" / "collect_machine_profile.py").is_file())
+            self.assertTrue((factory_home / "current" / "scripts" / "collect_machine_profile.py").is_file())
+            self.assertTrue((factory_home / "current" / "scripts" / "export_github_operating_records.py").is_file())
+            self.assertTrue((factory_home / "current" / ".venv" / "bin" / "python").is_file())
             reports = list(state_home.glob("machine-profile-*.json"))
             manifests = list(state_home.glob("install-*.tsv"))
             self.assertEqual(len(reports), 1)
