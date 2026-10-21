@@ -42,8 +42,10 @@ def source_revision(repository_root: Path) -> str:
             timeout=5,
         )
     except (OSError, subprocess.SubprocessError):
-        return "unknown"
-    revision = result.stdout.strip()
+        # Installed releases are archived under their exact commit SHA and have no .git directory.
+        revision = repository_root.name
+    else:
+        revision = result.stdout.strip()
     return revision if re.fullmatch(r"[0-9a-f]{40,64}", revision) else "unknown"
 
 
