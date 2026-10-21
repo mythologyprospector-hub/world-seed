@@ -85,7 +85,7 @@ class IntakeDockMaterializerTests(unittest.TestCase):
                 link.symlink_to(actual, target_is_directory=True)
             except (OSError, NotImplementedError):
                 self.skipTest("symlinks unavailable")
-            with self.assertRaisesRegex(ValueError, "must not be a symlink"):
+            with self.assertRaisesRegex(ValueError, "symlink at Intake Dock destination"):
                 DOCK.materialize(TEMPLATES, link, "episteme")
 
     def test_refuses_template_conflict_before_creating_lane_paths(self):
