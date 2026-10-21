@@ -69,6 +69,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         remote_values = (args.remote_dock_owner, args.remote_dock_repository, args.remote_dock_confirm_target)
         remote_set = any(value is not None and value != "" for value in remote_values)
         if remote_set:
+            if not dock_set:
+                raise ValueError("remote Intake Dock provisioning also requires a configured local Dock destination and lane")
             if not all(value is not None and value != "" for value in remote_values):
                 raise ValueError("remote Intake Dock provisioning requires owner, repository, and exact confirmation together")
             target = remote_dock._validate_target(args.remote_dock_owner, args.remote_dock_repository)
