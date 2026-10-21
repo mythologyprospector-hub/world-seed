@@ -115,10 +115,10 @@ fi
 
 # Provision the exact owner-approved private remote only after local preflight and release preparation.
 if [[ -n "$INTAKE_DOCK_REMOTE_OWNER" ]]; then
-  "$RELEASE/.venv/bin/python" "$RELEASE/scripts/provision_intake_dock.py" \\
-    --owner "$INTAKE_DOCK_REMOTE_OWNER" \\
-    --repo "$INTAKE_DOCK_REMOTE_REPOSITORY" \\
-    --apply \\
+  "$RELEASE/.venv/bin/python" "$RELEASE/scripts/provision_intake_dock.py" \
+    --owner "$INTAKE_DOCK_REMOTE_OWNER" \
+    --repo "$INTAKE_DOCK_REMOTE_REPOSITORY" \
+    --apply \
     --confirm-target "$INTAKE_DOCK_REMOTE_CONFIRM_TARGET"
   INTAKE_DOCK_REMOTE_STATUS="verified_private"
 fi
