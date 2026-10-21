@@ -4,13 +4,16 @@
 
 ## What this increment does
 
-The script at scripts/project_tree_recovery.py recursively captures a project directory into a new payload and restores it to a new isolated destination. The payload manifest records relative paths, file sizes, SHA-256 hashes, executable-bit status, directory paths (including empty directories), and explicit exclusions. Restore validates the manifest, checks that the payload contains exactly the declared paths, verifies payload hashes, stages the restore, independently verifies restored bytes, and refuses to overwrite an existing destination.
+The script at scripts/project_tree_recovery.py recursively captures only explicitly selected top-level files and directories into a new payload and restores it to a new isolated destination. This is deliberate: a capture cannot silently mean “copy everything.” The manifest records top-level entries that were not selected as well as explicit exclusions. The payload manifest records relative paths, file sizes, SHA-256 hashes, executable-bit status, directory paths (including empty directories), and explicit exclusions. Restore validates the manifest, checks that the payload contains exactly the declared paths, verifies payload hashes, stages the restore, independently verifies restored bytes, and refuses to overwrite an existing destination.
 
 Run from a trusted checkout:
 
     python scripts/project_tree_recovery.py capture \
       --source "$HOME/projects/REVIEWED-PROJECT" \
-      --output "$HOME/private-recovery/payloads/REVIEWED-PROJECT-tree-001"
+      --output "$HOME/private-recovery/payloads/REVIEWED-PROJECT-tree-001" \
+      --include README.md \
+      --include src \
+      --include tests
     python scripts/project_tree_recovery.py restore \
       --payload "$HOME/private-recovery/payloads/REVIEWED-PROJECT-tree-001" \
       --destination "$HOME/private-recovery/restore-tests/REVIEWED-PROJECT-tree-001"
@@ -19,16 +22,16 @@ Replace example paths only after reviewing the target and storage permissions. D
 
 ## Inclusion and exclusion contract
 
-- Ordinary regular files are included recursively, including nested source, binary assets, dotfiles, and empty directories.
+- Ordinary regular files are included recursively beneath each explicitly named top-level file/directory, including nested source, binary assets, dotfiles, and empty directories. Include roots must be direct children of the project root; select each root deliberately.
 - .git directories are explicitly excluded and recorded. Git history, refs, remotes, and working-tree/index state are a separate recovery category; use an independently verified Git bundle/clone rather than treating a filesystem tree as Git history.
-- The --exclude option excludes an exact relative path and records it in the manifest. Excluding a directory excludes its contents; the containing directory may remain if it is otherwise present.
+- The --exclude option excludes an exact relative path and records it in the manifest. Excluding a directory excludes its contents; the containing directory may remain if it is otherwise present. Top-level paths not selected by --include are recorded as not_captured.
 - Symlinks and special files are rejected rather than followed. Credential-like paths (including .env names) are rejected; review file contents too, because filenames cannot establish that a file contains no secret.
 - Payload and restore destinations must be new and may not overlap the source/payload. POSIX payload files are owner-only; executable files retain only their executable bit. Ownership, timestamps, ACLs, extended attributes, hard-link relationships, and exact permission modes are not preserved.
 - The manifest and its hashes detect accidental or unsophisticated alteration, but are not a cryptographic signature or proof that the original inventory was complete.
 
 ## Verification
 
-The unit tests cover nested paths, binary data, empty directories, executable status, explicit exclusions, symlink/credential-like refusal, manifest traversal, tampering, unexpected payload entries, and no-overwrite behavior. The CLI drill uses a temporary synthetic tree and independently compares SHA-256 hashes. CI success is evidence for these tests only; it is not a live-project recovery test.
+The unit tests cover nested paths, binary data, empty directories, executable status, explicit selection and omissions, exclusions, symlink/credential-like refusal, manifest traversal, tampering, unexpected payload entries, and no-overwrite behavior. The CLI drill uses a temporary synthetic tree and independently compares SHA-256 hashes. CI success is evidence for these tests only; it is not a live-project recovery test.
 
 ## Still required before acceptance
 
