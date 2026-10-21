@@ -218,3 +218,6 @@ The separate `scripts/transfer_intake_dock_handoff.py` validates a manifest-back
 
 
 The synthetic Intake Dock acceptance test `tests/test_intake_dock_synthetic_handoff.py` exercises packaging, transfer, Git commit/push to a local bare repository, checkout verification, receipt/hash binding, idempotent rerun, and wrong-owner refusal. It uses synthetic data and local Git only. It is not evidence of a successful live GitHub transfer, remote Codex discovery, or full post-wipe recovery.
+
+
+The factory installer now has an opt-in local Intake Dock regeneration step controlled by `WORLD_SEED_INTAKE_DOCK_DESTINATION` and `WORLD_SEED_INTAKE_DOCK_LANE`. It records only whether the Dock was locally materialized, not its private destination path. This regenerates folders and generic instructions, not the remote repository, staged files, personal data, or Codex access. Remote provisioning and transfer remain separate explicit actions.
