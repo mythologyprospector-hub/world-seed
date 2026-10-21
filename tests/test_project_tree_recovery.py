@@ -104,7 +104,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             (source / "nested" / "file.txt").write_text("ok", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "must not contain one another"):
                 RECOVERY.capture(source, source / "payload", ["nested"])
-            with self.assertRaisesRegex(ValueError, "unique safe relative paths"):
+            with self.assertRaisesRegex(ValueError, "direct-child file/directory roots"):
                 RECOVERY.capture(source, root / "payload", ["../outside"])
 
     def test_restore_rejects_tampering_unexpected_entries_and_existing_destination(self):
