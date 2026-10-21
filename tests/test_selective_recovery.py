@@ -12,6 +12,16 @@ assert SPEC and SPEC.loader
 RECOVERY = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(RECOVERY)
 
+GENERATOR_SPEC = importlib.util.spec_from_file_location("create_project", ROOT / "scripts" / "create_project.py")
+assert GENERATOR_SPEC and GENERATOR_SPEC.loader
+GENERATOR = importlib.util.module_from_spec(GENERATOR_SPEC)
+GENERATOR_SPEC.loader.exec_module(GENERATOR)
+
+LIBRARY_SPEC = importlib.util.spec_from_file_location("project_library", ROOT / "scripts" / "project_library.py")
+assert LIBRARY_SPEC and LIBRARY_SPEC.loader
+LIBRARY = importlib.util.module_from_spec(LIBRARY_SPEC)
+LIBRARY_SPEC.loader.exec_module(LIBRARY)
+
 
 class SelectiveRecoveryTests(unittest.TestCase):
     def test_capture_restore_and_hashes_match_in_new_destination(self):
@@ -126,6 +136,44 @@ class SelectiveRecoveryTests(unittest.TestCase):
             before = {path.name: path.read_bytes() for path in source.iterdir()}
             RECOVERY.capture(source, root / "payload", ["README.md"])
             self.assertEqual(before, {path.name: path.read_bytes() for path in source.iterdir()})
+
+
+    def test_generated_project_manifest_survives_recovery_and_catalog_verifies(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source_root = root / "source-projects"
+            source_root.mkdir()
+            source = GENERATOR.create_project(
+                ROOT,
+                "recovery-fixture",
+                "Prove generated projects survive verified recovery.",
+                source_root / "recovery-fixture",
+                revision="c" * 40,
+            )
+            included = [*GENERATOR.PROJECT_FILES, "world-seed-manifest.json"]
+            payload = root / "private-payload"
+            RECOVERY.capture(source, payload, included)
+            payload_manifest = json.loads(
+                (payload / RECOVERY.PAYLOAD_MANIFEST).read_text(encoding="utf-8")
+            )
+            self.assertEqual({entry["path"] for entry in payload_manifest["files"]}, set(included))
+
+            restored_root = root / "restored-projects"
+            restored = restored_root / "recovery-fixture"
+            RECOVERY.restore(payload, restored)
+            for name in included:
+                self.assertEqual((restored / name).read_bytes(), (source / name).read_bytes(), name)
+
+            catalog = LIBRARY.build_catalog([restored_root])
+            self.assertEqual(catalog["project_count"], 1)
+            record = catalog["projects"][0]
+            self.assertEqual(record["status"], "generated-files-match")
+            self.assertEqual(record["verification"], "generated-files-match-manifest")
+            self.assertEqual(record["source_revision"], "c" * 40)
+            self.assertEqual(
+                json.loads((restored / "world-seed-manifest.json").read_text(encoding="utf-8"))["generated_files"],
+                sorted(GENERATOR.PROJECT_FILES),
+            )
 
 
 if __name__ == "__main__":
