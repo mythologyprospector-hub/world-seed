@@ -46,6 +46,8 @@ REQUIRED_FILES = (
     "MACHINE_PROFILE.md",
     "FACTORY_INSTALLER.md",
     "scripts/install_local_factory.sh",
+    "scripts/materialize_profile_packages.py",
+    "tests/test_materialize_profile_packages.py",
     "scripts/collect_machine_profile.py",
     "BASH_PROMPT.md",
     "RECOVERY.md",
