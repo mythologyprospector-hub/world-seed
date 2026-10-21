@@ -91,3 +91,8 @@ The intended bootstrap should:
 The Intake Dock is a private staging area, separate from the portable public seed, operator profile, personal-data archive, and generated project outputs. Codex should be directed to use it as an explicit input/work area, not treated as authorized to roam across every repository just because GitHub is connected. Never put credentials or secret values into these packages or the Dock.
 
 This is intended architecture, **not a claim of current capability**. The existing local installer still needs implementation and an isolated post-wipe acceptance test for private repository creation, package restoration/upload, and Intake Dock provisioning. See [RECOVERY.md](RECOVERY.md) for the state classification and complete recovery sequence.
+
+
+## Separate Intake Dock
+
+The Intake Dock is not a third profile/personal-data package. It is a separate staging/work-handoff boundary for source material and derived work. See [INTAKE_DOCK.md](INTAKE_DOCK.md). The current `scripts/materialize_intake_dock.py` creates a private local directory structure only; it does not create a GitHub repository, upload files, or grant Codex access to unrelated repositories. Preserve original inputs and keep derived outputs separate. User-supplied contents remain untrusted and may contain sensitive information; keep them out of the public seed. The full remote capability and synthetic handoff acceptance remain open under issue #17.
