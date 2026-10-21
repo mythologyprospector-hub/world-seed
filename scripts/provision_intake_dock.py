@@ -13,12 +13,16 @@ import re
 import subprocess
 from typing import Any, Protocol, Sequence
 
-OWNER_PATTERN = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?\\Z")
-REPO_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\\Z")
+OWNER_PATTERN = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?\Z")
+REPO_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,98}[a-z0-9])?\Z")
 
 
 class RepositoryNotFound(Exception):
     """GitHub explicitly reported that the exact repository does not exist."""
+
+
+class GitHubRequestError(RuntimeError):
+    """A bounded GitHub CLI failure with an optional HTTP status."""
 
 
 class GitHubClient(Protocol):
@@ -39,7 +43,10 @@ class GhCliClient:
         except (OSError, subprocess.TimeoutExpired) as exc:
             raise RuntimeError(f"GitHub CLI request failed: {type(exc).__name__}") from exc
         if result.returncode != 0:
-            raise RuntimeError("GitHub CLI request failed; inspect gh auth status and repository access")
+            # Retain only a parsed status code, not arbitrary CLI output.
+            status = 404 if re.search(r"\\b404\\b", result.stderr or "") else None
+            detail = "GitHub API returned HTTP 404" if status == 404 else "GitHub CLI request failed; inspect gh auth status and repository access"
+            raise GitHubRequestError(detail)
         return result.stdout
 
     def authenticated_login(self) -> str:
@@ -52,11 +59,10 @@ class GhCliClient:
     def get_repository(self, full_name: str) -> dict[str, Any]:
         try:
             output = self._run(["api", f"repos/{full_name}"])
-        except RuntimeError as exc:
-            # Only a clear HTTP 404 is interpreted as absent. Permission and
+        except GitHubRequestError as exc:
+            # Only an explicit 404 is interpreted as absent. Permission and
             # authentication errors fail closed rather than triggering creation.
-            message = str(exc)
-            if "HTTP 404" in message:
+            if "HTTP 404" in str(exc):
                 raise RepositoryNotFound(full_name) from exc
             raise
         value = json.loads(output)
