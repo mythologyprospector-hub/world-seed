@@ -13,9 +13,9 @@ Jimmy has explicitly changed direction toward a mostly clean GitHub reboot after
 **The only repositories currently designated to survive the reset are these four. Treat this list as the authorized target state, not as permission to delete anything before the recovery gates and human authorization are satisfied.**
 
 1. **`world-seed` — the factory blueprint.** Portable constitution, governance, bootstrap, account/machine discovery, audit, verification, backup, recovery, and the mechanisms that coordinate the whole ecosystem.
-2. **`project_seed` (the existing repository referred to here as “project-seed”) — the history and gleaning workshop.** Retain it for its history and for extracting useful, proven patterns and lessons. Its historical contents are source material to evaluate, not automatically active factory machinery.
-3. **`operator-profile` — the operator-specific package.** Preferences, local operating context, and other operator configuration that must not contaminate the portable public core.
-4. **`personal-data` — the personal-data package.** Personal records and information that must remain separate from public infrastructure and be protected according to their sensitivity.
+2. **`project_seed` (called “project-seed” in conversation) — the history and gleaning workshop.** Retain it for its history and for extracting useful, proven patterns and lessons. Its historical contents are source material to evaluate, not automatically active factory machinery.
+3. **Private operator-configuration repository.** Preserve the operator-specific preferences and local operating context without contaminating the portable public core. Its exact repository identifier belongs only in the private recovery inventory.
+4. **Private personal-records repository.** Preserve personal records separately from public infrastructure and protect them according to their sensitivity. Its exact repository identifier belongs only in the private recovery inventory.
 
 Together, these are the **foundation, wiring, plumbing, and user/vendor add-ons inside a GitHub shell**. That is the factory to finish.
 
