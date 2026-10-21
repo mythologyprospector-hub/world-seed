@@ -111,6 +111,10 @@ REQUIRED_FILES = (
     "scripts/transfer_intake_dock_handoff.py",
     "tests/test_transfer_intake_dock_handoff.py",
     "tests/test_intake_dock_synthetic_handoff.py",
+    "PROJECT_TREE_RECOVERY.md",
+    "scripts/project_tree_recovery.py",
+    "scripts/run_project_tree_recovery_drill.py",
+    "tests/test_project_tree_recovery.py",
 )
 
 def validate(root: Path) -> list[str]:
