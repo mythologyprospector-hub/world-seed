@@ -40,5 +40,7 @@ jobs:
         run: python scripts/validate_audit_findings.py templates/audit-finding.template.json
       - name: Validate template against the full JSON Schema
         run: python scripts/validate_audit_schema.py templates/audit-finding.template.json
+      - name: Run bounded local recovery drill
+        run: python scripts/run_local_recovery_drill.py
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
