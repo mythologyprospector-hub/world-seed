@@ -85,7 +85,7 @@ def render_project(
     rendered: dict[str, str] = {}
     for name in PROJECT_FILES:
         if name == "MISSION.md":
-            rendered[name] = mission_template.replace(MISSION_MARKER, mission)
+            rendered[name] = mission_template.replace(MISSION_MARKER, f"**{mission}**")
         elif name == "README.md":
             readme = (template_root / name).read_text(encoding="utf-8")
             if "{{PROJECT_NAME}}" not in readme or "{{MISSION}}" not in readme:
