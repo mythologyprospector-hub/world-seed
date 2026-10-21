@@ -1,6 +1,8 @@
 """Mock-only tests for guarded Intake Dock GitHub repository provisioning."""
 import importlib.util
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -87,6 +89,17 @@ class ProvisioningTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact requested target"):
             MODULE.provision(client, "mythologyprospector-hub", "intake-dock", apply=True,
                              confirmed_target="mythologyprospector-hub/intake-dock")
+
+    def test_gh_adapter_treats_only_http_404_as_missing(self):
+        missing = SimpleNamespace(returncode=1, stdout="", stderr="HTTP 404 Not Found")
+        with patch.object(MODULE.subprocess, "run", return_value=missing):
+            with self.assertRaises(MODULE.RepositoryNotFound):
+                MODULE.GhCliClient().get_repository("mythologyprospector-hub/not-created")
+
+        forbidden = SimpleNamespace(returncode=1, stdout="", stderr="HTTP 403 Forbidden")
+        with patch.object(MODULE.subprocess, "run", return_value=forbidden):
+            with self.assertRaisesRegex(RuntimeError, "request failed"):
+                MODULE.GhCliClient().get_repository("mythologyprospector-hub/not-created")
 
     def test_invalid_names_and_path_traversal_are_refused(self):
         client = FakeGitHub()
