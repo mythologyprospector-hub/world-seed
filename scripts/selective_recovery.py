@@ -35,7 +35,7 @@ def safe_name(name: str) -> bool:
         and len(path.parts) == 1
         and "/" not in name
         and "\\" not in name
-        and name not in {".", "..", PAYLOAD_MANIFEST, "world-seed-manifest.json"}
+        and name not in {".", "..", PAYLOAD_MANIFEST}
         and not name.startswith(".")
         and not any(word in folded for word in SECRET_WORDS)
         and "\x00" not in name
