@@ -11,11 +11,12 @@ It is deliberately **mission-portable and operator-aware**:
 
 ## Start here
 
-1. Give the AI builder the repository URL and the instructions in [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md).
-2. The builder reads [AGENTS.md](AGENTS.md), [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), [BOOTSTRAP.md](BOOTSTRAP.md), and [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md).
-3. It inspects the target account and environment before changing anything.
-4. It prepares an evidence-backed plan and proceeds within the authority already granted, stopping only at real approval gates.
-5. It leaves durable records and verifies what it actually did.
+1. Read [STOP_AND_READ_THIS_FIRST.md](STOP_AND_READ_THIS_FIRST.md) before acting; load the authorized private operator configuration for account-specific mission and recovery scope.
+2. Give the AI builder the repository URL and the instructions in [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md).
+3. The builder reads [AGENTS.md](AGENTS.md), [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), [BOOTSTRAP.md](BOOTSTRAP.md), and [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md).
+4. It inspects the target account and environment before changing anything.
+5. It prepares an evidence-backed plan and proceeds within the authority already granted, stopping only at real approval gates.
+6. It leaves durable records and verifies what it actually did.
 
 ## Contents
 
