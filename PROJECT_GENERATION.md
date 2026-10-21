@@ -27,13 +27,14 @@ The generator creates:
 
 - `MISSION.md` — the shared discovery method with the supplied mission sentence.
 - `AGENTS.md`, `CONSTITUTION.md`, and `HUMAN.md` — project operating rules and human/AI working boundaries.
+- `LICENSE` — the MIT license template with copyright placeholders that must be completed from the authorized owner profile before publication.
 - `DOCS.md` — documentation conventions.
 - `MACHINE.md` — a portable placeholder for facts to be discovered locally; no Bucky-specific values are embedded.
 - `ORGANS.md` — conditional integration guidance that requires checking actual contracts.
 - `README.md` — project entry point.
 - `world-seed-manifest.json` — template version, source revision, mission, generated-file inventory, and generation timestamp.
 
-The manifest records the initial generated bundle, not future changes to it. It excludes itself from its own generated-file list. A later Project Library capability must independently capture the manifest and selected user data, preserve revisions, and verify reconstruction.
+The generated `LICENSE` deliberately retains `<YEAR>` and `<COPYRIGHT HOLDER>` placeholders because this portable generator does not yet load an authorized operator profile. Complete those fields accurately before publication; do not guess ownership. The manifest records the initial generated bundle, not future changes to it. It excludes itself from its own generated-file list. A later Project Library capability must independently capture the manifest and selected user data, preserve revisions, and verify reconstruction.
 
 ## Verification and limits
 
