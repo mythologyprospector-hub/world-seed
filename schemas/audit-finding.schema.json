@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:world-seed:schema:audit-finding:v1",
+  "title": "World-seed audit finding",
+  "description": "Portable, evidence-backed record for an audit finding. Store records according to the target ecosystem's privacy and access controls.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "finding_id",
+    "title",
+    "scope",
+    "severity",
+    "confidence",
+    "status",
+    "affected_assets",
+    "impact",
+    "evidence",
+    "owner",
+    "first_observed",
+    "last_reviewed",
+    "remediation",
+    "verification"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "pattern": "^AUDIT-[A-Z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "enum": ["repository", "cross-repository", "account"]
+    },
+    "severity": {
+      "enum": ["critical", "high", "medium", "low"]
+    },
+    "confidence": {
+      "enum": ["confirmed", "high", "medium", "low", "suspected"]
+    },
+    "status": {
+      "enum": [
+        "observed",
+        "triaged",
+        "accepted-risk",
+        "planned",
+        "in-progress",
+        "fixed-unverified",
+        "verified-resolved",
+        "blocked",
+        "reopened"
+      ]
+    },
+    "affected_assets": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "impact": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "observed_at"],
+        "properties": {
+          "description": {"type": "string", "minLength": 1},
+          "uri": {"type": ["string", "null"], "format": "uri-reference"},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "commit": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "first_observed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "remediation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["next_action"],
+      "properties": {
+        "next_action": {"type": "string", "minLength": 1},
+        "issue_url": {"type": ["string", "null"], "format": "uri"},
+        "pull_request_url": {"type": ["string", "null"], "format": "uri"},
+        "accepted_risk_rationale": {"type": ["string", "null"]},
+        "review_by": {"type": ["string", "null"], "format": "date"}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified", "evidence"],
+      "properties": {
+        "verified": {"type": "boolean"},
+        "evidence": {"type": "array", "items": {"type": "string"}},
+        "verified_at": {"type": ["string", "null"], "format": "date-time"},
+        "verified_by": {"type": ["string", "null"]}
+      }
+    },
+    "related_findings": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^AUDIT-[A-Z0-9-]+$"},
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "verified-resolved"}}},
+      "then": {
+        "properties": {
+          "verification": {
+            "required": ["verified", "evidence", "verified_at"],
+            "properties": {
+              "verified": {"const": true},
+              "evidence": {"minItems": 1},
+              "verified_at": {"type": "string", "format": "date-time"}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "accepted-risk"}}},
+      "then": {
+        "properties": {
+          "remediation": {
+            "required": ["accepted_risk_rationale", "review_by"],
+            "properties": {
+              "accepted_risk_rationale": {"type": "string", "minLength": 1},
+              "review_by": {"type": "string", "format": "date"}
+            }
+          }
+        }
+      }
+    }
+  ]
+}
