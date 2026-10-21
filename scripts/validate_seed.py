@@ -151,8 +151,7 @@ def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
     errors = validate(root)
     if errors:
-        print("
-".join(f"ERROR: {error}" for error in errors))
+        print("\n".join(f"ERROR: {error}" for error in errors))
         print(f"FAILED: {len(errors)} issue(s) found.")
         return 1
     print(f"PASS: {len(REQUIRED_FILES)} required files and local Markdown links checked.")
