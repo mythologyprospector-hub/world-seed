@@ -39,9 +39,10 @@ def main() -> int:
             path.write_bytes(data)
         (source / ".git" / "must-not-copy").write_text("separate Git recovery", encoding="utf-8")
         (source / "omit.txt").write_text("explicitly excluded", encoding="utf-8")
+        (source / "unselected.txt").write_text("not selected for capture", encoding="utf-8")
         before = {name: sha(source / name) for name in expected}
         payload, restored = root / "private-payload", root / "restored"
-        capture_output = run(str(cli), "capture", "--source", str(source), "--output", str(payload), "--exclude", "omit.txt")
+        capture_output = run(str(cli), "capture", "--source", str(source), "--output", str(payload), "--include", "README.md", "--include", "src", "--include", "empty", "--include", "assets.bin", "--exclude", "omit.txt")
         manifest = json.loads((payload / "project-tree-recovery.json").read_text(encoding="utf-8"))
         if {entry["path"] for entry in manifest["files"]} != set(expected):
             raise RuntimeError("manifest file inventory differs from expected fixture")
@@ -49,6 +50,8 @@ def main() -> int:
             raise RuntimeError("Git metadata exclusion was not recorded")
         if not any(entry["path"] == "omit.txt" for entry in manifest["exclusions"]):
             raise RuntimeError("explicit exclusion was not recorded")
+        if not any(entry["path"] == "unselected.txt" for entry in manifest["not_captured"]):
+            raise RuntimeError("unselected top-level file was not recorded")
         restore_output = run(str(cli), "restore", "--payload", str(payload), "--destination", str(restored))
         after = {name: sha(restored / name) for name in expected}
         if before != after:
