@@ -72,6 +72,14 @@ class CreateProjectTests(unittest.TestCase):
             with self.assertRaises(GENERATOR.ProjectGenerationError):
                 GENERATOR.create_project(ROOT, "new-project", "   ", destination)
 
+    def test_multiline_mission_and_invalid_revision_are_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "new-project"
+            with self.assertRaises(GENERATOR.ProjectGenerationError):
+                GENERATOR.create_project(ROOT, "new-project", "First line\\nSecond line", destination)
+            with self.assertRaises(GENERATOR.ProjectGenerationError):
+                GENERATOR.create_project(ROOT, "new-project", "A mission.", destination, revision="not-a-sha")
+
     def test_output_must_be_outside_factory_source_checkout(self):
         with self.assertRaises(GENERATOR.ProjectGenerationError):
             GENERATOR.create_project(
