@@ -21,6 +21,8 @@ REQUIRED_FILES = (
     "AUDIT_SYSTEM.md",
     "CONSISTENCY_STANDARD.md",
     "MACHINE_PROFILE.md",
+    "FACTORY_INSTALLER.md",
+    "scripts/install_local_factory.sh",
     "scripts/collect_machine_profile.py",
     "BASH_PROMPT.md",
     "RECOVERY.md",
@@ -67,6 +69,7 @@ REQUIRED_FILES = (
     "tests/test_validate_audit_findings.py",
     "tests/test_validate_audit_schema.py",
     "tests/test_collect_machine_profile.py",
+    "tests/test_install_local_factory.py",
     "tests/test_validate_seed.py",
 )
 
@@ -94,7 +97,6 @@ def validate(root: Path) -> list[str]:
                 visible_lines.append("")
                 continue
             visible_lines.append("" if fenced else line)
-
         for line_number, line in enumerate(visible_lines, 1):
             if "](" not in line:
                 continue
