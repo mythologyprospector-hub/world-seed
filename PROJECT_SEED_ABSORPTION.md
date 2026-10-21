@@ -1,6 +1,6 @@
 # Project Seed Absorption Map
 
-**Status:** Proposed
+**Status:** In progress — source-level audit and final acceptance remain open
 **Governs:** The migration of reusable individual-project bootstrap capabilities into World Seed; the existing Project Seed repository remains preserved until acceptance gates pass.
 **Last verified:** 2026-10-21
 
@@ -48,6 +48,32 @@ Source inspected: `mythologyprospector-hub/project_seed`, default branch `main`,
 7. Demonstrate a fresh builder can generate and validate a project from World Seed alone.
 8. Only after the above evidence exists, recommend whether to archive Project Seed. Do not delete it or rewrite its history as part of this work.
 
+## Source-level audit update — 2026-10-21
+
+The following repository state has now been inspected directly:
+
+- Project Seed default-branch tree and latest source commit: `e5f9cc7d5b7962b8fcbb16ab9b3d1e9ee2d2dbe2`.
+- World Seed default-branch generator, templates, installer, profile-package materializer, recovery tooling, canon, and project lifecycle documentation.
+- Project Seed's full file inventory, the headings/structure of its 54 KB `AGENTS.md`, its human/machine contracts, Organs contract, documentation standard, seed-sync policy/workflow, and worktree lifecycle rules.
+
+### Evidence-backed disposition
+
+| Source capability | World Seed evidence | Current finding |
+|---|---|---|
+| Generate a project without cloning Project Seed | `scripts/create_project.py`, `templates/project/`, `PROJECT_GENERATION.md`, and passing generated-project recovery drill | **Implemented and synthetically tested.** Does not by itself prove every policy in Project Seed has been reconciled. |
+| Human/assistant/implementation-agent division of labor; Genie Principle; Miracle Tokens; Fun Rule; Project-First Rule; Dots Principle | `AGENTS.md`, `HUMAN.md`, `CONSTITUTION.md`, `ONBOARDING_PROMPT.md` | **Substantially represented in the factory canon.** Final semantic diff is still required; do not infer exact equivalence from matching headings or terms. |
+| Portable vs operator-specific machine context | `MACHINE_PROFILE.md`, `PROFILE_PACKAGES.md`, operator-profile templates | **Boundary represented.** Project Seed's `MACHINE.md` contains Bucky-specific paths and must not be copied verbatim into the public seed. |
+| Organs is shared external infrastructure, used only when fit | `ORGANS.md`, generated `templates/project/ORGANS.md` | **Contract represented.** Organs implementation is not to be absorbed into World Seed; its necessity remains project-dependent. |
+| Documentation style and drift controls | `CONSISTENCY_STANDARD.md` and current repository documentation | **Candidate equivalent exists.** Finish clause-by-clause reconciliation of `DOCS.md`, including social-preview requirements and status language. |
+| Worktree discovery, active register, preservation, safe retirement | Newly added `WORKTREE_LIFECYCLE.md`, adapted from the source contract to avoid hardcoding Bucky's paths | **Transferred to World Seed in this branch; pending CI/review and canonical-link integration.** |
+| Project Seed sync workflow and target list | Source `.github/workflows/project-seed-sync.yml` and `SEED_SYNC.md` | **Not to be copied.** It uses a broad cross-repository token and target-specific root-file mappings. Before Project Seed retirement, record whether any required target still depends on it, disable/retire the automation safely, and verify no required project relies on future upstream sync. Never reproduce its token or write authority in the public seed. |
+| License, provenance, and history | Source `LICENSE` and Git history | **History remains valuable provenance.** Do not rewrite or delete it as part of absorption. Confirm attribution/license handling for any material actually copied. |
+| Unique lessons and latest operating rules | Source commit history through `e5f9cc7`, including October 19 Rule #2 / Project-First Rule update | **Review required.** The recent history shows that reading only an old snapshot would miss important rules; the comparison must use the recorded source commit and check for later changes immediately before final acceptance. |
+
+This is a scoped audit, not a claim that every paragraph in the large source constitution has already been proven equivalent. The remaining work is a semantic coverage review of each source document, a check of automation dependencies, and final acceptance against the gates below.
+
 ## Current state
 
-This map is a proposed migration contract. It does not claim that the generator, Project Library, or full recovery path already exists. The current local installer is only the first bootstrap layer; Bucky acceptance and isolated end-to-end recovery remain required.
+World Seed now has its own generator, templates, local Project Library, profile-package scaffolding, selective recovery, and isolated synthetic recovery drills. The protected-branch check on integrated `main` passed on 2026-10-21 (193 tests, both recovery drills, and 112 required-file/Markdown-link checks). This proves those specific tested paths only.
+
+Project Seed is **not yet cleared for retirement**. No repository deletion is authorized by this map. The next acceptance work is to finish the semantic comparison, verify the generated-project contract and source provenance, check the seed-sync workflow's remaining dependencies, and document any accepted omissions. Real Bucky recovery and private-data restoration remain separate gates.
