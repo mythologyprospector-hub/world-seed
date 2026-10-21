@@ -98,6 +98,12 @@ REQUIRED_FILES = (
     "tests/test_install_local_factory.py",
     "tests/test_verify_source_artifacts.py",
     "tests/test_validate_seed.py",
+    "INTAKE_DOCK.md",
+    "templates/intake-dock/README.md",
+    "templates/intake-dock/DROP_HERE.md",
+    "templates/intake-dock/manifest.json",
+    "scripts/materialize_intake_dock.py",
+    "tests/test_materialize_intake_dock.py",
 )
 
 def validate(root: Path) -> list[str]:

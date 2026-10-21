@@ -195,3 +195,8 @@ The factory should create or verify a dedicated private GitHub repository used a
 ### Current implementation status
 
 This section defines the intended architecture and acceptance target; it does not certify that the current installer already creates repositories, uploads profile/data packages, creates the Intake Dock, or completes an end-to-end post-wipe restore. Track those as implementation gates and prove them in an isolated recovery drill before claiming recovery readiness.
+
+
+## Intake Dock regeneration and preservation boundary
+
+The Intake Dock's **local workspace structure** is regenerable from `INTAKE_DOCK.md`, `templates/intake-dock/`, and `scripts/materialize_intake_dock.py`. The helper creates private local guidance plus an explicitly named `projects/<repo-slug>/{incoming,inventory,working,reports}` lane; it does not provision a GitHub repository or transfer data. Actual user-supplied files are userdata: preserve them separately with provenance and integrity evidence before any wipe. Recreating the folder tree or a future remote repository does not recover those files. Remote private-repository provisioning, target/visibility verification, upload/download, and a synthetic handoff drill remain open factory work tracked by issue #17. Never treat the local materializer as proof that the complete Intake Dock exists remotely or is available to Codex.
