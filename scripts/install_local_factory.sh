@@ -21,6 +21,13 @@ fi
 REV="$(git -C "$SOURCE_ROOT" rev-parse HEAD)"
 FACTORY_HOME="${WORLD_SEED_FACTORY_HOME:-$HOME/.local/share/world-seed-factory}"
 STATE_HOME="${WORLD_SEED_STATE_HOME:-$HOME/.local/state/world-seed-factory}"
+OPERATOR_PROFILE_DESTINATION="${WORLD_SEED_OPERATOR_PROFILE_DESTINATION:-}"
+PERSONAL_DATA_DESTINATION="${WORLD_SEED_PERSONAL_DATA_DESTINATION:-}"
+if [[ -n "$OPERATOR_PROFILE_DESTINATION" && -z "$PERSONAL_DATA_DESTINATION" ]] || [[ -z "$OPERATOR_PROFILE_DESTINATION" && -n "$PERSONAL_DATA_DESTINATION" ]]; then
+  printf 'ERROR: set both WORLD_SEED_OPERATOR_PROFILE_DESTINATION and WORLD_SEED_PERSONAL_DATA_DESTINATION, or neither.\\n' >&2
+  exit 2
+fi
+PROFILE_PACKAGES_STATUS="not_configured"
 RELEASE="$FACTORY_HOME/releases/$REV"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 REPORT="$STATE_HOME/machine-profile-$STAMP.json"
@@ -59,6 +66,13 @@ fi
 
 # "current" is a convenience pointer inside this installer's own directory.
 ln -sfn "releases/$REV" "$FACTORY_HOME/current"
+if [[ -n "$OPERATOR_PROFILE_DESTINATION" && -n "$PERSONAL_DATA_DESTINATION" ]]; then
+  "$RELEASE/.venv/bin/python" "$RELEASE/scripts/materialize_profile_packages.py" \
+    --template-root "$RELEASE/templates" \
+    --operator-destination "$OPERATOR_PROFILE_DESTINATION" \
+    --personal-data-destination "$PERSONAL_DATA_DESTINATION"
+  PROFILE_PACKAGES_STATUS="materialized"
+fi
 if [[ -e "$REPORT" || -L "$REPORT" || -e "$MANIFEST" || -L "$MANIFEST" ]]; then
   printf 'ERROR: generated output path already exists; refusing to overwrite.\n' >&2
   exit 2
@@ -72,6 +86,7 @@ fi
   printf 'machine_profile_report\t%s\n' "$REPORT"
   if [[ -d /srv/organs ]]; then printf 'organs_detected\tyes\n'; else printf 'organs_detected\tno\n'; fi
   printf 'remote_delivery\tnot_configured\n'
+  printf 'profile_packages\t%s\n' "$PROFILE_PACKAGES_STATUS"
   printf 'api_bus_changes\tnot_attempted\n'
 } > "$MANIFEST"
 chmod 600 "$REPORT" "$MANIFEST"
