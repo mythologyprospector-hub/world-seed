@@ -49,12 +49,20 @@ def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, 
         raise ValueError("lane must be a lowercase repository-style slug (letters, digits, hyphens)")
     templates = load_templates(template_root)
     destination = destination.expanduser().absolute()
-    _private_directory(destination, "Intake Dock destination")
+    if destination.exists():
+        _private_directory(destination, "Intake Dock destination")
+    else:
+        parent = destination.parent
+        if not parent.is_dir() or parent.is_symlink():
+            raise ValueError("Intake Dock parent must already exist and must not be a symlink")
+        if os.name == "posix" and stat.S_IMODE(parent.stat().st_mode) & 0o077:
+            raise ValueError("Intake Dock parent is not private; choose a private parent or secure it first")
 
     lane_root = destination / "projects" / lane
-    expected_dirs = [destination / "projects", lane_root, *(lane_root / name for name in LANE_DIRS)]
+    expected_dirs = [destination, destination / "projects", lane_root, *(lane_root / name for name in LANE_DIRS)]
     for directory in expected_dirs:
-        _private_directory(directory, f"Intake Dock directory: {directory.relative_to(destination)}")
+        if directory.exists():
+            _private_directory(directory, f"Intake Dock directory: {directory.relative_to(destination)}")
 
     missing_files: list[str] = []
     for name in DOCK_FILES:
@@ -77,9 +85,6 @@ def materialize(template_root: Path, destination: Path, lane: str) -> dict[str, 
                 created_dirs.append(directory)
             if os.name == "posix":
                 os.chmod(directory, 0o700)
-        if not destination.exists():
-            # A destination with missing ancestors is not silently created; keep path ownership explicit.
-            raise ValueError("Intake Dock destination must already exist or have an existing private parent")
         for name in missing_files:
             path = destination / name
             descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
