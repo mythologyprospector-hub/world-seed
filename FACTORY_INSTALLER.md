@@ -41,6 +41,16 @@ This first installer does **not** install or reconfigure Organs, start services,
 The next factory increment is to connect an owner-approved private destination and explicit data manifest to verified capture/restore. Do not upload raw machine profiles or private inventory to a public repository.
 
 
-## Intake Dock local scaffold (separate capability)
+## Intake Dock bootstrap (opt-in, local only)
 
-`scripts/materialize_intake_dock.py --destination "$HOME/private-intake-dock" --lane episteme` initializes local private staging folders and generic handoff instructions for the explicitly selected project lane (replace `episteme` with the intended lane slug). It is not yet called by `install_local_factory.sh`. The companion helpers now exist as separate building blocks: `scripts/provision_intake_dock.py` plans by default and can create/verify one private repository only with explicit exact-target confirmation; `scripts/package_intake_dock_handoff.py` creates a hash-verified local package from explicit files; `scripts/transfer_intake_dock_handoff.py` validates locally by default and requires explicit exact-target confirmation for a live transfer. The local synthetic package-to-Git round-trip is covered by `tests/test_intake_dock_synthetic_handoff.py`. None of these helpers is automatically invoked by the installer, and live GitHub transfer, remote Codex discovery, and post-wipe recovery acceptance remain unproven.
+The installer can regenerate the local Dock scaffold when both destination and lane are explicitly configured:
+
+```bash
+export WORLD_SEED_INTAKE_DOCK_DESTINATION="$HOME/private-intake-dock"
+export WORLD_SEED_INTAKE_DOCK_LANE="episteme"
+bash scripts/install_local_factory.sh
+```
+
+Replace the example destination and lane with the exact choices for this machine. Setting only one variable is an error. The install manifest records `intake_dock\tmaterialized_local_only` or `intake_dock\tnot_configured`; it does not record the private destination path. This step initializes folders and generic instructions only—it does not transfer content or create a remote repository.
+
+Separate helpers now exist: `scripts/provision_intake_dock.py` plans by default and can create/verify one private repository only with explicit exact-target confirmation; `scripts/package_intake_dock_handoff.py` creates a hash-verified local package from explicit files; `scripts/transfer_intake_dock_handoff.py` validates locally by default and requires explicit exact-target confirmation for a live transfer. The local synthetic package-to-Git round-trip is covered by `tests/test_intake_dock_synthetic_handoff.py`. Remote provisioning and transfer are not automatically invoked by the installer, and live GitHub transfer, remote Codex discovery, and post-wipe recovery acceptance remain unproven.
