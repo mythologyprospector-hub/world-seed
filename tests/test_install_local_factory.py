@@ -61,6 +61,8 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             environment = os.environ.copy()
             environment.pop("WORLD_SEED_OPERATOR_PROFILE_DESTINATION", None)
             environment.pop("WORLD_SEED_PERSONAL_DATA_DESTINATION", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_DESTINATION", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_LANE", None)
             environment.update({
                 "HOME": str(home),
                 "PATH": f"{fake_bin}:{environment['PATH']}",
@@ -94,6 +96,8 @@ class LocalFactoryInstallerTests(unittest.TestCase):
                 "WORLD_SEED_STATE_HOME": str(second_state_home),
                 "WORLD_SEED_OPERATOR_PROFILE_DESTINATION": str(operator_destination),
                 "WORLD_SEED_PERSONAL_DATA_DESTINATION": str(personal_destination),
+                "WORLD_SEED_INTAKE_DOCK_DESTINATION": str(root / "private-intake-dock"),
+                "WORLD_SEED_INTAKE_DOCK_LANE": "episteme",
             })
             configured_result = subprocess.run(
                 ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
@@ -103,12 +107,25 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             self.assertEqual(configured_result.returncode, 0, configured_result.stdout + configured_result.stderr)
             self.assertTrue((operator_destination / "PREFERENCES.md").is_file())
             self.assertTrue((personal_destination / "manifest.json").is_file())
+            dock_destination = root / "private-intake-dock"
+            self.assertTrue((dock_destination / "projects" / "episteme" / "incoming").is_dir())
+            self.assertTrue((dock_destination / "projects" / "episteme" / "inventory").is_dir())
             configured_manifests = list(second_state_home.glob("install-*.tsv"))
             self.assertEqual(len(configured_manifests), 1)
-            self.assertIn(
-                "profile_packages\tmaterialized",
-                configured_manifests[0].read_text(encoding="utf-8"),
+            configured_manifest = configured_manifests[0].read_text(encoding="utf-8")
+            self.assertIn("profile_packages\tmaterialized", configured_manifest)
+            self.assertIn("intake_dock\tmaterialized_local_only", configured_manifest)
+
+            incomplete_environment = configured_environment.copy()
+            incomplete_environment.pop("WORLD_SEED_INTAKE_DOCK_LANE", None)
+            incomplete_environment["WORLD_SEED_STATE_HOME"] = str(root / "state-incomplete-dock")
+            incomplete = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=incomplete_environment, check=False,
+                capture_output=True, text=True, timeout=30,
             )
+            self.assertEqual(incomplete.returncode, 2)
+            self.assertIn("set both WORLD_SEED_INTAKE_DOCK_DESTINATION and WORLD_SEED_INTAKE_DOCK_LANE", incomplete.stderr)
 
 
 if __name__ == "__main__":
