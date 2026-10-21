@@ -50,6 +50,7 @@ class SelectiveRecoveryTests(unittest.TestCase):
     def test_safe_name_rejects_portable_path_separators(self):
         self.assertFalse(RECOVERY.safe_name("nested/name.txt"))
         self.assertFalse(RECOVERY.safe_name("nested\\\\name.txt"))
+        self.assertTrue(RECOVERY.safe_name("world-seed-manifest.json"))
 
     def test_safe_name_rejects_nul_character(self):
         self.assertFalse(RECOVERY.safe_name("bad\x00name"))
