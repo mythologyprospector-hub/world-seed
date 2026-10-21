@@ -28,6 +28,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [BOOTSTRAP.md](BOOTSTRAP.md) — account-level discovery and genesis sequence.
 - [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md) — ecosystem vs project responsibilities and the factory boundary.
 - [PROJECT_SEED_ABSORPTION.md](PROJECT_SEED_ABSORPTION.md) — audited migration map and acceptance gates for absorbing Project Seed capabilities into the World Seed factory.
+- [RUNTIME_PLUMBING.md](RUNTIME_PLUMBING.md) — disposition and migration plan for Organs and other shared runtime capabilities under the local factory installer.
 - [PROJECT_GENERATION.md](PROJECT_GENERATION.md) — local project-generation interface, generated bundle, and current limitations.
 - [PROJECT_LIBRARY.md](PROJECT_LIBRARY.md) — private local catalog, project-integrity states, and explicit limits before backup/recovery can be claimed.
 - [AUTOMATION.md](AUTOMATION.md) — workflow and automation requirements.
