@@ -50,6 +50,9 @@ class FakeClient:
         subprocess.run(["git", "init", "-b", "main", str(destination)], check=True, capture_output=True)
         subprocess.run(["git", "-C", str(destination), "config", "user.name", "test"], check=True)
         subprocess.run(["git", "-C", str(destination), "config", "user.email", "test@example.invalid"], check=True)
+        remote = destination.parent / "remote.git"
+        subprocess.run(["git", "init", "--bare", str(remote)], check=True, capture_output=True)
+        subprocess.run(["git", "-C", str(destination), "remote", "add", "origin", str(remote)], check=True)
         (destination / "README.md").write_text("existing repository content", encoding="utf-8")
         subprocess.run(["git", "-C", str(destination), "add", "README.md"], check=True)
         subprocess.run(["git", "-C", str(destination), "commit", "-m", "seed"], check=True, capture_output=True)
@@ -90,6 +93,14 @@ class TransferPackageTests(unittest.TestCase):
             with zipfile.ZipFile(package, "a") as archive:
                 archive.writestr(payload_path, b"tampered")
             with self.assertRaisesRegex(ValueError, "duplicate ZIP entries"):
+                TRANSFER.validate_package(package, "owner/episteme")
+
+
+    def test_rejects_secret_material_even_if_package_manifest_hashes_match(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            package, _, _ = make_package(root, files=[("notes.txt", ("ghp_" + "A" * 36).encode())])
+            with self.assertRaisesRegex(ValueError, "GitHub token"):
                 TRANSFER.validate_package(package, "owner/episteme")
 
     def test_refuses_unsafe_manifest_path(self):
