@@ -44,7 +44,7 @@ class GhCliClient:
             raise RuntimeError(f"GitHub CLI request failed: {type(exc).__name__}") from exc
         if result.returncode != 0:
             # Retain only a parsed status code, not arbitrary CLI output.
-            status = 404 if re.search(r"\\b404\\b", result.stderr or "") else None
+            status = 404 if re.search(r"\b404\b", result.stderr or "") else None
             detail = "GitHub API returned HTTP 404" if status == 404 else "GitHub CLI request failed; inspect gh auth status and repository access"
             raise GitHubRequestError(detail)
         return result.stdout
