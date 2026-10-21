@@ -6,6 +6,7 @@ import sys
 REQUIRED_FILES = (
     ".github/workflows/world-seed-checks.yml",
     "MISSION.md",
+    "MISSION-RESET-AND-ACCEPTANCE.md",
     "PROFILE_PACKAGES.md",
     "templates/MISSION.md",
     "tests/test_mission_template.py",
