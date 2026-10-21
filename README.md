@@ -184,3 +184,7 @@ This is a first preservation pass, not a complete GitHub account export. It does
 ## Local factory bootstrap
 
 The first safe local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented by [scripts/install_local_factory.sh](scripts/install_local_factory.sh). It installs a versioned local bootstrap and a private machine-profile report. It does not configure API/BUS services or remote delivery yet; those remain explicit factory acceptance gaps.
+
+## Current factory-first mission
+
+[MISSION-RESET-AND-ACCEPTANCE.md](MISSION-RESET-AND-ACCEPTANCE.md) defines the current finish line: prove the portable factory and selective recovery system before building durable downstream projects. [RECOVERY.md](RECOVERY.md) distinguishes irreplaceable userdata and recovery metadata from machinery and disposable projects that can be regenerated.
