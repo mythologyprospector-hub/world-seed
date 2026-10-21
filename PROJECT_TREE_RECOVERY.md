@@ -37,6 +37,10 @@ The local factory installer has a separate read-only destination preflight for o
 
 The unit tests cover nested paths, binary data, empty directories, executable status, explicit selection and omissions, exclusions, symlink/credential-like refusal, manifest traversal, tampering, unexpected payload entries, and no-overwrite behavior. The CLI drill uses a temporary synthetic tree and independently compares SHA-256 hashes. CI success is evidence for these tests only; it is not a live-project recovery test.
 
+CI also runs `scripts/run_generated_project_recovery_drill.py`. It uses the actual World Seed project generator to create a disposable project, adds synthetic nested user-authored text and binary userdata, explicitly captures the generated files and `world-seed-manifest.json`, restores into a separate location, independently compares the complete file/hash inventory, confirms the source did not change, and verifies that the restored project still catalogs as `generated-files-match`.
+
+This proves the generated-project fixture path only. It does not preserve Git history, working-tree/index state, GitHub-only records, or private operator/personal data, and it is not a substitute for restoring the actual designated demolition-test subject.
+
 ## Still required before acceptance
 
 1. Reconcile the stacked factory branches against current main without blind merges.
