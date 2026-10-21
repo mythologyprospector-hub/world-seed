@@ -73,7 +73,7 @@ Then continue the GitHub-only record inventory. The overall recovery issue is [W
 
 World Seed's recovery/factory stack was previously merged through PR #27, and the reported protected-branch Action run showed 193 unit tests passing, both synthetic recovery drills passing, and 112 required-file/Markdown-link checks. This verifies synthetic checks, **not recovery of the real retirement candidates**.
 
-Project Seed absorption audit PR #28 was open and its check was still running at the last known checkpoint. Verify the current PR and Actions state before relying on that status or changing it.
+Project Seed absorption audit PR #28 has since been verified merged at `64a5b290e52d396682eb9611067ba9f9aa0adf5e`. Its merged audit still does not clear Project Seed for retirement: full semantic review, sync-dependency review, and the separate real recovery gates remain open. The handoff PR #32 was merged at `bf2f8efffce8cdc4c842a14d7d5e12bbeb1ef3cd`; its PR-head quality workflow completed successfully before merge, while a separate workflow run for the merge commit had not yet appeared at the last check.
 
 ## Resume protocol for the next assistant
 
