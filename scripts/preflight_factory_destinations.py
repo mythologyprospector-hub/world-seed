@@ -8,6 +8,7 @@ import sys
 from typing import Sequence
 
 SCRIPT_DIR = Path(__file__).resolve().parent
+sys.dont_write_bytecode = True
 sys.path.insert(0, str(SCRIPT_DIR))
 
 import materialize_intake_dock as dock
