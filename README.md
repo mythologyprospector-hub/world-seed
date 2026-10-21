@@ -43,7 +43,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
 - [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — a generic template to copy into an operator-approved, access-controlled location. Real operator profiles do not belong in the distributable seed.
 
-- [INTAKE_DOCK.md](INTAKE_DOCK.md) — local Intake Dock workspace, privacy boundary, remote-provisioning status, and acceptance scope.\n- [scripts/materialize_intake_dock.py](scripts/materialize_intake_dock.py) — initializes a private local staging workspace; does not access GitHub or upload data.\n\n## Mission boundaries and license
+- [INTAKE_DOCK.md](INTAKE_DOCK.md) — local Intake Dock workspace, privacy boundary, remote-provisioning status, and acceptance scope.\n- [scripts/materialize_intake_dock.py](scripts/materialize_intake_dock.py) — initializes a private local staging workspace with an explicit project lane; does not access GitHub or upload data.\n\n## Mission boundaries and license
 
 The seed's canonical constitution prohibits dystopian, Orwellian, apocalyptic, inhumane, exploitative, greedy, deceptive, underhanded, devious, nefarious, or otherwise unethical purposes and methods. It requires respect for human dignity, autonomy, privacy, licenses, EULAs, and applicable boundaries; it rejects pay-to-enter access and requires the MIT License for applicable project-owned material. See [CONSTITUTION.md](CONSTITUTION.md).
 
