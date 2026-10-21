@@ -10,7 +10,6 @@ import os
 from pathlib import Path
 import re
 import shutil
-import stat
 import tempfile
 from typing import Sequence
 
@@ -37,14 +36,8 @@ def safe_name(name: str) -> bool:
         and name not in {".", "..", PAYLOAD_MANIFEST, "world-seed-manifest.json"}
         and not name.startswith(".")
         and not any(word in folded for word in SECRET_WORDS)
-        and "\\x00" not in name
+        and "\x00" not in name
     )
-
-
-def private_dir(path: Path) -> None:
-    path.mkdir(mode=0o700, parents=False, exist_ok=False)
-    if os.name == "posix":
-        os.chmod(path, 0o700)
 
 
 def capture(source: Path, output: Path, includes: Sequence[str]) -> dict[str, object]:
