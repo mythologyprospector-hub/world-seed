@@ -63,6 +63,9 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             environment.pop("WORLD_SEED_PERSONAL_DATA_DESTINATION", None)
             environment.pop("WORLD_SEED_INTAKE_DOCK_DESTINATION", None)
             environment.pop("WORLD_SEED_INTAKE_DOCK_LANE", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_REMOTE_OWNER", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_REMOTE_REPOSITORY", None)
+            environment.pop("WORLD_SEED_INTAKE_DOCK_REMOTE_CONFIRM_TARGET", None)
             environment.update({
                 "HOME": str(home),
                 "PATH": f"{fake_bin}:{environment['PATH']}",
@@ -115,6 +118,57 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             configured_manifest = configured_manifests[0].read_text(encoding="utf-8")
             self.assertIn("profile_packages\tmaterialized", configured_manifest)
             self.assertIn("intake_dock\tmaterialized_local_only", configured_manifest)
+            self.assertIn("intake_dock_remote\tnot_configured", configured_manifest)
+
+            # Remote provisioning uses a fake gh client; no network or real repository is touched.
+            fake_gh = fake_bin / "gh"
+            fake_gh.write_text(
+                "#!/usr/bin/env python3\\n"
+                "import json, os, sys\\n"
+                "from pathlib import Path\\n"
+                "args = sys.argv[1:]\\n"
+                "state = Path(os.environ['FAKE_GH_STATE'])\\n"
+                "if args == ['api', 'user']:\\n"
+                "    print(json.dumps({'login': 'mythologyprospector-hub'}))\\n"
+                "elif len(args) == 2 and args[0] == 'api' and args[1].startswith('repos/'):\\n"
+                "    if not state.exists():\\n"
+                "        print('HTTP 404 Not Found', file=sys.stderr); sys.exit(1)\\n"
+                "    print(state.read_text(encoding='utf-8'))\\n"
+                "elif len(args) >= 3 and args[:2] == ['api', 'user/repos']:\\n"
+                "    name = next((item.split('=', 1)[1] for item in args if item.startswith('name=')), None)\\n"
+                "    if not name:\\n"
+                "        print('missing repo name', file=sys.stderr); sys.exit(2)\\n"
+                "    value = {'full_name': 'mythologyprospector-hub/' + name, 'private': True}\\n"
+                "    state.write_text(json.dumps(value), encoding='utf-8')\\n"
+                "    print(json.dumps(value))\\n"
+                "else:\\n"
+                "    print('unexpected gh command', file=sys.stderr); sys.exit(2)\\n",
+                encoding="utf-8",
+            )
+            fake_gh.chmod(0o755)
+            fake_remote_state = root / "fake-remote-repository.json"
+            remote_environment = configured_environment.copy()
+            remote_environment.update({
+                "WORLD_SEED_STATE_HOME": str(root / "remote-provision-state"),
+                "WORLD_SEED_INTAKE_DOCK_REMOTE_OWNER": "mythologyprospector-hub",
+                "WORLD_SEED_INTAKE_DOCK_REMOTE_REPOSITORY": "intake-dock",
+                "WORLD_SEED_INTAKE_DOCK_REMOTE_CONFIRM_TARGET": "mythologyprospector-hub/intake-dock",
+                "FAKE_GH_STATE": str(fake_remote_state),
+            })
+            remote_result = subprocess.run(
+                ["bash", str(checkout / "scripts" / "install_local_factory.sh")],
+                cwd=checkout, env=remote_environment, check=False,
+                capture_output=True, text=True, timeout=30,
+            )
+            self.assertEqual(remote_result.returncode, 0, remote_result.stdout + remote_result.stderr)
+            self.assertEqual(
+                __import__("json").loads(fake_remote_state.read_text(encoding="utf-8")),
+                {"full_name": "mythologyprospector-hub/intake-dock", "private": True},
+            )
+            remote_manifests = list((root / "remote-provision-state").glob("install-*.tsv"))
+            self.assertEqual(len(remote_manifests), 1)
+            self.assertIn("intake_dock_remote\tverified_private", remote_manifests[0].read_text(encoding="utf-8"))
+            self.assertNotIn("mythologyprospector-hub/intake-dock", remote_manifests[0].read_text(encoding="utf-8"))
 
             incomplete_environment = configured_environment.copy()
             incomplete_environment.pop("WORLD_SEED_INTAKE_DOCK_LANE", None)
