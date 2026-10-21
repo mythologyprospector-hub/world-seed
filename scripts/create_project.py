@@ -57,11 +57,13 @@ def render_project(
         raise ProjectGenerationError(
             "project name must be a lowercase slug using letters, numbers, and single hyphens"
         )
+    if "\n" in mission or "\r" in mission:
+        raise ProjectGenerationError("mission must be a single line")
     mission = " ".join(mission.split())
     if not mission:
         raise ProjectGenerationError("mission must not be blank")
-    if "\n" in mission or "\r" in mission:
-        raise ProjectGenerationError("mission must be a single line")
+    if revision != "unknown" and not re.fullmatch(r"[0-9a-f]{40,64}", revision):
+        raise ProjectGenerationError("source revision must be a Git SHA or the literal unknown")
 
     template_root = repository_root / "templates" / "project"
     mission_template_path = repository_root / "templates" / "MISSION.md"
@@ -117,7 +119,10 @@ def create_project(
 ) -> Path:
     """Create a new project without overwriting an existing path or source tree."""
     repository_root = repository_root.resolve()
-    destination = destination.expanduser().resolve()
+    destination = destination.expanduser()
+    if destination.is_symlink():
+        raise ProjectGenerationError("destination must not be a symbolic link")
+    destination = destination.resolve()
     try:
         destination.relative_to(repository_root)
     except ValueError:
