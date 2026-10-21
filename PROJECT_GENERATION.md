@@ -42,4 +42,6 @@ The [Local Project Library](PROJECT_LIBRARY.md) can compare listed generated fil
 
 Automated tests cover bundle completeness, mission substitution, manifest provenance and file hashes, invalid names, refusal to overwrite, refusal to generate inside the factory source checkout, and exclusion of operator machine details and credentials.
 
-This generator is not yet a complete factory. It does not initialize Git, create a remote repository, discover and apply account-specific profiles, collect unique project data, back up live Git state, or prove isolated project recovery. Do not treat a generated folder as backed up or recoverable until those separate acceptance gates pass.
+CI also runs `scripts/run_generated_project_recovery_drill.py`, which generates a disposable project, adds synthetic user-authored text and binary data, captures and restores the tree including its manifest, verifies the source remains unchanged, and confirms the restored project catalogs as `generated-files-match`.
+
+This generator is not yet a complete factory. The fixture does not initialize Git, recover live Git history/working-tree state, restore private operator/personal data, export GitHub-only records, or prove recovery of the actual designated test subject. Do not treat a generated folder as fully backed up or recovery-ready until those separate acceptance gates pass.
