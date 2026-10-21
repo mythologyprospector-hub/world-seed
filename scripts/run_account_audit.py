@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -118,6 +119,27 @@ def attach_expected_inventory_reconciliation(report: dict, expected: dict) -> di
     return report
 
 
+def resolve_github_token() -> str | None:
+    """Resolve an existing credential without displaying or persisting it."""
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token and token.strip():
+        return token.strip()
+    try:
+        result = subprocess.run(
+            ["gh", "auth", "token"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if result.returncode != 0:
+        return None
+    token = result.stdout.strip()
+    return token or None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--owner", help="Keep only repositories owned by this user or organization login")
@@ -126,9 +148,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-inventory", type=Path, help="Optional authoritative private JSON inventory outside this public repository")
     parser.add_argument("--expected-contracts", type=Path, help="Optional private JSON cross-repository contract inventory outside this public repository")
     args = parser.parse_args(argv)
-    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    token = resolve_github_token()
     if not token:
-        print("BLOCKED: set GH_TOKEN or GITHUB_TOKEN in the environment; do not pass tokens as arguments.", file=sys.stderr)
+        print("BLOCKED: provide GH_TOKEN/GITHUB_TOKEN or authenticate GitHub CLI with `gh auth login`; do not pass or print tokens.", file=sys.stderr)
         return 2
     output = args.output.expanduser().resolve()
     seed_root = Path(__file__).resolve().parents[1]
