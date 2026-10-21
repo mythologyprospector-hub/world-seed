@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
+import hashlib
 import json
 import re
 import shutil
@@ -100,6 +101,10 @@ def render_project(
     if not template_version:
         raise ProjectGenerationError("project template version must not be blank")
 
+    file_hashes = {
+        name: hashlib.sha256(content.encode("utf-8")).hexdigest()
+        for name, content in sorted(rendered.items())
+    }
     manifest: dict[str, object] = {
         "schema_version": 1,
         "project_name": project_name,
@@ -108,6 +113,7 @@ def render_project(
         "source_revision": revision,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "generated_files": sorted(PROJECT_FILES),
+        "generated_file_sha256": file_hashes,
         "manifest_excludes_itself": True,
     }
     return rendered, manifest
@@ -146,8 +152,8 @@ def create_project(
     destination.parent.mkdir(parents=True, exist_ok=True)
     try:
         destination.mkdir()
-        for name, text in rendered.items():
-            (destination / name).write_text(text, encoding="utf-8", newline="\n")
+        for name, content in rendered.items():
+            (destination / name).write_text(content, encoding="utf-8", newline="\n")
         (destination / "world-seed-manifest.json").write_text(
             manifest_text, encoding="utf-8", newline="\n"
         )
