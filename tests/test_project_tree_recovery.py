@@ -35,7 +35,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             }
 
             payload = root / "private" / "payload"
-            manifest = RECOVERY.capture(source, payload)
+            manifest = RECOVERY.capture(source, payload, ["README.md", "src", "assets", "empty", "run.sh"])
             self.assertEqual(len(manifest["files"]), 4)
             self.assertIn("empty/inside", manifest["directories"])
             self.assertEqual(manifest["exclusions"], [{
@@ -66,7 +66,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             (source / "README.md").write_text("keep", encoding="utf-8")
             (source / "src" / "generated.txt").write_text("exclude", encoding="utf-8")
             payload = root / "payload"
-            manifest = RECOVERY.capture(source, payload, ["src/generated.txt"])
+            manifest = RECOVERY.capture(source, payload, ["README.md", "src"], ["src/generated.txt"])
             self.assertEqual(manifest["exclusions"], [{
                 "path": "src/generated.txt",
                 "reason": "explicitly excluded by operator",
@@ -82,14 +82,14 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             (source / "README.md").write_text("safe", encoding="utf-8")
             (source / ".env.local").write_text("secret", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "credential-like"):
-                RECOVERY.capture(source, root / "payload-secret")
+                RECOVERY.capture(source, root / "payload-secret", [".env.local"])
             (source / ".env.local").unlink()
             try:
                 (source / "link.txt").symlink_to(source / "README.md")
             except (OSError, NotImplementedError):
                 self.skipTest("symlinks unavailable on this platform")
             with self.assertRaisesRegex(ValueError, "symlink"):
-                RECOVERY.capture(source, root / "payload-link")
+                RECOVERY.capture(source, root / "payload-link", ["README.md", "link.txt"])
 
     def test_capture_rejects_path_traversal_and_overlapping_destinations(self):
         self.assertFalse(RECOVERY.safe_relative("../outside"))
@@ -101,7 +101,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             (source / "nested").mkdir(parents=True)
             (source / "nested" / "file.txt").write_text("ok", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "must not contain one another"):
-                RECOVERY.capture(source, source / "payload")
+                RECOVERY.capture(source, source / "payload", ["nested"])
             with self.assertRaisesRegex(ValueError, "unique safe relative paths"):
                 RECOVERY.capture(source, root / "payload", ["../outside"])
 
@@ -112,7 +112,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             (source / "nested").mkdir(parents=True)
             (source / "nested" / "file.txt").write_text("original", encoding="utf-8")
             payload = root / "payload"
-            RECOVERY.capture(source, payload)
+            RECOVERY.capture(source, payload, ["nested"])
             existing = root / "existing"
             existing.mkdir()
             (existing / "keep.txt").write_text("untouched", encoding="utf-8")
@@ -138,7 +138,7 @@ class ProjectTreeRecoveryTests(unittest.TestCase):
             source.mkdir()
             (source / "README.md").write_text("safe", encoding="utf-8")
             payload = root / "payload"
-            RECOVERY.capture(source, payload)
+            RECOVERY.capture(source, payload, ["README.md"])
             path = payload / RECOVERY.MANIFEST_NAME
             manifest = json.loads(path.read_text(encoding="utf-8"))
             manifest["files"][0]["path"] = "../outside"
