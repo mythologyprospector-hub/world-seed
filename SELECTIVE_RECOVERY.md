@@ -32,6 +32,18 @@ uv run --no-project scripts/selective_recovery.py restore \
 
 The tool checks the payload inventory, rejects unexpected or missing payload entries, verifies hashes before copying, stages the restore in a new sibling directory, verifies restored bytes, then publishes the result at the new destination. It never overwrites an existing destination. Review the output before using it.
 
+## Disposable end-to-end drill
+
+The factory's CLI drill creates synthetic text and binary files in a temporary directory, invokes the actual capture and restore commands, independently compares restored bytes and SHA-256 hashes, confirms unselected data stays out, and verifies the source fixture is unchanged. It never reads a real project or contacts the network.
+
+Run it from a trusted checkout:
+
+```bash
+uv run --no-project scripts/run_selective_recovery_drill.py
+```
+
+A successful run prints `SELECTIVE_RECOVERY_CLI_DRILL=PASSED`. CI runs the same drill. This is a useful local CLI acceptance step, but still only validates a synthetic fixture; it is not whole-project or account recovery.
+
 ## Safety and acceptance limits
 
 - No network access, upload, credential-file access, GitHub mutation, or Organs changes.
