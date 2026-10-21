@@ -40,6 +40,12 @@ STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 REPORT="$STATE_HOME/machine-profile-$STAMP.json"
 MANIFEST="$STATE_HOME/install-$STAMP.tsv"
 
+# Refuse timestamp collisions before changing the release pointer or materializing destinations.
+if [[ -e "$REPORT" || -L "$REPORT" || -e "$MANIFEST" || -L "$MANIFEST" ]]; then
+  printf 'ERROR: generated output path already exists; refusing to overwrite.\\n' >&2
+  exit 2
+fi
+
 mkdir -p "$FACTORY_HOME/releases" "$STATE_HOME"
 chmod 700 "$STATE_HOME"
 
@@ -86,10 +92,6 @@ if [[ -n "$INTAKE_DOCK_DESTINATION" && -n "$INTAKE_DOCK_LANE" ]]; then
     --destination "$INTAKE_DOCK_DESTINATION" \
     --lane "$INTAKE_DOCK_LANE"
   INTAKE_DOCK_STATUS="materialized_local_only"
-fi
-if [[ -e "$REPORT" || -L "$REPORT" || -e "$MANIFEST" || -L "$MANIFEST" ]]; then
-  printf 'ERROR: generated output path already exists; refusing to overwrite.\n' >&2
-  exit 2
 fi
 "$RELEASE/.venv/bin/python" "$RELEASE/scripts/collect_machine_profile.py" --output "$REPORT"
 {
