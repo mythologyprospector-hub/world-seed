@@ -47,15 +47,24 @@ def secret_like(value: str) -> bool:
     return any(word in folded for word in SECRET_WORDS)
 
 
-def _inventory_tree(source: Path, excluded: set[str]) -> tuple[list[dict[str, object]], list[str], list[dict[str, str]]]:
+def _inventory_tree(source: Path, includes: set[str], excluded: set[str]) -> tuple[list[dict[str, object]], list[str], list[dict[str, str]], list[dict[str, str]]]:
     files: list[dict[str, object]] = []
     directories: list[str] = []
     exclusions: list[dict[str, str]] = []
+    selected_top = {item.split("/", 1)[0] for item in includes}
+    not_captured = [
+        {"path": item.name, "reason": "not selected by explicit capture roots"}
+        for item in sorted(source.iterdir(), key=lambda item: item.name)
+        if item.name not in selected_top and item.name != ".git"
+    ]
     for current, dirnames, filenames in os.walk(source, topdown=True, followlinks=False):
         current_path = Path(current)
         relative_dir = current_path.relative_to(source).as_posix()
         if relative_dir == ".":
             relative_dir = ""
+        if relative_dir and not any(root == relative_dir or root.startswith(relative_dir + "/") or relative_dir.startswith(root + "/") for root in includes):
+            dirnames[:] = []
+            continue
         kept_dirs: list[str] = []
         for name in sorted(dirnames):
             path = current_path / name
@@ -67,8 +76,13 @@ def _inventory_tree(source: Path, excluded: set[str]) -> tuple[list[dict[str, ob
             if name == ".git":
                 exclusions.append({"path": rel, "reason": "Git history and metadata are a separate recovery category"})
                 continue
-            if rel in excluded:
-                exclusions.append({"path": rel, "reason": "explicitly excluded by operator"})
+            if any(rel == item or rel.startswith(item + "/") for item in excluded):
+                if rel in excluded:
+                    exclusions.append({"path": rel, "reason": "explicitly excluded by operator"})
+                continue
+            selected = any(rel == item or rel.startswith(item + "/") for item in includes)
+            ancestor_of_selection = any(item.startswith(rel + "/") for item in includes)
+            if not selected and not ancestor_of_selection:
                 continue
             if secret_like(rel):
                 raise ValueError(f"credential-like path requires review and cannot be captured: {rel}")
@@ -83,8 +97,11 @@ def _inventory_tree(source: Path, excluded: set[str]) -> tuple[list[dict[str, ob
             if name == ".git":
                 exclusions.append({"path": rel, "reason": "Git metadata pointer is a separate recovery category"})
                 continue
-            if rel in excluded:
-                exclusions.append({"path": rel, "reason": "explicitly excluded by operator"})
+            if any(rel == item or rel.startswith(item + "/") for item in excluded):
+                if rel in excluded:
+                    exclusions.append({"path": rel, "reason": "explicitly excluded by operator"})
+                continue
+            if not any(rel == item or rel.startswith(item + "/") for item in includes):
                 continue
             if secret_like(rel):
                 raise ValueError(f"credential-like path requires review and cannot be captured: {rel}")
@@ -102,7 +119,7 @@ def _inventory_tree(source: Path, excluded: set[str]) -> tuple[list[dict[str, ob
                 "size_bytes": path.stat().st_size,
                 "executable": bool(mode & 0o111),
             })
-    return sorted(files, key=lambda item: str(item["path"])), sorted(set(directories)), sorted(exclusions, key=lambda item: item["path"])
+    return sorted(files, key=lambda item: str(item["path"])), sorted(set(directories)), sorted(exclusions, key=lambda item: item["path"]), not_captured
 
 
 def _check_destination_separation(source: Path, destination: Path, label: str) -> None:
@@ -110,7 +127,7 @@ def _check_destination_separation(source: Path, destination: Path, label: str) -
         raise ValueError(f"{label} and source/payload must not contain one another")
 
 
-def capture(source: Path, output: Path, excludes: Sequence[str] = ()) -> dict[str, object]:
+def capture(source: Path, output: Path, includes: Sequence[str], excludes: Sequence[str] = ()) -> dict[str, object]:
     source = source.expanduser().absolute()
     output = output.expanduser().absolute()
     if source.is_symlink() or not source.is_dir():
@@ -118,10 +135,19 @@ def capture(source: Path, output: Path, excludes: Sequence[str] = ()) -> dict[st
     if output.exists() or output.is_symlink():
         raise ValueError("payload output must not already exist")
     _check_destination_separation(source, output, "payload output")
+    selected = set(includes)
     excluded = set(excludes)
+    if not selected or len(selected) != len(list(includes)) or any(not safe_relative(item) or ".git" in item.split("/") or secret_like(item) for item in selected):
+        raise ValueError("provide unique explicit safe include roots; do not include Git metadata or credential-like paths")
     if len(excluded) != len(list(excludes)) or any(not safe_relative(item) for item in excluded):
         raise ValueError("exclusions must be unique safe relative paths; repeat --exclude for each exact path")
-    files, directories, exclusions = _inventory_tree(source, excluded)
+    if any(any(root == item or root.startswith(item + "/") for item in excluded) for root in selected):
+        raise ValueError("an include root conflicts with an exclusion")
+    for item in selected:
+        path = source / item
+        if path.is_symlink() or not path.exists() or not (path.is_file() or path.is_dir()):
+            raise ValueError(f"include root must exist and be a regular file or directory, not a symlink: {item}")
+    files, directories, exclusions, not_captured = _inventory_tree(source, selected, excluded)
     if not files:
         raise ValueError("refusing to create an empty file payload")
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -143,11 +169,12 @@ def capture(source: Path, output: Path, excludes: Sequence[str] = ()) -> dict[st
         manifest: dict[str, object] = {
             "schema_version": 1,
             "created_at_utc": datetime.now(timezone.utc).isoformat(),
-            "capture_scope": "recursive regular-file project tree; .git excluded; explicit exclusions recorded; credentials-like paths and symlinks refused",
+            "capture_scope": "recursive regular files beneath explicitly selected roots only; .git excluded; exclusions and unselected top-level entries recorded; credential-like paths and symlinks refused",
             "git_history": "excluded; recover separately with a Git bundle/clone and isolated ref verification",
             "files": files,
             "directories": directories,
             "exclusions": exclusions,
+            "not_captured": not_captured,
         }
         manifest_path = staging / MANIFEST_NAME
         with manifest_path.open("x", encoding="utf-8") as stream:
@@ -271,6 +298,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     capture_parser = commands.add_parser("capture", help="capture a project tree into a new private payload")
     capture_parser.add_argument("--source", type=Path, required=True)
     capture_parser.add_argument("--output", type=Path, required=True)
+    capture_parser.add_argument("--include", action="append", required=True, help="explicit relative file/directory root to capture; repeat for every approved root")
     capture_parser.add_argument("--exclude", action="append", default=[], help="exact relative path to exclude; repeat as needed")
     restore_parser = commands.add_parser("restore", help="verify and restore into a new isolated destination")
     restore_parser.add_argument("--payload", type=Path, required=True)
@@ -278,8 +306,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         if args.command == "capture":
-            manifest = capture(args.source, args.output, args.exclude)
-            print(f"PROJECT_TREE_CAPTURE=VERIFIED files={len(manifest['files'])} directories={len(manifest['directories'])} exclusions={len(manifest['exclusions'])}")
+            manifest = capture(args.source, args.output, args.include, args.exclude)
+            print(f"PROJECT_TREE_CAPTURE=VERIFIED files={len(manifest['files'])} directories={len(manifest['directories'])} exclusions={len(manifest['exclusions'])} not_selected={len(manifest['not_captured'])}")
             print("Git history remains separate; review every exclusion before relying on this payload.")
         else:
             manifest = restore(args.payload, args.destination)
