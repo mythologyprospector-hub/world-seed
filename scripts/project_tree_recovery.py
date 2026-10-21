@@ -137,8 +137,8 @@ def capture(source: Path, output: Path, includes: Sequence[str], excludes: Seque
     _check_destination_separation(source, output, "payload output")
     selected = set(includes)
     excluded = set(excludes)
-    if not selected or len(selected) != len(list(includes)) or any(not safe_relative(item) or ".git" in item.split("/") or secret_like(item) for item in selected):
-        raise ValueError("provide unique explicit safe include roots; do not include Git metadata or credential-like paths")
+    if not selected or len(selected) != len(list(includes)) or any(not safe_relative(item) or len(item.split("/")) != 1 or ".git" in item.split("/") or secret_like(item) for item in selected):
+        raise ValueError("provide unique explicit direct-child file/directory roots; do not include Git metadata or credential-like paths")
     if len(excluded) != len(list(excludes)) or any(not safe_relative(item) for item in excluded):
         raise ValueError("exclusions must be unique safe relative paths; repeat --exclude for each exact path")
     if any(any(root == item or root.startswith(item + "/") for item in excluded) for root in selected):
@@ -298,7 +298,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     capture_parser = commands.add_parser("capture", help="capture a project tree into a new private payload")
     capture_parser.add_argument("--source", type=Path, required=True)
     capture_parser.add_argument("--output", type=Path, required=True)
-    capture_parser.add_argument("--include", action="append", required=True, help="explicit relative file/directory root to capture; repeat for every approved root")
+    capture_parser.add_argument("--include", action="append", required=True, help="explicit direct-child file/directory root to capture recursively; repeat for every approved root")
     capture_parser.add_argument("--exclude", action="append", default=[], help="exact relative path to exclude; repeat as needed")
     restore_parser = commands.add_parser("restore", help="verify and restore into a new isolated destination")
     restore_parser.add_argument("--payload", type=Path, required=True)
