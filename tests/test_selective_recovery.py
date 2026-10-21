@@ -37,6 +37,10 @@ class SelectiveRecoveryTests(unittest.TestCase):
                 self.assertEqual(payload.stat().st_mode & 0o777, 0o700)
                 self.assertEqual((payload / "notes.txt").stat().st_mode & 0o777, 0o600)
 
+    def test_safe_name_rejects_portable_path_separators(self):
+        self.assertFalse(RECOVERY.safe_name("nested/name.txt"))
+        self.assertFalse(RECOVERY.safe_name("nested\\\\name.txt"))
+
     def test_safe_name_rejects_nul_character(self):
         self.assertFalse(RECOVERY.safe_name("bad\x00name"))
 
