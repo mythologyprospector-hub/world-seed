@@ -80,6 +80,9 @@ def _inventory_tree(source: Path, excluded: set[str]) -> tuple[list[dict[str, ob
             rel = (Path(relative_dir) / name).as_posix() if relative_dir else name
             if not safe_relative(rel):
                 raise ValueError(f"unsafe relative path: {rel!r}")
+            if name == ".git":
+                exclusions.append({"path": rel, "reason": "Git metadata pointer is a separate recovery category"})
+                continue
             if rel in excluded:
                 exclusions.append({"path": rel, "reason": "explicitly excluded by operator"})
                 continue
