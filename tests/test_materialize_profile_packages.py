@@ -1,6 +1,8 @@
 """Exercise safe materialization of generic package templates using temporary directories."""
 import importlib.util
+import json
 import os
+import shutil
 import stat
 import tempfile
 import unittest
@@ -44,8 +46,11 @@ class MaterializeProfilePackagesTests(unittest.TestCase):
             root = Path(temporary)
             operator, personal = root / "operator", root / "personal"
             MATERIALIZER.materialize(ROOT / "templates", operator, personal)
+            extra = operator / "owner-added.txt"
+            extra.write_text("keep this file", encoding="utf-8")
             result = MATERIALIZER.materialize(ROOT / "templates", operator, personal)
             self.assertEqual(result, {"operator-profile": [], "personal-data": []})
+            self.assertEqual(extra.read_text(encoding="utf-8"), "keep this file")
 
     def test_conflicting_existing_file_aborts_before_creating_other_package(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -74,6 +79,17 @@ class MaterializeProfilePackagesTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "not private"):
                 MATERIALIZER.materialize(ROOT / "templates", operator, personal)
             self.assertFalse(personal.exists())
+
+
+    def test_rejects_non_object_manifest_with_clear_error(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            templates = root / "templates"
+            shutil.copytree(ROOT / "templates/operator-profile", templates / "operator-profile")
+            shutil.copytree(ROOT / "templates/personal-data", templates / "personal-data")
+            (templates / "operator-profile/manifest.json").write_text("[]", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "wrong schema or package type"):
+                MATERIALIZER.load_templates(templates)
 
     def test_refuses_overlapping_destinations(self):
         with tempfile.TemporaryDirectory() as temporary:
