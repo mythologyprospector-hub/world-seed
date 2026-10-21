@@ -122,29 +122,7 @@ class LocalFactoryInstallerTests(unittest.TestCase):
 
             # Remote provisioning uses a fake gh client; no network or real repository is touched.
             fake_gh = fake_bin / "gh"
-            fake_gh.write_text(
-                "#!/usr/bin/env python3\\n"
-                "import json, os, sys\\n"
-                "from pathlib import Path\\n"
-                "args = sys.argv[1:]\\n"
-                "state = Path(os.environ['FAKE_GH_STATE'])\\n"
-                "if args == ['api', 'user']:\\n"
-                "    print(json.dumps({'login': 'mythologyprospector-hub'}))\\n"
-                "elif len(args) == 2 and args[0] == 'api' and args[1].startswith('repos/'):\\n"
-                "    if not state.exists():\\n"
-                "        print('HTTP 404 Not Found', file=sys.stderr); sys.exit(1)\\n"
-                "    print(state.read_text(encoding='utf-8'))\\n"
-                "elif len(args) >= 3 and args[:2] == ['api', 'user/repos']:\\n"
-                "    name = next((item.split('=', 1)[1] for item in args if item.startswith('name=')), None)\\n"
-                "    if not name:\\n"
-                "        print('missing repo name', file=sys.stderr); sys.exit(2)\\n"
-                "    value = {'full_name': 'mythologyprospector-hub/' + name, 'private': True}\\n"
-                "    state.write_text(json.dumps(value), encoding='utf-8')\\n"
-                "    print(json.dumps(value))\\n"
-                "else:\\n"
-                "    print('unexpected gh command', file=sys.stderr); sys.exit(2)\\n",
-                encoding="utf-8",
-            )
+            shutil.copyfile(REPO_ROOT / "tests" / "fixtures" / "fake_gh_cli.py", fake_gh)
             fake_gh.chmod(0o755)
             fake_remote_state = root / "fake-remote-repository.json"
             remote_environment = configured_environment.copy()
