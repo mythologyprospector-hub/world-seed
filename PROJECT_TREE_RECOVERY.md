@@ -20,6 +20,20 @@ Run from a trusted checkout:
 
 Replace example paths only after reviewing the target and storage permissions. Do not run this against a real subject until the target and preservation scope have been explicitly identified. Review the full inventory and exclusions before relying on a payload.
 
+## Designated demolition rehearsal subjects
+
+The real-world acceptance subjects are **Praxis and Renaissance**. Their purpose here is to test the factory and recovery system, not to become active rebuild projects. Rehearse each repository independently; do not treat one successful restore as proof for the other. First inspect the actual local checkout and identify its canonical path from the private machine profile. Do not guess paths or capture the entire filesystem.
+
+For each subject, keep these categories separate in the recovery record:
+
+1. Selected project tree: source, tests, useful docs/assets, and explicitly identified non-secret userdata or local project records.
+2. Git history and refs: a separately verified bundle/clone and isolated ref check; record whether staged/index state and uncommitted changes existed and how they were preserved.
+3. GitHub-only records: issues, PRs, comments/reviews, releases/assets, Actions metadata/artifacts, discussions, repository settings/rulesets/permissions, and any unsupported or inaccessible categories.
+4. External/runtime dependencies: actual requirements and data ownership. Organs is not assumed required; record any concrete dependency evidence and keep runtime databases/configuration separate from project source.
+5. Private operator/personal records: capture only from the explicitly authorized private roots and keep separate from public seed/project payloads.
+
+The rehearsal passes only when the restored copy is isolated from the source, every selected file/directory matches its manifest, the Git recovery checks pass for the declared scope, relevant project tests run against the restored copy, omissions and unverified categories are reported, and the source is unchanged. A remote GitHub tree inventory is not a substitute for a local working-tree/userdata capture.
+
 ## Relationship to factory bootstrap
 
 The local factory installer has a separate read-only destination preflight for operator/personal-data packages and the Intake Dock. When explicitly configured with an owner, repository name, and exact `OWNER/REPOSITORY` confirmation, it can also create-or-verify that private GitHub repository using the already authenticated personal account. This provisions only an empty remote container; it does not upload user files or configure Codex. Destination preflight checks local conflicts before package materialization. None of these factory steps inventories a project, chooses recovery roots, captures userdata, preserves Git history, or proves a restore. Project-tree capture remains a separate explicitly scoped rehearsal, and its omissions must be reviewed.
@@ -43,11 +57,11 @@ The project-tree helper itself does not preserve Git history or index state; the
 
 ## Still required before acceptance
 
-1. Reconcile the stacked factory branches against current main without blind merges.
-2. Review the actual target project and define what counts as essential userdata, preferences, generated files, and recovery metadata. Do not infer this from a repository keep-list.
+1. Begin from a clean, trusted World Seed checkout at a recorded commit; the factory PR stack is already merged to main.
+2. Review each actual target and define essential userdata, preferences, generated files, and recovery metadata. Do not infer this from a repository keep-list.
 3. Separately capture and verify Git history and required GitHub-only records/configuration, with access limitations recorded.
-4. Restore the actual reviewed subject into a separate clean location; compare every manifest entry and report all exclusions and omissions.
-5. Run project-specific tests and factory checks against the restored copy.
+4. Restore each reviewed subject into a separate clean location; compare every manifest entry and report all exclusions and omissions.
+5. Run relevant project tests and factory checks against each restored copy.
 6. Present evidence and limitations to the human. No deletion or reset until the human separately authorizes it.
 
 This tool does not contact GitHub, upload data, inspect file contents for secrets, preserve Git history, export GitHub operating records, or prove a post-wipe rebuild.
