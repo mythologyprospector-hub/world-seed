@@ -101,7 +101,7 @@ class SyntheticHandoffDrillTests(unittest.TestCase):
             self.assertEqual(receipt["target_repository"], "owner/episteme")
             self.assertEqual(receipt["lane"], "episteme")
             self.assertEqual(receipt["transfer_status"], "received")
-            self.assertEqual(receipt["files"][0]["sha256"], packed["sha256"] if False else receipt["files"][0]["sha256"])
+            self.assertEqual(receipt["source_package_sha256"], packed["sha256"])
             with zipfile.ZipFile(package_path) as archive:
                 manifest = json.loads(archive.read("manifest.json"))
             self.assertEqual(receipt["files"][0]["sha256"], manifest["files"][0]["sha256"])
