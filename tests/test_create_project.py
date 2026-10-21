@@ -1,6 +1,7 @@
 """Tests for World Seed's portable project generator."""
 import importlib.util
 import json
+import hashlib
 import tempfile
 import unittest
 from pathlib import Path
@@ -39,8 +40,11 @@ class CreateProjectTests(unittest.TestCase):
             self.assertEqual(manifest["source_revision"], "a" * 40)
             self.assertTrue(manifest["manifest_excludes_itself"])
             self.assertEqual(set(manifest["generated_files"]), set(GENERATOR.PROJECT_FILES))
+            self.assertEqual(set(manifest["generated_file_sha256"]), set(GENERATOR.PROJECT_FILES))
             for name in GENERATOR.PROJECT_FILES:
                 self.assertTrue((created / name).is_file(), name)
+                expected = hashlib.sha256((created / name).read_bytes()).hexdigest()
+                self.assertEqual(manifest["generated_file_sha256"][name], expected)
             self.assertTrue((created / "world-seed-manifest.json").is_file())
             license_text = (created / "LICENSE").read_text(encoding="utf-8")
             self.assertIn("<YEAR>", license_text)
