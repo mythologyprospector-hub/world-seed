@@ -33,7 +33,7 @@ def load_templates(root: Path) -> dict[str, dict[str, bytes]]:
             manifest = json.loads(files["manifest.json"].decode("utf-8"))
         except (UnicodeError, json.JSONDecodeError) as exc:
             raise ValueError(f"template manifest is invalid JSON: {package}") from exc
-        if manifest.get("schema_version") != 1 or manifest.get("package_type") != package:
+        if not isinstance(manifest, dict) or manifest.get("schema_version") != 1 or manifest.get("package_type") != package:
             raise ValueError(f"template manifest has the wrong schema or package type: {package}")
         packages[package] = files
     return packages
