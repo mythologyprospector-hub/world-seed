@@ -59,6 +59,8 @@ class LocalFactoryInstallerTests(unittest.TestCase):
             factory_home = root / "installed-factory"
             state_home = root / "private-state"
             environment = os.environ.copy()
+            environment.pop("WORLD_SEED_OPERATOR_PROFILE_DESTINATION", None)
+            environment.pop("WORLD_SEED_PERSONAL_DATA_DESTINATION", None)
             environment.update({
                 "HOME": str(home),
                 "PATH": f"{fake_bin}:{environment['PATH']}",
