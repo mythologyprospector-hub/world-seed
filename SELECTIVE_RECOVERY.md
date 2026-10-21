@@ -13,7 +13,8 @@ uv run --no-project scripts/selective_recovery.py capture \
   --source "$HOME/projects/your-disposable-project" \
   --output "$HOME/private-recovery/payloads/your-disposable-project-001" \
   --include README.md \
-  --include MISSION.md
+  --include MISSION.md \
+  --include world-seed-manifest.json
 ```
 
 Replace the example paths and include only files you have reviewed. Repeat `--include` for each required direct-child filename. The command does not recurse and does not infer that omitted files are unimportant. It refuses hidden files, manifest files, likely credential-bearing names, symlinks, missing files, duplicate names, and existing output directories.
@@ -48,9 +49,9 @@ A successful run prints `SELECTIVE_RECOVERY_CLI_DRILL=PASSED`. CI runs the same 
 
 - No network access, upload, credential-file access, GitHub mutation, or Organs changes.
 - No recursive walk of project files; only named direct-child regular files are captured.
-- A payload is not a snapshot of the whole project. The project manifest is deliberately excluded and is not recreated by restore.
+- A payload is not a snapshot of the whole project. For generated projects, explicitly include `world-seed-manifest.json` so provenance and the Project Library's generated-file hash checks survive restoration. The recovery tool's own `recovery-payload.json` is generated separately and cannot be included as a source file. Preserving a project manifest does not by itself authenticate it; the restored generated files must still be checked against its hashes.
 - File names that look credential-related are refused as a basic guardrail, not as a guarantee that file contents contain no secrets. Review every selected file before capture.
 - A source revision copied from the project manifest is informational metadata, not proof that the source tree was clean or that a commit contains the captured content.
 - A passing fixture test is not proof that the installer works on Bucky or that account-wide recovery works.
 
-Acceptance still requires review, CI, execution against a disposable fixture, capture, restore into a separate empty location, and independent comparison of restored bytes. Further gates must address whole-tree and binary assets, Git history and working-tree state, GitHub-only operating records, machine-specific private data, and a clean-environment factory drill. Until those gates pass, do not call live projects recovery-ready or begin the larger reset.
+Acceptance still requires review, CI, execution against a disposable fixture, capture, restore into a separate empty location, and independent comparison of restored bytes. An end-to-end generated-project fixture must verify that the project manifest survives capture/restore and that the restored project is cataloged as `generated-files-match`. Further gates must address whole-tree and binary assets, Git history and working-tree state, GitHub-only operating records, machine-specific private data, and a clean-environment factory drill. Until those gates pass, do not call live projects recovery-ready or begin the larger reset.
