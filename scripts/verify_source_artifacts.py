@@ -217,9 +217,10 @@ def verify_source_artifacts(root: Path) -> dict:
         "repository_results": rows,
         "errors": errors,
         "note": (
-            "This verifies bundle readability by isolated mirror clone, ZIP CRC integrity, and checkout Git identity. "
-            "It does not prove every expected ref is present, compare ZIP contents to Git trees, verify GitHub-only records, "
-            "or prove a complete account restoration."
+            "This verifies bundle readability by isolated mirror clone, compares bundle refs with checkout refs, "
+            "checks ZIP CRC integrity and ZIP names/content against the checkout HEAD tree, and checks checkout Git identity. "
+            "It does not prove every expected GitHub ref was originally captured, that checkout HEAD is the intended revision, "
+            "verify GitHub-only records/settings, or prove a complete account restoration."
         ),
     }
 
