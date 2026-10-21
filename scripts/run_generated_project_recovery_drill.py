@@ -178,9 +178,58 @@ def main() -> int:
                 f"restored project did not catalog as generated-files-match: {restored_record.get('status')}"
             )
 
+        # Exercise the separate operator-profile and personal-data packages with synthetic records.
+        profile_materializer = seed_root / "scripts" / "materialize_profile_packages.py"
+        profile_source = root / "private-packages"
+        operator_package = profile_source / "operator-profile"
+        personal_package = profile_source / "personal-data"
+        run_python(
+            str(profile_materializer),
+            "--template-root", str(seed_root / "templates"),
+            "--operator-destination", str(operator_package),
+            "--personal-data-destination", str(personal_package),
+        )
+        (operator_package / "PREFERENCES.md").write_text(
+            "# Synthetic operator preferences\\nUse concise status updates.\\n",
+            encoding="utf-8",
+        )
+        (personal_package / "family-records.md").write_text(
+            "# Synthetic personal record\\nFixture-only data; not a real person.\\n",
+            encoding="utf-8",
+        )
+        profile_before = snapshot(profile_source)
+        profile_payload = root / "private-profile-payload"
+        profile_restored = root / "restored-private-packages"
+        run_python(
+            str(recovery), "capture", "--source", str(profile_source),
+            "--output", str(profile_payload),
+            "--include", "operator-profile", "--include", "personal-data",
+        )
+        profile_manifest = json.loads(
+            (profile_payload / "project-tree-recovery.json").read_text(encoding="utf-8")
+        )
+        if {entry["path"] for entry in profile_manifest["files"]} != set(profile_before):
+            raise RuntimeError("private profile package capture inventory mismatch")
+        run_python(
+            str(recovery), "restore", "--payload", str(profile_payload),
+            "--destination", str(profile_restored),
+        )
+        if snapshot(profile_restored) != profile_before:
+            raise RuntimeError("private operator/personal-data package restore mismatch")
+        if snapshot(profile_source) != profile_before:
+            raise RuntimeError("private package source changed during recovery")
+        if (profile_restored / "operator-profile" / "PREFERENCES.md").read_text(encoding="utf-8") != (
+            operator_package / "PREFERENCES.md"
+        ).read_text(encoding="utf-8"):
+            raise RuntimeError("operator preferences did not survive recovery")
+        if (profile_restored / "personal-data" / "family-records.md").read_text(encoding="utf-8") != (
+            personal_package / "family-records.md"
+        ).read_text(encoding="utf-8"):
+            raise RuntimeError("personal-data fixture did not survive recovery")
+
         print("GENERATED_PROJECT_RECOVERY_DRILL=PASSED")
-        print("scope=temporary generated project; local Git bundle; synthetic working-tree changes and userdata; no live project or network")
-        print("checks=project manifest, Git checkpoint/history, uncommitted tracked edit, untracked binary/nested userdata, independent hashes, source unchanged, restored catalog generated-files-match")
+        print("scope=temporary generated project and private package fixtures; local Git bundle; synthetic working-tree changes/userdata; no live project or network")
+        print("checks=project manifest, Git checkpoint/history, uncommitted tracked edit, untracked binary/nested userdata, operator preferences, personal-data package, independent hashes, source unchanged, restored catalog generated-files-match")
     return 0
 
 
