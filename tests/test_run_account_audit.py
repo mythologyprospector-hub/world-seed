@@ -3,6 +3,7 @@ import importlib.util
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
@@ -113,6 +114,39 @@ class AccountBaselineTests(unittest.TestCase):
         self.assertEqual(report["repository_count_blocked"], 1)
         self.assertEqual(report["repositories"][0]["inspection_status"], "blocked")
         self.assertEqual(report["blocked_inspections"][0]["repository"], "example/private")
+
+
+
+class TokenResolutionTests(unittest.TestCase):
+    def test_environment_token_takes_precedence_without_cli_call(self):
+        with patch.dict(AUDITOR.os.environ, {"GH_TOKEN": " env-token ", "GITHUB_TOKEN": "other-token"}, clear=True):
+            with patch.object(AUDITOR.subprocess, "run") as run:
+                self.assertEqual(AUDITOR.resolve_github_token(), "env-token")
+                run.assert_not_called()
+
+    def test_active_github_cli_token_is_used_when_environment_is_empty(self):
+        result = SimpleNamespace(returncode=0, stdout="cli-token\n", stderr="")
+        with patch.dict(AUDITOR.os.environ, {}, clear=True):
+            with patch.object(AUDITOR.subprocess, "run", return_value=result) as run:
+                self.assertEqual(AUDITOR.resolve_github_token(), "cli-token")
+                run.assert_called_once_with(
+                    ["gh", "auth", "token"],
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+
+    def test_missing_or_unauthenticated_cli_fails_closed(self):
+        with patch.dict(AUDITOR.os.environ, {}, clear=True):
+            with patch.object(AUDITOR.subprocess, "run", side_effect=FileNotFoundError):
+                self.assertIsNone(AUDITOR.resolve_github_token())
+            with patch.object(
+                AUDITOR.subprocess,
+                "run",
+                return_value=SimpleNamespace(returncode=1, stdout="", stderr="not logged in"),
+            ):
+                self.assertIsNone(AUDITOR.resolve_github_token())
 
 
 if __name__ == "__main__":
