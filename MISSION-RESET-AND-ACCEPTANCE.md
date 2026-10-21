@@ -30,6 +30,10 @@ Projects are downstream products. The operating system that reliably creates, go
 
 The old World and recovery worktrees are disposable test material. Salvage useful discoveries, code, tests, and backups, but do not treat the old architecture as binding. Bucky contains substantial old World backups for archiving.
 
+**Designated real demolition-test subjects: `praxis` and `renaissance`.** They are not downstream products to rehabilitate. Use them to prove that World Seed can inventory, preserve, restore, and verify essential material before their old repositories are retired. Preserve lasting code, tests, discoveries, documentation, useful Git history, and required metadata only to the extent the recovery manifest and acceptance evidence justify. Do not rebuild Episteme or either subject as a side mission. Do not delete or reset either subject until isolated recovery and relevant checks pass and the human gives explicit final authorization.
+
+**Organs is a separate infrastructure disposition.** Evaluate its reusable runtime plumbing as a possible factory-managed, optional local capability under [RUNTIME_PLUMBING.md](RUNTIME_PLUMBING.md). Its old integration assumptions do not make it a required dependency of World Seed or the demolition subjects.
+
 ## Acceptance gates
 
 The system is not complete until all are demonstrated:
