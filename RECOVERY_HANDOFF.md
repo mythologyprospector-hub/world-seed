@@ -47,7 +47,7 @@ A read-only worktree inventory found one checkout each for the six other local c
 - Episteme PR #43 test worktree at `~/projects/.worktrees/episteme/episteme-pr43-test`, detached HEAD `bd58c07`.
 - Episteme PR #59 test worktree at `~/projects/.worktrees/episteme/episteme-pr59-test`, detached HEAD `4dbc710`.
 
-A read-only `git status --short --untracked-files=all` check showed `?? uv.lock` in the Episteme main checkout and no tracked/untracked output in either test worktree. The lockfile was separately copied and hash-verified. **Ignored files in these worktrees have not yet been inventoried.** Do not remove or reset the detached test worktrees.
+A read-only `git status --short --untracked-files=all` check showed `?? uv.lock` in the Episteme main checkout and no tracked/untracked output in either test worktree. The lockfile was separately copied and hash-verified. A subsequent ignored-path summary found these top-level counts: main checkout — `.pytest_cache` 5, `scripts` 2, `src` 70, `tests` 91, `.venv` 647; each detached test worktree — `src` 25. These are counts of ignored paths grouped by top-level path, not a content review. In particular, ignored paths under `src`, `tests`, and `scripts` may be valuable local-only source or tests; their filenames, reasons for being ignored, and contents have not yet been reviewed. Treat them as potentially important until verified. Do not remove or reset the detached test worktrees.
 
 The local branch audit showed multiple GitHub branches absent from original local remote-tracking caches and several differing branch tips. Fresh GitHub mirrors/bundles have since been created and verified; do not treat that as completion of the wider GitHub-record inventory.
 
