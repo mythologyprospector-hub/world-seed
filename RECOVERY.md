@@ -215,3 +215,6 @@ The local `scripts/package_intake_dock_handoff.py` packages only explicitly sele
 ## Guarded Intake Dock transfer
 
 The separate `scripts/transfer_intake_dock_handoff.py` validates a manifest-backed package locally by default. Live transfer requires exact target confirmation, verifies the authenticated personal-account owner and private visibility, rechecks file paths and hashes, screens for common credential markers, refuses conflicting content, and records a receipt with the uploaded files. It is not integrated into the installer and is not itself a backup/restore mechanism. Secret scanning is heuristic; a human must review the exact package and target before any real transfer. Synthetic end-to-end testing and isolated recovery acceptance remain required.
+
+
+The synthetic Intake Dock acceptance test `tests/test_intake_dock_synthetic_handoff.py` exercises packaging, transfer, Git commit/push to a local bare repository, checkout verification, receipt/hash binding, idempotent rerun, and wrong-owner refusal. It uses synthetic data and local Git only. It is not evidence of a successful live GitHub transfer, remote Codex discovery, or full post-wipe recovery.
