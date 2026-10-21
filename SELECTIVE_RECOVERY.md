@@ -17,7 +17,7 @@ uv run --no-project scripts/selective_recovery.py capture \
   --include world-seed-manifest.json
 ```
 
-Replace the example paths and include only files you have reviewed. Repeat `--include` for each required direct-child filename. The command does not recurse and does not infer that omitted files are unimportant. It refuses hidden files, manifest files, likely credential-bearing names, symlinks, missing files, duplicate names, and existing output directories.
+Replace the example paths and include only files you have reviewed. Repeat `--include` for each required direct-child filename. The command does not recurse and does not infer that omitted files are unimportant. It refuses hidden files, the recovery payload's reserved manifest filename, likely credential-bearing names, symlinks, missing files, duplicate names, and existing output directories. A generated project's `world-seed-manifest.json` is allowed when explicitly selected.
 
 Payload files and the inventory are written with owner-only permissions on POSIX systems. The inventory records each selected file's size and SHA-256 digest. Keep payloads private: user-authored text may itself be sensitive.
 
