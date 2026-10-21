@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "package_type": "operator-profile",
+  "intended_operator": "unknown",
+  "created_at": "unknown",
+  "last_reviewed_at": "unknown",
+  "sensitivity": "private",
+  "included_sections": [
+    "PREFERENCES.md"
+  ],
+  "disclosure_rules": [
+    "Load only task-relevant sections",
+    "Never disclose secrets or private details to unrelated projects or services",
+    "Verify mutable machine and account facts before relying on them"
+  ],
+  "provenance": "template; not yet populated or verified"
+}
