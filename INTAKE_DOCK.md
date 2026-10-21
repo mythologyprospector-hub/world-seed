@@ -1,6 +1,6 @@
 # Intake Dock
 
-**Status:** Local workspace scaffolding, guarded remote repository provisioning, and manifest-backed local handoff packaging are implemented as separate building blocks. Remote file transfer and end-to-end Codex handoff are not implemented.
+**Status:** Local workspace scaffolding, guarded private-repository provisioning, manifest-backed local packaging, and an explicitly confirmed transfer helper are implemented as separate building blocks. End-to-end factory integration and Codex discoverability remain unproven.
 
 ## Purpose
 
@@ -55,9 +55,11 @@ python3 scripts/package_intake_dock_handoff.py \
 
 Replace every example path with files you have explicitly reviewed and intend to hand off. This is a convenience check, **not a complete secret scanner**; review the manifest and package contents before any future transfer. Never use broad wildcards to select private data. Creating a package does not authorize uploading it.
 
-## Current limits
+## Guarded transfer helper
 
-The local workspace and package tools do not upload or download files or prove discoverability by a remote Codex session. `scripts/provision_intake_dock.py` separately plans by default and requires explicit exact-target confirmation for live private-repository provisioning; it is not called automatically by the materializer or packager. No remote transfer is implemented in this increment. Any live repository creation, access-control change, or data transfer remains behind explicit owner approval.
+`scripts/transfer_intake_dock_handoff.py --package PATH --target OWNER/REPOSITORY` validates the archive and prints a plan without network calls. Live transfer requires both `--apply` and `--confirm-target OWNER/REPOSITORY`; the target must already exist, match the authenticated personal GitHub account, and be private. The helper rechecks manifest target/lane, paths, archive entries, sizes, hashes, and likely private-key/GitHub-token markers. It writes only the named lane’s `incoming/` files plus a deterministic receipt under `inventory/`, refuses conflicting remote files, and pushes a commit to the target repository. Identical content is not overwritten. All behavior can be exercised against a local fake repository in tests.
+
+This helper is not called automatically by the factory installer. A successful test does not authorize a live transfer. Before any real use, inspect the exact package and target; use synthetic files first. Credential detection is heuristic and cannot guarantee a package contains no secrets. The tool does not create repositories, change visibility/access controls, or prove Codex discoverability. End-to-end factory integration and isolated recovery acceptance remain open.
 
 ## Acceptance
 

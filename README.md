@@ -47,6 +47,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [scripts/materialize_intake_dock.py](scripts/materialize_intake_dock.py) — initializes a private local staging workspace with an explicit project lane; does not access GitHub or upload data.
 - [scripts/provision_intake_dock.py](scripts/provision_intake_dock.py) — dry-run-first, explicitly confirmed provisioning of one private repository in the authenticated personal account; no upload or lane setup.
 - [scripts/package_intake_dock_handoff.py](scripts/package_intake_dock_handoff.py) — packages only explicitly named files into a hash-verified local ZIP manifest; no upload or source modification.
+- [scripts/transfer_intake_dock_handoff.py](scripts/transfer_intake_dock_handoff.py) — validates a package locally by default; remote transfer requires `--apply` plus exact-target confirmation and refuses overwrites.
 
 ## Mission boundaries and license
 
