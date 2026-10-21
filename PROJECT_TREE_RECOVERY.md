@@ -39,7 +39,7 @@ The unit tests cover nested paths, binary data, empty directories, executable st
 
 CI also runs `scripts/run_generated_project_recovery_drill.py`. It uses the actual World Seed project generator to create a disposable project, adds synthetic nested user-authored text and binary userdata, explicitly captures the generated files and `world-seed-manifest.json`, restores into a separate location, independently compares the complete file/hash inventory, confirms the source did not change, and verifies that the restored project still catalogs as `generated-files-match`.
 
-This proves the generated-project fixture path only. It does not preserve Git history, working-tree/index state, GitHub-only records, or private operator/personal data, and it is not a substitute for restoring the actual designated demolition-test subject.
+The project-tree helper itself does not preserve Git history or index state; the drill tests a separate Git bundle restore plus a captured working-tree overlay in a synthetic repository. This proves only the fixture path. It does not export GitHub-only records or preserve private operator/personal data, and it is not a substitute for restoring the actual designated demolition-test subject.
 
 ## Still required before acceptance
 
