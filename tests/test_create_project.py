@@ -35,6 +35,9 @@ class CreateProjectTests(unittest.TestCase):
             for name in GENERATOR.PROJECT_FILES:
                 self.assertTrue((created / name).is_file(), name)
             self.assertTrue((created / "world-seed-manifest.json").is_file())
+            license_text = (created / "LICENSE").read_text(encoding="utf-8")
+            self.assertIn("<YEAR>", license_text)
+            self.assertIn("<COPYRIGHT HOLDER>", license_text)
 
     def test_custom_mission_replaces_marker_and_readme_placeholders(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -63,6 +66,18 @@ class CreateProjectTests(unittest.TestCase):
             with self.assertRaises(GENERATOR.ProjectGenerationError):
                 GENERATOR.create_project(ROOT, "keep-me", "A mission.", destination)
             self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
+
+    def test_symbolic_link_destination_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            target = root / "preserve-me"
+            target.mkdir()
+            (target / "marker.txt").write_text("preserve", encoding="utf-8")
+            link = root / "project-link"
+            link.symlink_to(target, target_is_directory=True)
+            with self.assertRaises(GENERATOR.ProjectGenerationError):
+                GENERATOR.create_project(ROOT, "project-link", "A mission.", link)
+            self.assertEqual((target / "marker.txt").read_text(encoding="utf-8"), "preserve")
 
     def test_invalid_name_and_blank_mission_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
