@@ -44,5 +44,9 @@ jobs:
         run: python scripts/run_local_recovery_drill.py
       - name: Run disposable selective recovery CLI drill
         run: python scripts/run_selective_recovery_drill.py
+      - name: Run disposable project-tree recovery CLI drill
+        run: python scripts/run_project_tree_recovery_drill.py
+      - name: Run generated-project recovery and catalog acceptance drill
+        run: python scripts/run_generated_project_recovery_drill.py
       - name: Run unit tests
         run: python -m unittest discover -s tests -v

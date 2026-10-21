@@ -39,6 +39,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md) — the canonical boundary between portable seed, private operator profile, and personal-data package.
 - [BASH_PROMPT.md](BASH_PROMPT.md) — the local prompt's role, limits, and safe integration into the operator workflow.
 - [RECOVERY.md](RECOVERY.md) — independent backup and reconstruction requirements.
+- [PROJECT_TREE_RECOVERY.md](PROJECT_TREE_RECOVERY.md) — experimental explicit-scope project-tree capture/restore, manifests, and acceptance limits.
 - [scripts/export_github_operating_records.py](scripts/export_github_operating_records.py) — read-only, paginated export of supported GitHub operating-record metadata to private storage.
 - [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) — reusable prompt for a fresh chat or builder.
 - [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) — a generic template to copy into an operator-approved, access-controlled location. Real operator profiles do not belong in the distributable seed.
@@ -192,7 +193,7 @@ This is a first preservation pass, not a complete GitHub account export. It does
 
 ## Local factory bootstrap
 
-The first safe local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented by [scripts/install_local_factory.sh](scripts/install_local_factory.sh). It installs a versioned local bootstrap and a private machine-profile report. It does not configure API/BUS services or remote delivery yet; those remain explicit factory acceptance gaps.
+The first safe local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented by [scripts/install_local_factory.sh](scripts/install_local_factory.sh). It installs a versioned local bootstrap and a private machine-profile report. An optional exact-target-confirmed step can create or verify an empty private Intake Dock repository; it does not transfer files, configure Codex, or configure API/BUS services. Remote handoff and Codex discovery remain explicit factory acceptance gaps.
 
 ## Current factory-first mission
 
