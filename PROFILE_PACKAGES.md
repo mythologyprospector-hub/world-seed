@@ -73,3 +73,21 @@ Removing content from the current tree does not erase prior Git history or copie
 ## Approval and safety boundaries
 
 Creating a new repository or changing access controls requires explicit owner approval. For this migration, the private destination exists and the migration draft's presence and provenance have been checked. Its mutable machine facts were not live-verified, and the profile remains subject to owner review; keep the public-tree cleanup and private package reviewable until both boundaries are confirmed. Never make a private package public to simplify bootstrap, and never place credentials or secrets in either package.
+
+
+## Post-wipe regeneration and private repository provisioning
+
+Use the rooted-Android ROM Manager analogy as a practical mental model: the factory is the installable system; not every partition or runtime artifact must be backed up. After a wipe, the installer can rediscover the machine, reinstall portable machinery, regenerate disposable infrastructure, and reload authorized settings. However, anything unique that cannot be recreated must be independently preserved and verified before the wipe.
+
+The intended bootstrap should:
+
+1. Discover live machine facts and collect only the system information needed for the operator's environment.
+2. Load the approved operator preferences/profile package if available; do not treat stale machine facts as authoritative.
+3. Use the owner's authorized GitHub CLI/API identity to create or verify the required private repositories/containers for the operator profile and personal-data package.
+4. Restore the corresponding approved package contents from the independent recovery set. Creating an empty repository is not data recovery.
+5. Create or verify a dedicated **private Intake Dock** repository for user-supplied exports, documents, source bundles, and other material that Codex is meant to work with.
+6. Verify private visibility, owner/target identity, access boundaries, upload results, and idempotent reruns. Fail safely if authorization, visibility, or target identity cannot be verified.
+
+The Intake Dock is a private staging area, separate from the portable public seed, operator profile, personal-data archive, and generated project outputs. Codex should be directed to use it as an explicit input/work area, not treated as authorized to roam across every repository just because GitHub is connected. Never put credentials or secret values into these packages or the Dock.
+
+This is intended architecture, **not a claim of current capability**. The existing local installer still needs implementation and an isolated post-wipe acceptance test for private repository creation, package restoration/upload, and Intake Dock provisioning. See [RECOVERY.md](RECOVERY.md) for the state classification and complete recovery sequence.

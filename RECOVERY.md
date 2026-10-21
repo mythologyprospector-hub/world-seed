@@ -145,3 +145,53 @@ Every recovery manifest must identify the preservation class, source of truth, c
 ## Local factory bootstrap status
 
 The first local installer is documented in [FACTORY_INSTALLER.md](FACTORY_INSTALLER.md) and implemented in `scripts/install_local_factory.sh`. It installs a versioned local bootstrap and saves a private machine profile. It is deliberately not yet the full factory: project-specific userdata collection, private profile restoration, API/BUS wiring, secure delivery, repository regeneration, and a clean-environment end-to-end recovery acceptance drill remain open gates.
+
+
+## Post-wipe regeneration model (ROM Manager analogy)
+
+**Design intent:** Treat recovery like a rooted-Android ROM workflow, not like a demand to preserve every partition. A wipe removes the disposable operating environment; the factory installer then flashes/installs the portable machinery, discovers the live system, loads authorized preferences, regenerates derived structures, and reboots into a usable environment. Some state must survive independently; other state is expected to be recreated after the wipe.
+
+The analogy is a design guide, not evidence that the current installer already implements every step. The end-to-end acceptance drill must prove each claimed step.
+
+### Classify state before deciding what to back up
+
+| State class | Recovery treatment | Examples |
+|---|---|---|
+| Portable factory / seed | Preserve independently and verify integrity before the wipe | World Seed source and history, bootstrap instructions, schemas, installer, tests |
+| Irreplaceable owner data | Capture independently, verify, and test restoration before the wipe | Personal records, user-created documents/exports, unique project data, essential operating records |
+| Operator profile and preferences | Preserve the approved source package; regenerate the private repository container after bootstrap if needed, then restore the package | Communication preferences, approved attribution, machine/account orientation, non-secret configuration |
+| Machine-derived facts | Rediscover after installation and compare with any prior profile as a clue, not truth | OS/hardware inventory, installed tools, paths, available services, current repository access |
+| Regenerable private infrastructure | Recreate after the wipe through the factory installer and authorized GitHub CLI/API access | Private operator-profile repository, private personal-data repository/container, private Intake Dock |
+| Credentials and secrets | Never place in generic backups, profile manifests, public seed, or Dock payloads unless an explicitly approved secure secret system is designed for them | Tokens, passwords, private keys; document safe re-authentication/rotation instead |
+| Disposable build/runtime state | Rebuild from source and configuration; preserve only if it contains unique, classified user data | Virtual environments, caches, generated artifacts, temporary worktrees |
+
+Do not confuse **recreating a repository** with **recovering its contents**. The factory may create a fresh private repository after a wipe, but any irreplaceable contents must first be preserved independently and then selectively restored. If a package is absent, inaccessible, or cannot be restored, bootstrap may continue only within the documented safe scope and must report the gap honestly.
+
+### Expected post-wipe bootstrap sequence
+
+1. Start from the independently preserved, integrity-checked seed and authorized bootstrap instructions.
+2. Install the portable factory machinery on the clean machine.
+3. Discover the live machine and available tools; record current facts rather than assuming an old machine profile is still accurate.
+4. Load the authorized operator profile and preferences, if available, and keep personal-data access separate and purpose-limited.
+5. Through the factory installer, use the owner's authorized GitHub CLI/API identity to create or verify the required **private** repositories/containers. Intended targets include the operator profile, personal-data package, and private Intake Dock. Check visibility and ownership explicitly; never silently create public repositories.
+6. Upload only the corresponding approved profile/package contents to their correct private destinations. Do not upload credentials, secrets, or unrelated personal records.
+7. Restore irreplaceable data from the independently preserved recovery set, with integrity checks and a manifest of what was restored, omitted, or failed.
+8. Rebuild derived machine state and disposable project state from the seed and approved configuration.
+9. Verify permissions, repository contents, bootstrap health, and the acceptance checks; record evidence and residual gaps.
+
+Repository creation and access-control changes require owner authorization. The design must not assume that GitHub CLI authentication implies blanket permission to modify every repository. Use an explicit allowlist/declared target set, least privilege, idempotent operations, and clear failure reporting.
+
+### Private Intake Dock
+
+The factory should create or verify a dedicated private GitHub repository used as a **loading dock** for user-supplied exports, documents, source bundles, and other material intended for Codex to work with. It is a staging boundary, not the public seed, not the operator profile, and not the personal-data archive.
+
+- Confirm the repository is private before uploading anything.
+- Keep uploaded material clearly separated from generated outputs and implementation changes.
+- Record provenance, intended purpose, sensitivity, and retention/cleanup expectations where practical.
+- Give Codex access only to this declared work area and other specifically authorized project repositories; a connected account is not blanket authorization.
+- Do not use the Dock as the only copy of irreplaceable data. Anything required for recovery needs an independent preservation path.
+- Do not automatically forward Dock contents to unrelated projects, public repositories, prompts, or services.
+
+### Current implementation status
+
+This section defines the intended architecture and acceptance target; it does not certify that the current installer already creates repositories, uploads profile/data packages, creates the Intake Dock, or completes an end-to-end post-wipe restore. Track those as implementation gates and prove them in an isolated recovery drill before claiming recovery readiness.
