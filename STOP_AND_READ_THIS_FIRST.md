@@ -8,6 +8,21 @@ The projects are test material and downstream products. **World Seed and the res
 
 Jimmy has explicitly changed direction toward a mostly clean GitHub reboot after the foundation is finished and proven. This is strategic direction, not blanket permission to delete repositories today. Preserve the evidence and source material needed to prove recovery first; the human remains the final gate for destructive actions.
 
+## THE FOUR REPOSITORIES THAT SURVIVE THE RESET
+
+**The only repositories currently designated to survive the reset are these four. Treat this list as the authorized target state, not as permission to delete anything before the recovery gates and human authorization are satisfied.**
+
+1. **`world-seed` — the factory blueprint.** Portable constitution, governance, bootstrap, account/machine discovery, audit, verification, backup, recovery, and the mechanisms that coordinate the whole ecosystem.
+2. **`project-seed` — the history and gleaning workshop.** Retain it for its history and for extracting useful, proven patterns and lessons. Its historical contents are source material to evaluate, not automatically active factory machinery.
+3. **`operator-profile` — the operator-specific package.** Preferences, local operating context, and other operator configuration that must not contaminate the portable public core.
+4. **`personal-data` — the personal-data package.** Personal records and information that must remain separate from public infrastructure and be protected according to their sensitivity.
+
+Together, these are the **foundation, wiring, plumbing, and user/vendor add-ons inside a GitHub shell**. That is the factory to finish.
+
+**Do not choose, design, populate, or build the factory's eventual products yet.** Once the building is finished and its capabilities have been demonstrated, Jimmy and the steward will discuss what goes inside. A disposable project may be used strictly as a factory acceptance test; it is not a decision about the factory's future product portfolio.
+
+Any repository outside this four-repository target is disposable in the planned reset. “Disposable” means it is not part of the intended surviving system; it does **not** mean its unique evidence, history, data, or lessons can be destroyed before the essential preservation and recovery gates pass. Glean what the factory needs, prove preservation and restoration, and obtain the required authorization before destructive action.
+
 ## THE HUMAN'S AMBITION — TAKE IT SERIOUSLY
 
 Jimmy is a layman, not a professional software engineer. His “pipe dream” is that World Seed and the rest of the foundation might one day let someone like him compete in the global software market and community by producing work of genuinely professional quality.
@@ -36,6 +51,7 @@ Professional quality means more than a green test suite or polished README. It m
 - Ensure the portable core, operator profile, personal data, account inventory, machine-specific setup, and recovery artifacts have clear boundaries.
 - Make onboarding actionable for a non-programmer with a real machine and a real GitHub account.
 - Make the factory's own validators catch missing essential files, broken instructions, unsafe privacy boundaries, false claims, and untested recovery assumptions.
+- Keep the four-repository survival boundary explicit and machine-checkable where practical.
 
 ### 2. Prove capabilities in reality
 
@@ -46,8 +62,8 @@ Run and record explicit acceptance tests for:
 - backup of repository source, refs, and relevant GitHub-only operating records/settings;
 - verification of backup integrity and coverage;
 - an isolated restoration drill that reconstructs a usable environment and proves the restored result;
-- creation of a disposable project from a blank starting point, using a new mission;
-- professional-quality gates appropriate to that project's purpose;
+- a disposable factory acceptance test from a blank starting point, only after the factory itself is ready;
+- professional-quality gates appropriate to that test project's purpose;
 - durable handoff to a new AI builder who has not seen the prior conversation.
 
 A passing unit test, successful export, backup file, green workflow, or written plan is useful evidence—but none alone proves complete account recovery or a working factory. State exactly what each test proves and what remains unverified.
@@ -62,11 +78,11 @@ Projects may be archived or removed after the essential material is backed up, i
 
 ### 4. Reboot only when the gates pass
 
-The desired end state is a deliberately clean GitHub account/world, rebuilt from the proven foundation—not a museum of inherited repositories. But **do not begin destructive cleanup merely because the mission is clear or the tests are green**. Confirm recovery evidence, exact scope, and human authorization before destructive actions. The factory must earn the right to rebuild its own world.
+The desired end state is a deliberately clean GitHub account/world, rebuilt around the four designated survivor repositories—not a museum of inherited repositories. But **do not begin destructive cleanup merely because the mission is clear or the tests are green**. Confirm recovery evidence, exact scope, and human authorization before destructive actions. The factory must earn the right to rebuild its own world.
 
 ### 5. Prove the factory can make something excellent
 
-Use a disposable project as a real acceptance test, not as a showcase made to look successful. Give it a meaningful, distinct mission. Let the steward discover what should be built, use the foundation's workflow, implement and test it, independently review the result, and record failures and improvements. Judge by the delivered artifact and evidence—not by the number of repos, documents, commits, or claims.
+Use a disposable project as a real acceptance test, not as a decision about what the future product should be. This test is allowed only to prove the factory can bootstrap, govern, build, test, review, and preserve a project from a blank start. Give it a meaningful, distinct test mission; judge the delivered artifact and evidence, then discard it if it is no longer needed. The eventual product portfolio is a separate decision for after the building is finished.
 
 ## CURRENT CHECKPOINT — VERIFY BEFORE ACTING
 
@@ -86,9 +102,9 @@ These are checkpoints, not endorsements of current readiness. A future builder m
 1. Read this sign, `MISSION.md`, `CONSTITUTION.md`, `AGENTS.md`, `RECOVERY.md`, `AUDIT_SYSTEM.md`, `PROFILE_PACKAGES.md`, and the current handoff/acceptance tests.
 2. Reconcile the real GitHub and local state. Identify the current source-of-truth branch and the intended PR path; do not infer it from old chat.
 3. Write a short evidence-based status: proven, incomplete, blocked, and next highest-leverage action.
-4. Continue driving the foundation toward the acceptance gates above. Do not ask Jimmy to restate this mission.
+4. Continue driving the factory toward the acceptance gates above. Do not ask Jimmy to restate this mission or ask him to pick the future products before the factory is complete.
 5. Do not delete repositories, merge consequential changes, or claim full recovery without the required evidence and authorization.
 
 **The finish line is not “World Seed exists.” The finish line is “a layman can use the proven foundation to help produce and maintain work that stands up to professional scrutiny—and the system can recover and do it again.”**
 
-Build the machine. Prove the machine. Then let it build the world.
+Build the machine. Prove the machine. Then, when the building is finished, decide what goes inside.
