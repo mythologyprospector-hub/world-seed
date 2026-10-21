@@ -18,7 +18,7 @@ class LocalFactoryInstallerTests(unittest.TestCase):
 
     def test_installer_declares_safe_first_layer_boundaries(self) -> None:
         source = INSTALLER.read_text(encoding="utf-8")
-        self.assertIn("git status --porcelain", source)
+        self.assertIn("status --porcelain --untracked-files=normal", source)
         self.assertIn("refusing to overwrite", source)
         self.assertIn("chmod 600", source)
         self.assertIn("remote_delivery", source)
