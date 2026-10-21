@@ -12,8 +12,6 @@ on:
 permissions:
   contents: read
 
-# A PR gets one current check at a time; superseded runs are cancelled.
-# Do not also run push checks on the feature branch: pull_request already covers it.
 concurrency:
   group: world-seed-checks-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -27,7 +25,9 @@ jobs:
       - name: Check out exact revision
         uses: actions/checkout@v4
       - name: Check shell script syntax
-        run: bash -n scripts/prepare_local_handoff_backup.sh
+        run: |
+          bash -n scripts/prepare_local_handoff_backup.sh
+          bash -n scripts/install_local_factory.sh
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
