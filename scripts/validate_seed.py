@@ -114,6 +114,7 @@ REQUIRED_FILES = (
     "PROJECT_TREE_RECOVERY.md",
     "scripts/project_tree_recovery.py",
     "scripts/run_project_tree_recovery_drill.py",
+    "scripts/run_generated_project_recovery_drill.py",
     "tests/test_project_tree_recovery.py",
 )
 
