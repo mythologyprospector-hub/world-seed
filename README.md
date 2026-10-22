@@ -23,6 +23,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md) and [scripts/terminal_journal.py](scripts/terminal_journal.py) — initial durable, private local command/output journal; capture is opt-in per command and remote sync is not yet enabled.
 - [RECOVERY_STATE_CONTRACT.md](RECOVERY_STATE_CONTRACT.md), [schemas/recovery-project-state.schema.json](schemas/recovery-project-state.schema.json), and [templates/recovery-project-state.template.json](templates/recovery-project-state.template.json) — versioned project-context recovery contract, schema, and explicitly unverified starter template.
 - [RECOVERY_CAPSULE.md](RECOVERY_CAPSULE.md) and [scripts/build_recovery_capsule.py](scripts/build_recovery_capsule.py) — local metadata-only index of terminal journal sessions; no upload or retrieval bridge.
+- [RECOVERY_STATE_REFRESH.md](RECOVERY_STATE_REFRESH.md) and [scripts/audit_recovery_state.py](scripts/audit_recovery_state.py) — local read-only audit comparing a reviewed state record with a selected Git checkout; outputs a new private proposal report without editing the source state.
 
 - [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
 - [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
