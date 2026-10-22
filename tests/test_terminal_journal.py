@@ -3,6 +3,7 @@
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
@@ -77,6 +78,46 @@ class TerminalJournalTests(unittest.TestCase):
             self.assertLess(max(output_positions), finish_positions[0])
             self.assertIn("EARLY_MARKER", self.output(records, "stdout"))
             self.assertIn("LATE_MARKER", self.output(records, "stdout"))
+
+    @unittest.skipUnless(os.name == "posix", "POSIX signals required")
+    def test_keyboard_interrupt_drains_output_before_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            log_dir = Path(temp) / "journal"
+            process = subprocess.Popen(
+                [
+                    sys.executable, str(SCRIPT), "--log-dir", str(log_dir), "--",
+                    sys.executable, "-c",
+                    "import time; print('BEFORE_INTERRUPT', flush=True); time.sleep(30)",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                assert process.stdout is not None
+                first_line = process.stdout.readline()
+                self.assertIn("BEFORE_INTERRUPT", first_line)
+                process.send_signal(signal.SIGINT)
+                remaining_stdout, stderr = process.communicate(timeout=10)
+                self.assertEqual(process.returncode, 130, stderr)
+                self.assertIn("saved:", stderr)
+                _, records = self.records(log_dir)
+                finished = self.events(records, "command_finished")[0]
+                self.assertTrue(finished["interrupted"])
+                self.assertEqual(finished["exit_code"], 130)
+                output_positions = [
+                    i for i, record in enumerate(records) if record["event"] == "output"
+                ]
+                finish_positions = [
+                    i for i, record in enumerate(records) if record["event"] == "command_finished"
+                ]
+                self.assertTrue(output_positions)
+                self.assertLess(max(output_positions), finish_positions[0])
+                self.assertIn("BEFORE_INTERRUPT", self.output(records, "stdout"))
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.communicate(timeout=5)
 
     def test_preserves_nonzero_exit_code_and_records_failure(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
