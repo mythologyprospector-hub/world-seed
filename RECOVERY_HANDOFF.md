@@ -55,13 +55,17 @@ A read-only ignored-path rule summary across all seven main checkouts found: `wo
 
 The local branch audit showed multiple GitHub branches absent from original local remote-tracking caches and several differing branch tips. Fresh GitHub mirrors/bundles have since been created and verified; do not treat that as completion of the wider GitHub-record inventory.
 
+A read-only submodule-entry scan (`git ls-tree -r` over each commit reachable from local refs) found no mode-`160000` entries in the reachable local history of any of the seven candidate repositories. Combined with the absence of `.gitmodules` in each current local checkout, this is strong evidence against submodules in those local histories; the fresh GitHub mirror histories have not yet had the same scan. A local check for `git lfs` reported it unavailable or not configured for all seven, so Git LFS content is still **unverified**, not ruled out. Next, search tracked Git blobs for Git LFS pointer signatures and repeat submodule/LFS checks against the fresh mirror copies.
+
 The attempt to run a large shell block for all local status inventories was interrupted because the paste broke across lines. Do not repeat a large multi-line paste blindly. Use short, manageable commands or a script file, and preserve the user's prompt if a command is accidentally left incomplete (Ctrl+C cancels the unfinished shell input).
 
 ## Not yet done
 
 - [ ] Inspect local-only and ignored files for all seven subjects, including the two Episteme detached worktrees; preserve selected essentials without copying caches indiscriminately.
 - [ ] Confirm the contents and integrity of the local preservation directory and record a private inventory without publishing private paths or personal details.
-- [ ] Check relevant Git LFS objects, submodules, tags, and any refs not covered by the bundle verification as applicable.
+- [ ] Scan fresh GitHub mirror histories for submodule entries; local reachable histories had none.
+- [ ] Check tracked blobs for Git LFS pointer signatures; Git LFS tooling was unavailable/not configured, so LFS is not ruled out.
+- [ ] Check relevant tags and any refs not covered by bundle verification as applicable.
 - [ ] Inventory GitHub-only records for each candidate: issues, PRs and review threads, discussions, releases/tags, Actions artifacts/logs, wikis, project boards, repo settings, collaborators, secrets/variables names where appropriate, and other project metadata. Record what is actually available; do not expose secret values.
 - [ ] Restore each subject into an isolated clean destination using World Seed recovery tooling, compare hashes/metadata, and run relevant checks.
 - [ ] Report a per-subject recovery verdict and unresolved gaps.
@@ -69,7 +73,7 @@ The attempt to run a large shell block for all local status inventories was inte
 
 ## Current next safe step
 
-The first-pass read-only local status and ignored-rule summaries for the seven candidate main checkouts are complete, and both detached Episteme worktrees' ignored entries are explained by Python bytecode caches. Next, inspect for other local-only data outside normal Git status and ignored caches, then continue the GitHub-only record inventory. Capture any sensitive paths privately; do not display private document contents. Keep the existing bundles and worktrees untouched. The overall recovery issue is [World Seed issue #12](https://github.com/mythologyprospector-hub/world-seed/issues/12); use it as the central progress thread and link this handoff from there.
+The first-pass read-only local status and ignored-rule summaries for the seven candidate main checkouts are complete, and both detached Episteme worktrees' ignored entries are explained by Python bytecode caches. The local reachable-history scan found no submodule entries, but fresh GitHub mirror histories still need the same check; Git LFS is not ruled out. Next, scan for Git LFS pointer blobs and submodule entries in the fresh mirrors, then inspect for other local-only data outside normal Git status and ignored caches and continue the GitHub-only record inventory. Capture any sensitive paths privately; do not display private document contents. Keep the existing bundles and worktrees untouched. The overall recovery issue is [World Seed issue #12](https://github.com/mythologyprospector-hub/world-seed/issues/12); use it as the central progress thread and link this handoff from there.
 
 ## Related factory context
 
