@@ -20,7 +20,7 @@ For shell syntax (pipes, redirects, or multiple commands), use:
 python3 scripts/terminal_journal.py --shell 'python3 scripts/validate_seed.py && python3 -m unittest discover -s tests -v'
 ```
 
-The wrapper streams output to the terminal and writes a `command_started` event before launching the child. Each stdout/stderr chunk is then appended as an `output` event and flushed with `fsync` before those bytes are displayed. A final `command_finished` event records exit status, elapsed time, byte counts, output hashes, interruption state, and journal-write errors. Events share a session ID and sequence numbers. This means a host or wrapper crash can still leave a recoverable partial session rather than losing all output until command completion.
+The wrapper streams output to the terminal and writes a `command_started` event before launching the child. Each stdout/stderr chunk is then appended as an `output` event and flushed with `fsync` before those bytes are displayed. The output readers use non-blocking-when-available buffered reads so small chunks can be delivered without waiting for a full buffer. A final `command_finished` event records exit status, elapsed time, byte counts, output hashes, interruption state, and journal-write errors. Events share a session ID and sequence numbers. On keyboard interruption, the wrapper terminates the child and drains reader threads before writing the completion event. A host or wrapper crash can still leave a recoverable partial session rather than losing all output until command completion.
 
 The journal uses event-oriented JSON Lines. To reconstruct output, concatenate each session's `output` event `text` fields separately by `stream` (`stdout` or `stderr`) in sequence order. A missing `command_finished` event means the session did not record normal completion; do not infer an exit status.
 
@@ -37,7 +37,7 @@ This initial interface captures commands deliberately routed through the wrapper
 
 ## Remote synchronization boundary
 
-Remote delivery must use the existing private Intake Dock / Miracle Depot compartment model, not the public World Seed repository. Each project must have its own lane. A private repository is still a repository-wide access boundary, not a lane-level permission boundary.
+Remote delivery must use a separately approved private destination with explicit project/lane isolation. The Intake Dock remains an unproven scaffold, and Miracle Depot is not assumed to be the final destination. Do not treat a private repository as lane-level isolation: repository privacy is a repository-wide access boundary.
 
 Automatic sync is not enabled. Before enabling it, implement and test explicit destination configuration, project/lane validation, bounded batches, integrity receipts, retry behavior, duplicate handling, and a reviewable secret-redaction policy. Heuristic redaction is not a guarantee that a record contains no secrets. Do not sync raw terminal recordings by default.
 
