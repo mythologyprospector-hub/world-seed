@@ -43,7 +43,7 @@ From the World Seed checkout, after installing the pinned development dependency
   --project world-seed \
   --state /path/to/reviewed-world-seed-state.json \
   --repo /path/to/world-seed-checkout \
-  --output \"$HOME/.local/state/world-seed-recovery/world-seed-audit.json\"
+  --output "$HOME/.local/state/world-seed-recovery/world-seed-audit.json"
 ```
 
 Replace both input paths with the actual reviewed state file and checkout. The output path must not already exist. The tool is read-only with respect to the state input and writes a private report. It does not create a state record from the template for you.
