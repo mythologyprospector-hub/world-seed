@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Build a metadata-only recovery capsule from a local terminal journal.
+"""Build a local recovery capsule from a terminal journal and optional project state.
 
-Raw commands and stdout/stderr are deliberately excluded. This tool performs no
-network access and never uploads records.
+Raw terminal commands and stdout/stderr are excluded. Project state is included
+only when explicitly supplied and validated against the versioned JSON Schema.
+This tool performs no network access and never uploads records.
 """
 
 from __future__ import annotations
@@ -15,6 +16,10 @@ from pathlib import Path
 import re
 import sys
 from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PROJECT_STATE_SCHEMA = ROOT / "schemas" / "recovery-project-state.schema.json"
 
 
 def safe_project_name(value: str) -> str:
@@ -50,7 +55,48 @@ def load_records(paths: list[Path]) -> tuple[list[dict[str, Any]], list[dict[str
     return records, warnings
 
 
-def build_capsule(project: str, journal_root: Path) -> dict[str, Any]:
+def load_project_state(path: Path, project: str) -> dict[str, Any]:
+    """Load and validate one explicitly selected project-state JSON record."""
+    try:
+        state = json.loads(path.expanduser().read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"cannot read project-state JSON ({type(exc).__name__})") from exc
+    if not isinstance(state, dict):
+        raise ValueError("project-state document must be a JSON object")
+
+    try:
+        import jsonschema
+    except ImportError as exc:
+        raise ValueError(
+            "project-state validation requires development dependencies; install requirements-dev.txt"
+        ) from exc
+
+    try:
+        schema = json.loads(PROJECT_STATE_SCHEMA.read_text(encoding="utf-8"))
+        jsonschema.Draft202012Validator.check_schema(schema)
+        validator = jsonschema.Draft202012Validator(
+            schema, format_checker=jsonschema.FormatChecker()
+        )
+        errors = sorted(validator.iter_errors(state), key=lambda error: list(error.absolute_path))
+    except (OSError, UnicodeError, json.JSONDecodeError, jsonschema.SchemaError) as exc:
+        raise ValueError(f"cannot load or use project-state schema ({type(exc).__name__})") from exc
+    if errors:
+        first = errors[0]
+        location = ".".join(str(part) for part in first.absolute_path) or "<root>"
+        raise ValueError(
+            f"project-state record failed schema validation at {location}: {first.message}"
+        )
+
+    if state["project"]["name"] != project:
+        raise ValueError("project-state project.name must exactly match --project")
+    return state
+
+
+def build_capsule(
+    project: str,
+    journal_root: Path,
+    project_state_path: Path | None = None,
+) -> dict[str, Any]:
     project = safe_project_name(project)
     project_dir = journal_root / project
     if not project_dir.is_dir():
@@ -88,6 +134,29 @@ def build_capsule(project: str, journal_root: Path) -> dict[str, Any]:
             "journal_write_error_reported": bool(finish.get("journal_errors")) if finish else None,
         })
     sessions.sort(key=lambda item: (item["started_at"] or "", item["session_id"]))
+
+    state_section: dict[str, Any] = {
+        "included": False,
+        "status": "not_supplied",
+        "validation": "not_run",
+        "interpretation": (
+            "No project-state record was supplied. Journal metadata alone does not "
+            "reconstruct project canon, decisions, or next action."
+        ),
+    }
+    if project_state_path is not None:
+        state = load_project_state(project_state_path, project)
+        state_section = {
+            "included": True,
+            "status": "schema_valid",
+            "validation": "passed",
+            "interpretation": (
+                "Schema validation checks structure and format only. Claims, provenance, "
+                "freshness, linked evidence, and authorization still require independent review."
+            ),
+            "record": state,
+        }
+
     return {
         "schema_version": 1,
         "capsule_type": "world-seed-terminal-journal-metadata",
@@ -100,13 +169,15 @@ def build_capsule(project: str, journal_root: Path) -> dict[str, Any]:
             "stdout_stderr_text_included": False,
             "network_transfer_performed": False,
         },
+        "project_state": state_section,
         "sessions": sessions,
         "warnings": warnings,
         "limitations": [
-            "This capsule contains metadata only; it cannot reconstruct terminal output.",
-            "Recorded exit codes and hashes are reported as journal claims, not independently verified.",
+            "This capsule does not include raw terminal output and cannot reconstruct it.",
+            "Recorded exit codes and hashes are journal claims, not independently verified.",
+            "A schema-valid project-state record is not proof that its claims are true or current.",
             "A missing completion event is incomplete or unrecorded; no exit status is inferred.",
-            "Review this file before sharing; branch names and activity timing may still be sensitive.",
+            "Review this file before sharing; state notes, branch names and activity timing may be sensitive.",
         ],
     }
 
@@ -135,7 +206,7 @@ def write_private_new_file(path: Path, payload: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Create a metadata-only, local recovery capsule from a terminal journal."
+        description="Create a local recovery capsule from a terminal journal and optional project state."
     )
     parser.add_argument("--project", required=True, help="exact project lane name")
     parser.add_argument(
@@ -144,19 +215,25 @@ def main() -> int:
         default=Path.home() / ".local/state/world-seed-terminal-journal",
         help="journal root (default: ~/.local/state/world-seed-terminal-journal)",
     )
+    parser.add_argument(
+        "--project-state",
+        type=Path,
+        help="optional reviewed project-state JSON file; must validate against the repository schema",
+    )
     parser.add_argument("--output", required=True, type=Path, help="new output file; existing files are never overwritten")
     args = parser.parse_args()
     try:
-        capsule = build_capsule(args.project, args.journal_root.expanduser())
+        capsule = build_capsule(args.project, args.journal_root.expanduser(), args.project_state)
         write_private_new_file(args.output, json.dumps(capsule, ensure_ascii=False, indent=2) + "\n")
     except (ValueError, FileNotFoundError, OSError) as exc:
         print(f"[recovery-capsule] ERROR: {exc}", file=sys.stderr)
         return 2
-    print(f"[recovery-capsule] created metadata-only capsule: {args.output}")
+    print(f"[recovery-capsule] created recovery capsule: {args.output}")
     print(f"[recovery-capsule] sessions: {len(capsule['sessions'])}; warnings: {len(capsule['warnings'])}")
-    print("[recovery-capsule] no raw command/output text included; no network transfer performed")
+    print(f"[recovery-capsule] project state: {capsule['project_state']['status']}")
+    print("[recovery-capsule] raw command/output text excluded; no network transfer performed")
     return 0
 
 
-if __name__ == "__main__":
+if __0__ == "__main__":
     raise SystemExit(main())
