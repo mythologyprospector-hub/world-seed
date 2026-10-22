@@ -46,14 +46,21 @@ def run_git(repo: Path, *args: str) -> str:
 
 
 def redact_url(value: str) -> str:
-    """Remove URL userinfo before any URL is written to the report."""
+    """Normalize common HTTPS/SSH remotes without exposing URL userinfo."""
+    value = value.strip()
+    # Git's common SCP-style SSH remote: git@github.com:owner/repository.git
+    scp_match = re.fullmatch(r"(?:[^@/]+@)?([^:/]+):(.+)", value)
+    if scp_match and "://" not in value:
+        host, path = scp_match.groups()
+        return urlunsplit(("https", host, "/" + path.lstrip("/"), "", ""))
     try:
         parsed = urlsplit(value)
         if parsed.scheme and parsed.netloc:
             host = parsed.hostname or ""
             if parsed.port:
                 host = f"{host}:{parsed.port}"
-            return urlunsplit((parsed.scheme, host, parsed.path, parsed.query, parsed.fragment))
+            # Do not retain query or fragment; they can contain credentials too.
+            return urlunsplit((parsed.scheme, host, parsed.path, "", ""))
     except ValueError:
         pass
     return "[unparseable-or-non-url-origin]"
