@@ -47,7 +47,7 @@ A read-only worktree inventory found one checkout each for the six other local c
 - Episteme PR #43 test worktree at `~/projects/.worktrees/episteme/episteme-pr43-test`, detached HEAD `bd58c07`.
 - Episteme PR #59 test worktree at `~/projects/.worktrees/episteme/episteme-pr59-test`, detached HEAD `4dbc710`.
 
-A read-only `git status --short --untracked-files=all` check showed `?? uv.lock` in the Episteme main checkout and no tracked/untracked output in either test worktree. The lockfile was separately copied and hash-verified. **Ignored files in these worktrees have not yet been inventoried.** Do not remove or reset the detached test worktrees.
+A read-only `git status --short --untracked-files=all` check showed `?? uv.lock` in the Episteme main checkout and no tracked/untracked output in either test worktree. The lockfile was separately copied and hash-verified. A subsequent ignored-path summary found these top-level counts: main checkout — `.pytest_cache` 5, `scripts` 2, `src` 70, `tests` 91, `.venv` 647; each detached test worktree — `src` 25. These were counts of ignored paths grouped by top-level path, not a content review. A follow-up `git check-ignore -v --no-index` report resolved all 815 ignored entries to ordinary project rules: `.venv/` (647), `__pycache__/` (157), `*.egg-info/` (6), and `.pytest_cache/` (5). The apparent `src`, `tests`, and `scripts` top-level groups were paths nested under these ignored directories, not evidence of 187 ignored source files. The full path/rule report is stored privately at `~/retirement-preservation-2026-10-21/local-state/episteme-ignored-rules.txt`. No ignored caches have been copied or removed. The two detached worktrees still need their own ignored-path and local-state review. Do not remove or reset the detached test worktrees.
 
 The local branch audit showed multiple GitHub branches absent from original local remote-tracking caches and several differing branch tips. Fresh GitHub mirrors/bundles have since been created and verified; do not treat that as completion of the wider GitHub-record inventory.
 
@@ -73,7 +73,7 @@ Then continue the GitHub-only record inventory. The overall recovery issue is [W
 
 World Seed's recovery/factory stack was previously merged through PR #27, and the reported protected-branch Action run showed 193 unit tests passing, both synthetic recovery drills passing, and 112 required-file/Markdown-link checks. This verifies synthetic checks, **not recovery of the real retirement candidates**.
 
-Project Seed absorption audit PR #28 was open and its check was still running at the last known checkpoint. Verify the current PR and Actions state before relying on that status or changing it.
+Project Seed absorption audit PR #28 has since been verified merged at `64a5b290e52d396682eb9611067ba9f9aa0adf5e`. Its merged audit still does not clear Project Seed for retirement: full semantic review, sync-dependency review, and the separate real recovery gates remain open. The handoff PR #32 was merged at `bf2f8efffce8cdc4c842a14d7d5e12bbeb1ef3cd`; its PR-head quality workflow completed successfully before merge, while a separate workflow run for the merge commit had not yet appeared at the last check.
 
 ## Resume protocol for the next assistant
 
