@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Capture one command as a durable local JSONL terminal-journal record."""
+"""Run a command while durably journaling output chunks as they arrive."""
 
 from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -13,6 +14,7 @@ import subprocess
 import sys
 import threading
 import time
+import uuid
 from typing import BinaryIO
 
 
@@ -78,20 +80,44 @@ def append_record(path: Path, record: dict[str, object]) -> None:
         os.close(fd)
 
 
-def pump(stream: BinaryIO, destination: BinaryIO, collected: bytearray, lock: threading.Lock) -> None:
+def pump(
+    source: BinaryIO,
+    destination: BinaryIO,
+    stream_name: str,
+    collected: bytearray,
+    lock: threading.Lock,
+    log_path: Path,
+    base_record: dict[str, object],
+    sequence: dict[str, int],
+    journal_errors: list[str],
+) -> None:
     while True:
-        chunk = stream.read(4096)
+        chunk = source.read(4096)
         if not chunk:
-            break
+            return
         collected.extend(chunk)
         with lock:
+            event = {
+                **base_record,
+                "event": "output",
+                "sequence": sequence["value"],
+                "recorded_at": utc_now(),
+                "stream": stream_name,
+                "text": chunk.decode("utf-8", errors="replace"),
+            }
+            try:
+                # Persist before displaying the bytes: visible output should already be recoverable.
+                append_record(log_path, event)
+                sequence["value"] += 1
+            except OSError as exc:
+                journal_errors.append(f"{type(exc).__name__}: {exc}")
             destination.write(chunk)
             destination.flush()
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Run a command, stream its output, and append a private local journal record."
+        description="Run a command, stream its output, and durably journal output chunks locally."
     )
     parser.add_argument("--project", help="project lane name (defaults to Git root or current directory name)")
     parser.add_argument(
@@ -127,24 +153,57 @@ def main() -> int:
         parser.error(str(exc))
 
     root = (args.log_dir or (Path.home() / ".local/state/world-seed-terminal-journal")).expanduser()
-    start_time = utc_now()
     day = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     log_path = root / project / f"{day}.jsonl"
+    session_id = str(uuid.uuid4())
+    start_time = utc_now()
     started = time.monotonic()
     stdout_data = bytearray()
     stderr_data = bytearray()
     output_lock = threading.Lock()
+    sequence = {"value": 0}
+    journal_errors: list[str] = []
     child: subprocess.Popen[bytes] | None = None
     interrupted = False
     spawn_error: str | None = None
     exit_code = 127
+    base_record: dict[str, object] = {
+        "schema_version": 2,
+        "session_id": session_id,
+        "project": project,
+        "cwd": str(cwd),
+        **git,
+        "command": command_record,
+    }
+
+    try:
+        append_record(log_path, {
+            **base_record,
+            "event": "command_started",
+            "sequence": sequence["value"],
+            "recorded_at": start_time,
+        })
+        sequence["value"] += 1
+    except OSError as exc:
+        print(f"[terminal-journal] ERROR: cannot persist command start; command not run: {exc}", file=sys.stderr)
+        return 125
 
     try:
         child = subprocess.Popen(child_argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         assert child.stdout is not None and child.stderr is not None
         threads = [
-            threading.Thread(target=pump, args=(child.stdout, sys.stdout.buffer, stdout_data, output_lock), daemon=True),
-            threading.Thread(target=pump, args=(child.stderr, sys.stderr.buffer, stderr_data, output_lock), daemon=True),
+            threading.Thread(
+                target=pump,
+                args=(child.stdout, sys.stdout.buffer, "stdout", stdout_data, output_lock,
+                      log_path, base_record, sequence, journal_errors),
+                daemon=True,
+            ),
+            threading.Thread(
+                target=pump,
+                args=(child.stderr, sys.stderr.buffer, "stderr", stderr_data, output_lock,
+                      log_path, base_record, sequence, journal_errors),
+                daemon=True,
+            ),
         ]
         for thread in threads:
             thread.start()
@@ -166,31 +225,36 @@ def main() -> int:
         exit_code = 127
     finally:
         ended_time = utc_now()
-        record: dict[str, object] = {
-            "schema_version": 1,
+        finished: dict[str, object] = {
+            **base_record,
+            "event": "command_finished",
+            "sequence": sequence["value"],
+            "recorded_at": ended_time,
             "started_at": start_time,
-            "ended_at": ended_time,
             "duration_seconds": round(time.monotonic() - started, 3),
-            "project": project,
-            "cwd": str(cwd),
-            **git,
-            "command": command_record,
             "exit_code": exit_code,
             "interrupted": interrupted,
             "spawn_error": spawn_error,
-            "stdout": stdout_data.decode("utf-8", errors="replace"),
-            "stderr": stderr_data.decode("utf-8", errors="replace"),
+            "stdout_bytes": len(stdout_data),
+            "stderr_bytes": len(stderr_data),
+            "stdout_sha256": hashlib.sha256(stdout_data).hexdigest(),
+            "stderr_sha256": hashlib.sha256(stderr_data).hexdigest(),
+            "journal_errors": journal_errors,
         }
         try:
-            append_record(log_path, record)
+            append_record(log_path, finished)
             print(f"\n[terminal-journal] saved: {log_path}", file=sys.stderr)
         except OSError as exc:
-            print(
-                f"\n[terminal-journal] ERROR: could not persist this command record: {exc}",
-                file=sys.stderr,
-            )
+            print(f"\n[terminal-journal] ERROR: could not persist completion record: {exc}", file=sys.stderr)
             return 125
 
+    if journal_errors:
+        print(
+            "\n[terminal-journal] ERROR: one or more output chunks could not be persisted; "
+            "see journal_errors in the completion record if it was saved.",
+            file=sys.stderr,
+        )
+        return 125
     return exit_code
 
 
