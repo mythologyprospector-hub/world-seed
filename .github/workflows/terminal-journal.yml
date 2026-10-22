@@ -1,0 +1,31 @@
+name: Terminal Journal Tests
+
+on:
+  pull_request:
+    paths:
+      - "scripts/terminal_journal.py"
+      - "tests/test_terminal_journal.py"
+      - ".github/workflows/terminal-journal.yml"
+  push:
+    branches:
+      - "feat/durable-terminal-journal"
+    paths:
+      - "scripts/terminal_journal.py"
+      - "tests/test_terminal_journal.py"
+      - ".github/workflows/terminal-journal.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  terminal-journal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run terminal journal tests
+        run: python -m unittest tests.test_terminal_journal -v
