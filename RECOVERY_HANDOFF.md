@@ -33,7 +33,9 @@ The fresh mirrors address missing or stale remote-tracking refs in the original 
 
 `~/retirement-preservation-2026-10-21/`
 
-Subdirectories include `git-bundles/`, `github-bundles/`, `remote-mirrors/`, `branch-audit/`, and `out-of-git/`.
+Subdirectories include `git-bundles/`, `github-bundles/`, `remote-mirrors/`, `branch-audit/`, `local-state/`, and `out-of-git/`. A later read-only aggregate inventory reported 178 files totaling 14 MB across six top-level directories: `branch-audit/`, `git-bundles/`, `github-bundles/`, `local-state/`, `out-of-git/`, and `remote-mirrors/`. This count does not include the subsequently created `bundle-restore-tests/` directory, so it is a point-in-time inventory rather than the current total.
+
+**Bundle verification:** The operator checked all 14 `*.bundle` files across `git-bundles/` and `github-bundles/`; `git bundle list-heads` succeeded for 14/14. Each of the 14 bundles was then cloned with `git clone --mirror` into a new isolated destination under `~/retirement-preservation-2026-10-21/bundle-restore-tests/`, and each restored mirror passed `git fsck --full --no-reflogs`: 14 tested, 14 passed, zero failed. These are object-database restore checks for the bundles, not clean working-tree restores of the seven real candidate projects.
 
 **Important limitations:** Git bundles preserve Git objects reachable from included refs; they do not by themselves preserve working-tree changes, ignored/untracked files, reflogs, GitHub-only discussions/reviews/issues/settings/releases, or guarantee that external LFS/submodule content is present. Verify each relevant category separately.
 
@@ -67,7 +69,9 @@ The attempt to run a large shell block for all local status inventories was inte
 
 - [x] Correctly inspect `.git/info/exclude` using absolute per-repository paths. Six repositories have zero non-comment local exclude rules; Miracle Depot has one, consistent with the previously identified private profile document. No configured global excludes file was found.
 - [ ] Inspect local-only and ignored files for all seven subjects, including the two Episteme detached worktrees; preserve selected essentials without copying caches indiscriminately.
-- [ ] Confirm the contents and integrity of the local preservation directory and record a private inventory without publishing private paths or personal details.
+- [ ] Complete the private inventory of preservation-directory contents and verify all non-bundle artifacts and copied-file verification records without publishing private paths or personal details. Aggregate inventory only so far: 178 files / 14 MB before `bundle-restore-tests/` was created.
+- [x] Check all 14 saved Git bundles with `git bundle list-heads`: 14 readable, zero failures.
+- [x] Restore all 14 bundles into isolated mirror test copies and run `git fsck --full --no-reflogs`: 14 passed, zero failures. This does not replace clean working-tree restores of the seven real candidates.
 - [x] Scan fresh GitHub mirror histories for submodule entries; no mode-`160000` entries were found in reachable history of any of the seven mirrors.
 - [x] Scan Git objects reachable from fresh mirror refs for the exact Git LFS pointer signature; zero matches in each repository. Native Git LFS verification was unavailable, so this is not an absolute proof that all external LFS content is absent.
 - [ ] Check relevant tags and any refs not covered by bundle verification as applicable.
@@ -78,7 +82,7 @@ The attempt to run a large shell block for all local status inventories was inte
 
 ## Current next safe step
 
-The first-pass read-only local status and `.gitignore`-based ignored-rule summaries for the seven candidate main checkouts are complete, and both detached Episteme worktrees' ignored entries are explained by Python bytecode caches. The corrected absolute-path `.git/info/exclude` audit found one non-comment rule in Miracle Depot and zero in each of the other six candidates; no configured global exclude file was found. No submodule entries were found in either local or fresh mirror reachable history. A signature scan found no Git LFS pointer signatures in reachable objects of any fresh mirror, though native Git LFS verification was unavailable. Next, inspect for other local-only data outside normal Git status and ignored caches, then continue the GitHub-only record inventory. Capture any sensitive paths privately; do not display private document contents. Keep the existing bundles and worktrees untouched. The overall recovery issue is [World Seed issue #12](https://github.com/mythologyprospector-hub/world-seed/issues/12); use it as the central progress thread and link this handoff from there.
+The first-pass read-only local status and `.gitignore`-based ignored-rule summaries for the seven candidate main checkouts are complete, and both detached Episteme worktrees' ignored entries are explained by Python bytecode caches. The preservation directory's aggregate inventory reported 178 files / 14 MB before isolated bundle restore-test copies were created. All 14 bundles had readable headers and all 14 isolated mirror restores passed `git fsck --full --no-reflogs`; actual candidate working-tree restores remain outstanding. The corrected absolute-path `.git/info/exclude` audit found one non-comment rule in Miracle Depot and zero in each of the other six candidates; no configured global exclude file was found. No submodule entries were found in either local or fresh mirror reachable history. A signature scan found no Git LFS pointer signatures in reachable objects of any fresh mirror, though native Git LFS verification was unavailable. Next, inspect for other local-only data outside normal Git status and ignored caches, then continue the GitHub-only record inventory. Capture any sensitive paths privately; do not display private document contents. Keep the existing bundles and worktrees untouched. The overall recovery issue is [World Seed issue #12](https://github.com/mythologyprospector-hub/world-seed/issues/12); use it as the central progress thread and link this handoff from there.
 
 ## Related factory context
 
