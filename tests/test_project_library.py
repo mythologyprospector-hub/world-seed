@@ -51,6 +51,24 @@ class ProjectLibraryTests(unittest.TestCase):
             self.assertEqual(catalog["recovery_claim"], "none; catalog status is not proof of backup or successful restoration")
             self.assertEqual(before, {p.name: p.read_bytes() for p in project.iterdir()})
 
+    def test_catalog_accepts_schema_two_manifest_with_validation_results(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = self.make_project(root)
+            manifest_path = project / "world-seed-manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["schema_version"] = 2
+            manifest["template_version"] = "1.2.0"
+            manifest["validation_results"] = {
+                "status": "passed",
+                "checks": [{"id": "required_file_inventory", "status": "passed", "detail": "fixture"}],
+            }
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+            record = LIBRARY.build_catalog([root])["projects"][0]
+            self.assertEqual(record["status"], "generated-files-match")
+            self.assertEqual(record["verification"], "generated-files-match-manifest")
+
     def test_modified_generated_file_is_reported_as_drift(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
