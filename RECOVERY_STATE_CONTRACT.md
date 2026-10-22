@@ -1,6 +1,6 @@
 # Recovery State Contract
 
-**Status:** Design contract; no state file schema, generator integration, retrieval service, or remote transfer is implemented by this document alone.
+**Status:** Contract plus initial versioned JSON Schema and cautious template are present on `feat/durable-terminal-journal`. Automatic state generation/integration, retrieval service, and remote transfer are not implemented.
 
 ## Purpose
 
@@ -28,7 +28,7 @@ Never silently turn a claim in project state into verified fact. Link claims to 
 
 ## Required sections for a future project-state record
 
-A later implementation may choose Markdown or a versioned machine-readable format, but it must preserve these semantic fields.
+The initial machine-readable format is JSON, governed by [`schemas/recovery-project-state.schema.json`](schemas/recovery-project-state.schema.json), with a deliberately unverified starter at [`templates/recovery-project-state.template.json`](templates/recovery-project-state.template.json). The template is not a populated project record and must not be treated as project truth. Future versions must preserve these semantic fields or explicitly migrate them.
 
 ### 1. Record identity and freshness
 
@@ -140,4 +140,4 @@ The implementation is not complete until it can demonstrate that:
 
 ## Current implementation status
 
-As of the design documented here, the terminal journal and metadata-only capsule generator exist on the feature branch. This contract does **not** mean the project-state record, automatic context recovery, encryption, or retrieval bridge has been implemented. Those remain future work.
+As of this revision, the terminal journal, metadata-only capsule generator, project-state schema, starter template, and standard-library contract tests exist on the feature branch. The template is intentionally not populated with inferred project facts. Automatic state generation/integration, retrieval across fresh conversations, encryption, and the retrieval bridge remain future work.
