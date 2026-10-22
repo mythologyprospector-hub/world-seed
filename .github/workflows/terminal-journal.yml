@@ -19,6 +19,9 @@ on:
       - "scripts/build_recovery_capsule.py"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
+      - "schemas/recovery-project-state.schema.json"
+      - "templates/recovery-project-state.template.json"
+      - "tests/test_recovery_project_state.py"
       - ".github/workflows/terminal-journal.yml"
 
 permissions:
