@@ -1,6 +1,6 @@
 # Recovery State Refresh Design
 
-**Status:** The read-only audit and conservative candidate-state generator are implemented on `feat/durable-terminal-journal`. The focused suite passed 32/32 tests, and both relevant GitHub Actions workflows passed on implementation commit `721b8c5e969e99f2125473e7f57ebd4858bc0d53`. This document does not authorize remote retrieval, encryption, or data transfer.
+**Status:** The read-only audit and conservative candidate-state generator are implemented on `feat/durable-terminal-journal`. A local Markdown recovery-brief renderer has now been added but has not yet been verified. The earlier audit/refresh checkpoint passed 32/32 tests on implementation commit `721b8c5e969e99f2125473e7f57ebd4850`. This document does not authorize remote retrieval, encryption, or data transfer.
 
 ## Problem
 
