@@ -1,6 +1,6 @@
 # Recovery State Contract
 
-**Status:** The versioned state contract, local audit, conservative freshness candidate, and local Markdown recovery-brief renderer are present on `feat/durable-terminal-journal`. The earlier audit/refresh checkpoint passed 32/32 tests on implementation commit `721b8c5e969e99f2125473e7f57ebd4850`; the renderer is newly added and still awaits local and hosted verification. Automatic state generation/integration, fresh-conversation retrieval, and remote transfer are not implemented.
+**Status:** The versioned state contract, local audit, conservative freshness candidate, and local Markdown recovery-brief renderer are present on `feat/durable-terminal-journal`. The earlier audit/refresh checkpoint passed 32/32 tests on implementation commit `721b8c5e969e99f2125473e7f57ebd4858bc0d53`; the renderer is newly added and still awaits local and hosted verification. Automatic state generation/integration, fresh-conversation retrieval, and remote transfer are not implemented.
 
 ## Purpose
 
