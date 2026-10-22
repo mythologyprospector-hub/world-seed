@@ -135,7 +135,7 @@ class TerminalHandoffTests(unittest.TestCase):
                 "#!/usr/bin/env python3\n"
                 "import json, sys\n"
                 "if sys.argv[1:3] == ['repo', 'view']:\n"
-                " print('true\\\\tmain')\n"
+                " print('true\\tmain')\n"
                 "elif sys.argv[1] == 'api':\n"
                 " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
                 "else:\n"
