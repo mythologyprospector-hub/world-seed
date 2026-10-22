@@ -181,11 +181,6 @@ def compare(state: dict[str, Any], observed: dict[str, Any]) -> dict[str, Any]:
                 "suggested_value": proposed_freshness,
                 "reason": "Derived from local Git comparisons only; review before editing the source state record.",
             },
-            {
-                "field": "record.describes_commit",
-                "suggested_value": observed["head_commit"],
-                "reason": "Local HEAD observed; changing the record to this commit is a human-reviewed proposal, not an automatic update.",
-            },
         ],
     }
 
