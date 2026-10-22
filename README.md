@@ -20,6 +20,8 @@ It is deliberately **mission-portable and operator-aware**:
 
 ## Contents
 
+- [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md) and [scripts/terminal_journal.py](scripts/terminal_journal.py) — initial durable, private local command/output journal; capture is opt-in per command and remote sync is not yet enabled.
+
 - [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
 - [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
 - [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
