@@ -23,12 +23,14 @@ on:
       - "scripts/terminal_journal.py"
       - "scripts/build_recovery_capsule.py"
       - "scripts/audit_recovery_state.py"
+      - "scripts/propose_recovery_state_refresh.py"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
       - "schemas/recovery-project-state.schema.json"
       - "templates/recovery-project-state.template.json"
       - "tests/test_recovery_project_state.py"
       - "tests/test_recovery_state_audit.py"
+      - "tests/test_recovery_state_refresh.py"
       - ".github/workflows/terminal-journal.yml"
 
 permissions:
