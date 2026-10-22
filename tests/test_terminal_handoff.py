@@ -117,5 +117,41 @@ class TerminalHandoffTests(unittest.TestCase):
             self.assertIn("did not verify as private", result.stderr)
 
 
+
+    def test_publish_success_writes_receipt_from_github_response(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            outbox = root / "outbox"
+            outbox.mkdir()
+            report = outbox / "report.json"
+            report.write_text(json.dumps({
+                "handoff_schema": "world-seed-terminal-output-handoff/v1",
+                "session_id": "test-session",
+            }), encoding="utf-8")
+            fakebin = root / "bin"
+            fakebin.mkdir()
+            gh = fakebin / "gh"
+            gh.write_text(
+                "#!/usr/bin/env python3\n"
+                "import json, sys\n"
+                "if sys.argv[1:3] == ['repo', 'view']:\n"
+                " print('true\\\\tmain')\n"
+                "elif sys.argv[1] == 'api':\n"
+                " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
+                "else:\n"
+                " sys.exit(2)\n",
+                encoding="utf-8",
+            )
+            gh.chmod(0o755)
+            env = os.environ.copy()
+            env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
+            result = self.run_cli("publish", "--report", str(report), "--outbox", str(outbox),
+                                  "--confirm-publish", env=env)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json", result.stdout)
+            receipt = json.loads(report.with_suffix(".receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(receipt["commit_sha"], "a" * 40)
+            self.assertEqual(receipt["repository"], "mythologyprospector-hub/miracle-depot")
+
 if __name__ == "__main__":
     unittest.main()
