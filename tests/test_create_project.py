@@ -5,6 +5,7 @@ import hashlib
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "scripts" / "create_project.py"
@@ -99,6 +100,33 @@ class CreateProjectTests(unittest.TestCase):
             with self.assertRaises(GENERATOR.ProjectGenerationError):
                 GENERATOR.create_project(ROOT, "keep-me", "A mission.", destination)
             self.assertEqual(marker.read_text(encoding="utf-8"), "preserve")
+
+    def test_failed_destination_creation_never_deletes_a_competing_directory(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "racing-project"
+            original_mkdir = Path.mkdir
+
+            def competing_creator(path, *args, **kwargs):
+                if path == destination:
+                    original_mkdir(path, *args, **kwargs)
+                    (path / "owner-data.txt").write_text("belongs to another process", encoding="utf-8")
+                    raise FileExistsError("simulated concurrent destination creation")
+                return original_mkdir(path, *args, **kwargs)
+
+            with patch.object(Path, "mkdir", new=competing_creator):
+                with self.assertRaises(FileExistsError):
+                    GENERATOR.create_project(
+                        ROOT,
+                        "racing-project",
+                        "A useful mission.",
+                        destination,
+                        revision="f" * 40,
+                    )
+
+            self.assertEqual(
+                (destination / "owner-data.txt").read_text(encoding="utf-8"),
+                "belongs to another process",
+            )
 
     def test_symbolic_link_destination_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:

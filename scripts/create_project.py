@@ -150,16 +150,19 @@ def create_project(
     if destination.exists() or destination.is_symlink():
         raise ProjectGenerationError(f"destination already exists; refusing to overwrite: {destination}")
     destination.parent.mkdir(parents=True, exist_ok=True)
+    created_by_this_invocation = False
     try:
         destination.mkdir()
+        created_by_this_invocation = True
         for name, content in rendered.items():
             (destination / name).write_text(content, encoding="utf-8", newline="\n")
         (destination / "world-seed-manifest.json").write_text(
             manifest_text, encoding="utf-8", newline="\n"
         )
     except Exception:
-        # This directory was created exclusively by this invocation.
-        shutil.rmtree(destination, ignore_errors=True)
+        # Never remove a destination if mkdir failed: another process may own it.
+        if created_by_this_invocation:
+            shutil.rmtree(destination, ignore_errors=True)
         raise
     return destination
 
