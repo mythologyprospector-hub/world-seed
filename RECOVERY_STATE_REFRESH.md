@@ -6,9 +6,9 @@
 
 The versioned project-state record has the right broad sections, but it is currently a hand-maintained template. A future assistant must not mistake stale notes for current repository truth, silently rewrite human decisions, or claim a test passed because a log or summary merely says so.
 
-## Implemented first milestone: read-only audit and refresh proposal
+## Implemented first milestone: read-only audit
 
-Implement a local command that reads one explicitly selected state JSON file and inspects one explicitly selected local Git checkout. It produces a separate **audit/proposal report**; it does not edit or replace the state file.
+The local audit command reads one explicitly selected state JSON file and inspects one explicitly selected local Git checkout. It produces a separate **audit report**; it does not edit or replace the state file. It may propose a freshness value based on local Git comparisons, but it must not propose changing `record.describes_commit` merely to match the observed HEAD: that field says which commit the human-reviewed state actually describes, not whichever commit happens to be checked out.
 
 The initial implementation:
 
@@ -17,7 +17,7 @@ The initial implementation:
 3. Inspect the selected checkout's Git root, configured origin URL, HEAD commit, branch/detached state, and tracked/untracked dirty status.
 4. Compare observed repository identity and HEAD with the state record's repository URL and `record.describes_commit`.
 5. Report mismatches and freshness conservatively. A dirty checkout, unknown recorded commit, repository mismatch, or commit mismatch must not be labelled current.
-6. Preserve all human-maintained content unchanged and list suggested metadata changes separately.
+6. Preserve all human-maintained content unchanged. Only propose the derived freshness value; report observed HEAD separately as evidence, not as a suggested replacement for `record.describes_commit`.
 7. Emit a new report file only; refuse to overwrite an existing path. Use owner-only file permissions on POSIX.
 8. Run locally without network access. Do not call GitHub, upload data, or access credentials.
 9. Use explicit statuses such as `pass`, `mismatch`, and `unknown`; never turn unavailable evidence into success.
@@ -43,7 +43,7 @@ The report should contain:
 - Project slug and recorded repository URL/commit/freshness.
 - Observed Git root identity, origin URL, HEAD, branch or detached state, and dirty status.
 - Explicit comparisons for project identity, origin, commit, and freshness.
-- Suggested state metadata changes, each with a reason and source evidence.
+- A freshness proposal derived from local Git comparisons. The observed HEAD is recorded separately; it is not automatically proposed as the state record's described commit.
 - Limitations: local Git inspection does not verify tests, hosted CI, authorization, or truth of human-authored claims.
 
 Do not include environment variables, command arguments from journal records, terminal output, secret-file contents, tokens, or private key material.
