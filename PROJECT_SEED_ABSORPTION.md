@@ -44,10 +44,9 @@ Source inspected: `mythologyprospector-hub/project_seed`, default branch `main`,
 3. Implement a versioned World Seed project template and generator that work without fetching or cloning Project Seed at runtime.
 4. Generate a disposable fixture with an explicit mission and manifest containing source revision, generated-file inventory, and validation results.
 5. Test portable defaults, mission customization, repeatability/idempotence, conflict handling, broken-link detection, and private-data exclusion.
-6. Prove the fixture's selective backup and isolated reconstruction; compare the restored result against its manifest and expected behavior.
-7. Demonstrate a fresh builder can generate and validate a project from World Seed alone.
-8. Only after the above evidence exists, recommend whether to archive Project Seed. Do not delete it or rewrite its history as part of this work.
-
+6. **Prove project quality first:** a fresh builder uses World Seed alone to create a coherent, useful, implemented project with mission-appropriate architecture, meaningful tests, reproducible setup, and evidence-backed documentation. A generated scaffold or green factory test suite alone does not satisfy this gate.
+7. After gate 6 passes, prove selective backup and isolated reconstruction of that worthy fixture; compare the restored result against its manifest and run relevant checks. Recovery must protect demonstrated value, not displace the project-quality milestone.
+8. Only after the preceding evidence exists, recommend whether to archive Project Seed. Do not delete it or rewrite its history as part of this work.
 ## Source-level audit update — 2026-10-21
 
 The following repository state has now been inspected directly:
@@ -64,7 +63,7 @@ The following repository state has now been inspected directly:
 | Human/assistant/implementation-agent division of labor; Genie Principle; Miracle Tokens; Fun Rule; Project-First Rule; Dots Principle | `AGENTS.md`, `HUMAN.md`, `CONSTITUTION.md`, `ONBOARDING_PROMPT.md` | **Substantially represented in the factory canon.** Final semantic diff is still required; do not infer exact equivalence from matching headings or terms. |
 | Portable vs operator-specific machine context | `MACHINE_PROFILE.md`, `PROFILE_PACKAGES.md`, operator-profile templates | **Boundary represented.** Project Seed's `MACHINE.md` contains Bucky-specific paths and must not be copied verbatim into the public seed. |
 | Organs is shared external infrastructure, used only when fit | `ORGANS.md`, generated `templates/project/ORGANS.md` | **Contract represented.** Organs implementation is not to be absorbed into World Seed; its necessity remains project-dependent. |
-| Documentation style and drift controls | `CONSISTENCY_STANDARD.md` and current repository documentation | **Candidate equivalent exists.** Finish clause-by-clause reconciliation of `DOCS.md`, including social-preview requirements and status language. |
+| Documentation style and drift controls | `CONSISTENCY_STANDARD.md`, generated `templates/project/DOCS.md`, and current repository documentation | **Partial absorption in PR #46.** The public social-preview launch requirement is being added to the canonical standard and generated template; clause-by-clause reconciliation of the remaining `DOCS.md` rules and status language is still open. |
 | Worktree discovery, active register, preservation, safe retirement | `WORKTREE_LIFECYCLE.md`, adapted from the source contract to avoid hardcoding Bucky's paths and linked from the builder arrival protocol | **Merged into World Seed main by PR #28; the main quality check passed.** The contract is now available in the factory, while its use during real recovery remains to be demonstrated. |
 | Project Seed sync workflow and target list | Source `.github/workflows/project-seed-sync.yml` and `SEED_SYNC.md` | **Not to be copied.** It uses a broad cross-repository token and target-specific root-file mappings. Before Project Seed retirement, record whether any required target still depends on it, disable/retire the automation safely, and verify no required project relies on future upstream sync. Never reproduce its token or write authority in the public seed. |
 | License, provenance, and history | Source `LICENSE` and Git history | **History remains valuable provenance.** Do not rewrite or delete it as part of absorption. Confirm attribution/license handling for any material actually copied. |
