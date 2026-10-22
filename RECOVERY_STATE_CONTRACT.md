@@ -1,6 +1,6 @@
 # Recovery State Contract
 
-**Status:** Contract, initial versioned JSON Schema, cautious template, and capsule integration are present on `feat/durable-terminal-journal`. The focused local suite and both relevant GitHub Actions workflows passed on commit `ecf795e49704599cd67065999de2d2598283dd69`. Automatic state generation/integration, retrieval service, and remote transfer are not implemented.
+**Status:** Contract, versioned JSON Schema, cautious template, capsule integration, local audit, and conservative freshness-candidate generator are present on `feat/durable-terminal-journal`. The focused local suite passed 32/32 tests, and both relevant GitHub Actions workflows passed on implementation commit `721b8c5e969e99f2125473e7f57ebd4858bc0d53`. Automatic state generation/integration, retrieval service, and remote transfer are not implemented.
 
 ## Purpose
 
@@ -140,4 +140,4 @@ The implementation is not complete until it can demonstrate that:
 
 ## Current implementation status
 
-As of commit `ecf795e49704599cd67065999de2d2598283dd69`, the terminal journal, metadata-only capsule generator, project-state schema, starter template, and standard-library contract tests exist on the feature branch. The focused local suite passed 21/21 tests, and both the Terminal Journal Tests and World Seed quality checks workflows passed on that exact commit. The template is intentionally not populated with inferred project facts. Automatic state generation/integration, retrieval across fresh conversations, encryption, and the retrieval bridge remain future work.
+As of implementation commit `721b8c5e969e99f2125473e7f57ebd4858bc0d53`, the terminal journal, metadata-only capsule generator, project-state schema/template, local state audit, and conservative freshness-candidate generator exist on the feature branch. The focused local suite passed 32/32 tests; [World Seed quality checks run #483](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39838580846) and [Terminal Journal Tests run #69](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39838580827) both completed successfully on that exact commit. The template is intentionally not populated with inferred project facts. Automatic state population, retrieval across fresh conversations, encryption, and the retrieval bridge remain future work.
