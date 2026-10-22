@@ -83,10 +83,6 @@ def main() -> int:
     path = f"terminal-live/world-seed-see-{now.strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}.txt"
     url = f"https://github.com/{REPO}/blob/main/{path}"
     started = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
-    print(f"[world-seed-see] Live report: {url}", flush=True)
-    print("[world-seed-see] Explicitly wrapped output is shared to the private repo about every 10 seconds.", flush=True)
-    print("[world-seed-see] Redaction is heuristic; never run commands whose output contains secrets.", flush=True)
-
     retained = bytearray()
     truncated = False
     sha: str | None = None
@@ -100,6 +96,17 @@ def main() -> int:
         "NOTE: output is heuristically redacted, not guaranteed secret-free.\n"
         "----- output -----\n"
     )
+    initial_report = header + "[Waiting for command output]\n"
+    try:
+        sha = upload(path, initial_report, None)
+    except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
+        print(f"[world-seed-see] Could not create the private live report; command not started: {exc}", file=sys.stderr)
+        return 125
+    last_upload = time.monotonic()
+    print(f"[world-seed-see] Live report: {url}", flush=True)
+    print("[world-seed-see] Explicitly wrapped output is shared to the private repo about every 10 seconds.", flush=True)
+    print("[world-seed-see] Redaction is heuristic; never run commands whose output contains secrets.", flush=True)
+
     selector = selectors.DefaultSelector()
     try:
         proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
