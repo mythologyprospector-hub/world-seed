@@ -20,9 +20,17 @@ class RecoveryCapsuleTests(unittest.TestCase):
         path.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
         return path
 
-    def invoke(self, root: Path, project: str, output: Path) -> subprocess.CompletedProcess[str]:
+    def invoke(
+        self, root: Path, project: str, output: Path, project_state: Path | None = None
+    ) -> subprocess.CompletedProcess[str]:
+        command = [
+            sys.executable, str(SCRIPT), "--project", project,
+            "--journal-root", str(root), "--output", str(output),
+        ]
+        if project_state is not None:
+            command.extend(["--project-state", str(project_state)])
         return subprocess.run(
-            [sys.executable, str(SCRIPT), "--project", project, "--journal-root", str(root), "--output", str(output)],
+            command,
             capture_output=True,
             text=True,
             check=False,
@@ -119,6 +127,60 @@ class RecoveryCapsuleTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             capsule = json.loads(output.read_text(encoding="utf-8"))
             self.assertTrue(capsule["warnings"])
+
+
+    def test_valid_project_state_is_included_but_not_claimed_as_verified(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "journal"
+            self.write_journal(root, "alpha", [])
+            template_path = Path(__file__).resolve().parents[1] / "templates" / "recovery-project-state.template.json"
+            state = json.loads(template_path.read_text(encoding="utf-8"))
+            state["project"]["name"] = "alpha"
+            state_path = Path(temp) / "state.json"
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+            output = Path(temp) / "capsule.json"
+            result = self.invoke(root, "alpha", output, state_path)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            capsule = json.loads(output.read_text(encoding="utf-8"))
+            self.assertTrue(capsule["project_state"]["included"])
+            self.assertEqual(capsule["project_state"]["status"], "schema_valid")
+            self.assertEqual(capsule["project_state"]["record"]["project"]["name"], "alpha")
+            self.assertIn("not proof", capsule["project_state"]["interpretation"])
+
+    def test_invalid_or_wrong_project_state_is_refused_without_capsule(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "journal"
+            self.write_journal(root, "alpha", [])
+            template_path = Path(__file__).resolve().parents[1] / "templates" / "recovery-project-state.template.json"
+            state = json.loads(template_path.read_text(encoding="utf-8"))
+            state["project"]["name"] = "beta"
+            state_path = Path(temp) / "state.json"
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+            output = Path(temp) / "capsule.json"
+            result = self.invoke(root, "alpha", output, state_path)
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("must exactly match", result.stderr)
+            self.assertFalse(output.exists())
+
+            state["project"]["name"] = "alpha"
+            state["unrecognized_claim"] = "should be rejected"
+            state_path.write_text(json.dumps(state), encoding="utf-8")
+            second_output = Path(temp) / "capsule-2.json"
+            second = self.invoke(root, "alpha", second_output, state_path)
+            self.assertEqual(second.returncode, 2)
+            self.assertIn("schema validation", second.stderr)
+            self.assertFalse(second_output.exists())
+
+    def test_capsule_explicitly_marks_project_state_not_supplied(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "journal"
+            self.write_journal(root, "alpha", [])
+            output = Path(temp) / "capsule.json"
+            result = self.invoke(root, "alpha", output)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            capsule = json.loads(output.read_text(encoding="utf-8"))
+            self.assertFalse(capsule["project_state"]["included"])
+            self.assertEqual(capsule["project_state"]["status"], "not_supplied")
 
 
 if __name__ == "__main__":
