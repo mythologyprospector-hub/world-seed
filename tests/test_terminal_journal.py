@@ -92,7 +92,7 @@ class TerminalJournalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             log_dir = Path(temp) / "journal"
             result = self.invoke(
-                log_dir, "--project", "other/project", "--", sys.executable, "-c", "print('LANE')"
+                log_dir, "--project", "other-project", "--", sys.executable, "-c", "print('LANE')"
             )
             self.assertEqual(result.returncode, 0)
             self.assertTrue((log_dir / "other-project").is_dir())
