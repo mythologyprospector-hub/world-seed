@@ -151,7 +151,8 @@ def build_capsule(
             "status": "schema_valid",
             "validation": "passed",
             "interpretation": (
-                "Schema validation checks structure and format only. Claims, provenance, "
+                "Schema validation checks structure and format only; it is not proof that "
+                "the record's claims are true, current, authorized, or supported. Claims, provenance, "
                 "freshness, linked evidence, and authorization still require independent review."
             ),
             "record": state,
