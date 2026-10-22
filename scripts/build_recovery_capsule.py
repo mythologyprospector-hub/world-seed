@@ -114,8 +114,6 @@ def build_capsule(project: str, journal_root: Path) -> dict[str, Any]:
 def write_private_new_file(path: Path, payload: str) -> None:
     path = path.expanduser()
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if os.name == "posix":
-        path.parent.chmod(0o700)
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     if hasattr(os, "O_CLOEXEC"):
         flags |= os.O_CLOEXEC
