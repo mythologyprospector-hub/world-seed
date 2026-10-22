@@ -1,6 +1,6 @@
 # Recovery State Refresh Design
 
-**Status:** The read-only audit and a conservative candidate-state generator are implemented on `feat/durable-terminal-journal`; the new generator's local tests and CI are pending verification. This document does not authorize remote retrieval, encryption, or data transfer.
+**Status:** The read-only audit and conservative candidate-state generator are implemented on `feat/durable-terminal-journal`. The focused suite passed 32/32 tests, and both relevant GitHub Actions workflows passed on implementation commit `721b8c5e969e99f2125473e7f57ebd4858bc0d53`. This document does not authorize remote retrieval, encryption, or data transfer.
 
 ## Problem
 
@@ -97,7 +97,7 @@ Do not include environment variables, command arguments from journal records, te
 
 ## Current verification checkpoint
 
-On commit `7ff2801f8d941c7123bb5c5010c65ece9361d932`, the operator's focused local suite passed 27/27 tests. The [World Seed quality checks run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39836684488) reports completed/success, with all listed steps successful. The [Terminal Journal Tests run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39836684620) also reports completed/success and its test step succeeded; however, the jobs endpoint still returned `in_progress` for the job despite all listed steps being completed successfully. Preserve that endpoint inconsistency rather than treating the job-level status as independently confirmed.
+On implementation commit `721b8c5e969e99f2125473e7f57ebd4858bc0d53`, the operator's focused local suite passed **32/32 tests**. The [World Seed quality checks run #483](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39838580846) and [Terminal Journal Tests run #69](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39838580827) both completed successfully, including their test steps.
 
 ## Authorization boundary
 
