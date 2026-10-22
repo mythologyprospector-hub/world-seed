@@ -2,7 +2,7 @@
 
 **Status:** Canonical baseline; mandatory for every bootstrapped repository  
 **Governs:** Documentation, code readability, naming, repository layout, engineering conventions, and the automated checks that keep them consistent.  
-**Last verified:** 2026-10-22
+**Last verified:** 2026-10-19
 
 ## Purpose
 
