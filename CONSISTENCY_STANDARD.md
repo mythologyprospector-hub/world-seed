@@ -2,7 +2,7 @@
 
 **Status:** Canonical baseline; mandatory for every bootstrapped repository  
 **Governs:** Documentation, code readability, naming, repository layout, engineering conventions, and the automated checks that keep them consistent.  
-**Last verified:** 2026-10-19
+**Last verified:** 2026-10-22
 
 ## Purpose
 
@@ -92,6 +92,18 @@ Repositories should share a recognizable structure wherever their purpose permit
 Not every repository needs every directory or file. Avoid empty scaffolding and ceremonial files. A deviation must follow the exception policy above.
 
 Processes should also be recognizable across the ecosystem: discovery before change, evidence-backed plans, scoped implementation, automated validation, independent review where appropriate, recorded outcomes, and explicit handoff. The exact commands may differ by technology, but each repository must document a clear, canonical path to set up, check, test, run, and recover it.
+
+## Public repository launch readiness
+
+Every public GitHub repository should have a social preview image before it is treated as launch-ready.
+
+- Prepare a PNG, JPG, or GIF under 1 MB, preferably 1280 × 640 pixels (640 × 320 is the minimum recommended size in the source guidance).
+- Keep the source image in the repository so it can be recreated or uploaded again.
+- GitHub applies the image through repository Settings → Social preview → Edit → Upload an image; committing the file does not apply it.
+- Treat preparation and upload as separate states. Do not claim the preview is applied until the owner confirms the GitHub setting was completed.
+- Verify current GitHub requirements when preparing the image, because platform guidance can change.
+
+Private repositories may retain a source image, but the source guidance notes that GitHub only shares a social preview from a public repository.
 
 ## Engineering quality baseline
 
