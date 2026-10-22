@@ -1,6 +1,6 @@
 # Recovery State Contract
 
-**Status:** Contract plus initial versioned JSON Schema and cautious template are present on `feat/durable-terminal-journal`. Automatic state generation/integration, retrieval service, and remote transfer are not implemented.
+**Status:** Contract, initial versioned JSON Schema, cautious template, and capsule integration are present on `feat/durable-terminal-journal`. The focused local suite and both relevant GitHub Actions workflows passed on commit `ecf795e49704599cd67065999de2d2598283dd69`. Automatic state generation/integration, retrieval service, and remote transfer are not implemented.
 
 ## Purpose
 
@@ -140,4 +140,4 @@ The implementation is not complete until it can demonstrate that:
 
 ## Current implementation status
 
-As of this revision, the terminal journal, metadata-only capsule generator, project-state schema, starter template, and standard-library contract tests exist on the feature branch. The template is intentionally not populated with inferred project facts. Automatic state generation/integration, retrieval across fresh conversations, encryption, and the retrieval bridge remain future work.
+As of commit `ecf795e49704599cd67065999de2d2598283dd69`, the terminal journal, metadata-only capsule generator, project-state schema, starter template, and standard-library contract tests exist on the feature branch. The focused local suite passed 21/21 tests, and both the Terminal Journal Tests and World Seed quality checks workflows passed on that exact commit. The template is intentionally not populated with inferred project facts. Automatic state generation/integration, retrieval across fresh conversations, encryption, and the retrieval bridge remain future work.
