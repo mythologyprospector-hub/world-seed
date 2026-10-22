@@ -34,7 +34,21 @@ The initial implementation:
 - No changes to the terminal journal's raw event records.
 - No shell startup changes or automatic shell-wide capture.
 
-## Run the audit\n\nFrom the World Seed checkout, after installing the pinned development dependency into the project virtual environment, run:\n\n```bash\n.venv/bin/python scripts/audit_recovery_state.py \\\n  --project world-seed \\\n  --state /path/to/reviewed-world-seed-state.json \\\n  --repo /path/to/world-seed-checkout \\\n  --output \"$HOME/.local/state/world-seed-recovery/world-seed-audit.json\"\n```\n\nReplace both input paths with the actual reviewed state file and checkout. The output path must not already exist. The tool is read-only with respect to the state input and writes a private report. It does not create a state record from the template for you.\n\n## Report contract
+## Run the audit
+
+From the World Seed checkout, after installing the pinned development dependency into the project virtual environment, run:
+
+```bash
+.venv/bin/python scripts/audit_recovery_state.py \
+  --project world-seed \
+  --state /path/to/reviewed-world-seed-state.json \
+  --repo /path/to/world-seed-checkout \
+  --output \"$HOME/.local/state/world-seed-recovery/world-seed-audit.json\"
+```
+
+Replace both input paths with the actual reviewed state file and checkout. The output path must not already exist. The tool is read-only with respect to the state input and writes a private report. It does not create a state record from the template for you.
+
+## Report contract
 
 The report should contain:
 
@@ -61,6 +75,10 @@ Do not include environment variables, command arguments from journal records, te
 - No network requests are made.
 - The local suite and hosted workflows pass on the exact implementation commit.
 
-## Current verification checkpoint\n\nThe focused workflow passed on commit `b943d7c97e041d1ec238e0f8cc22b5d1ae388625`; it includes the audit tests. The [Terminal Journal Tests run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39835737185) and [World Seed quality checks run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39835737168) both passed for that exact commit. The operator's local suite on the new implementation remains to be run.\n\n## Authorization boundary
+## Current verification checkpoint
+
+On commit `7ff2801f8d941c7123bb5c5010c65ece9361d932`, the operator's focused local suite passed 27/27 tests. The [World Seed quality checks run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39836684488) reports completed/success, with all listed steps successful. The [Terminal Journal Tests run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39836684620) also reports completed/success and its test step succeeded; however, the jobs endpoint still returned `in_progress` for the job despite all listed steps being completed successfully. Preserve that endpoint inconsistency rather than treating the job-level status as independently confirmed.
+
+## Authorization boundary
 
 The operator has authorized continued development of the local recovery workflow. That does not authorize a merge, destructive changes, secret disclosure, remote provisioning, or transfer of records. Keep this milestone local and reversible.
