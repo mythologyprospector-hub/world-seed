@@ -36,7 +36,7 @@ class CreateProjectTests(unittest.TestCase):
             manifest = json.loads((created / "world-seed-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["project_name"], "example-project")
             self.assertEqual(manifest["mission"], "Help people solve a useful problem.")
-            self.assertEqual(manifest["template_version"], "1.0.0")
+            self.assertEqual(manifest["template_version"], "1.1.0")
             self.assertEqual(manifest["source_revision"], "a" * 40)
             self.assertTrue(manifest["manifest_excludes_itself"])
             self.assertEqual(set(manifest["generated_files"]), set(GENERATOR.PROJECT_FILES))
@@ -49,6 +49,27 @@ class CreateProjectTests(unittest.TestCase):
             license_text = (created / "LICENSE").read_text(encoding="utf-8")
             self.assertIn("<YEAR>", license_text)
             self.assertIn("<COPYRIGHT HOLDER>", license_text)
+
+    def test_generated_builder_guidance_requires_real_project_work_and_evidence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            created = GENERATOR.create_project(
+                ROOT,
+                "quality-project",
+                "Deliver a useful result.",
+                Path(temporary) / "quality-project",
+                revision="e" * 40,
+            )
+            guidance = (created / "AGENTS.md").read_text(encoding="utf-8")
+            for requirement in (
+                "First-build protocol",
+                "Build a complete first slice",
+                "Test the behavior",
+                "Make it reproducible",
+                "Review the whole project",
+                "Do not stop after creating its documents",
+                "Do not call the project useful, complete, or recovery-worthy",
+            ):
+                self.assertIn(requirement, guidance)
 
     def test_custom_mission_replaces_marker_and_readme_placeholders(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -124,7 +145,7 @@ class CreateProjectTests(unittest.TestCase):
                 Path(temporary) / "portable-project",
                 revision="c" * 40,
             )
-            bundle = "\\n".join(
+            bundle = "\n".join(
                 (created / name).read_text(encoding="utf-8")
                 for name in GENERATOR.PROJECT_FILES
             )
