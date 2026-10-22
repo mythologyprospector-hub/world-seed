@@ -50,6 +50,94 @@ def source_revision(repository_root: Path) -> str:
     return revision if re.fullmatch(r"[0-9a-f]{40,64}", revision) else "unknown"
 
 
+def validate_rendered_project(
+    rendered: dict[str, str],
+    project_name: str,
+    mission: str,
+) -> list[dict[str, str]]:
+    """Validate the generated bundle before writing it and return auditable check results."""
+    from urllib.parse import unquote, urlsplit
+
+    checks: list[dict[str, str]] = []
+
+    def record(check_id: str, passed: bool, detail: str) -> None:
+        checks.append({
+            "id": check_id,
+            "status": "passed" if passed else "failed",
+            "detail": detail,
+        })
+
+    inventory_ok = set(rendered) == set(PROJECT_FILES)
+    record(
+        "required_file_inventory",
+        inventory_ok,
+        "All and only the required project files are rendered."
+        if inventory_ok else "Rendered file inventory does not match the required project bundle.",
+    )
+
+    mission_ok = (
+        bool(mission)
+        and mission in rendered.get("MISSION.md", "")
+        and mission in rendered.get("README.md", "")
+        and MISSION_MARKER not in rendered.get("MISSION.md", "")
+    )
+    record(
+        "mission_substitution",
+        mission_ok,
+        "The supplied mission is present in the mission and README files."
+        if mission_ok else "The mission is missing or the replacement marker remains.",
+    )
+
+    readme = rendered.get("README.md", "")
+    readme_ok = "{{PROJECT_NAME}}" not in readme and "{{MISSION}}" not in readme
+    record(
+        "readme_placeholders_resolved",
+        readme_ok,
+        "Project name and mission placeholders are resolved."
+        if readme_ok else "README contains unresolved project placeholders.",
+    )
+
+    unresolved = [
+        name for name, content in rendered.items()
+        if re.search(r"\\{\\{[^{}]+\\}\\}", content)
+    ]
+    record(
+        "no_unresolved_template_markers",
+        not unresolved,
+        "No unresolved double-brace template markers remain."
+        if not unresolved else "Unresolved template markers remain in: " + ", ".join(sorted(unresolved)),
+    )
+
+    rendered_names = set(rendered)
+    broken_links: list[str] = []
+    for source_name, content in rendered.items():
+        if not source_name.endswith(".md"):
+            continue
+        for match in re.finditer(r"\\[[^\\]]*\\]\\(([^)]+)\\)", content):
+            href = match.group(1).strip()
+            parsed = urlsplit(href)
+            if not parsed.path or parsed.scheme or href.startswith("//"):
+                continue
+            target = unquote(parsed.path)
+            target_path = Path(target.lstrip("/")) if target.startswith("/") else Path(source_name).parent / target
+            normalized = target_path.as_posix()
+            if normalized not in rendered_names and not (
+                not target_path.suffix and (normalized + ".md") in rendered_names
+            ):
+                broken_links.append(f"{source_name} -> {href}")
+    record(
+        "local_markdown_links_resolve",
+        not broken_links,
+        "All local Markdown links resolve to generated files."
+        if not broken_links else "Broken local Markdown links: " + "; ".join(broken_links),
+    )
+
+    failed = [check["id"] for check in checks if check["status"] != "passed"]
+    if failed:
+        raise ProjectGenerationError("rendered project validation failed: " + ", ".join(failed))
+    return checks
+
+
 def render_project(
     repository_root: Path,
     project_name: str,
@@ -101,12 +189,13 @@ def render_project(
     if not template_version:
         raise ProjectGenerationError("project template version must not be blank")
 
+    validation_checks = validate_rendered_project(rendered, project_name, mission)
     file_hashes = {
         name: hashlib.sha256(content.encode("utf-8")).hexdigest()
         for name, content in sorted(rendered.items())
     }
     manifest: dict[str, object] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "project_name": project_name,
         "mission": mission,
         "template_version": template_version,
@@ -114,6 +203,10 @@ def render_project(
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "generated_files": sorted(PROJECT_FILES),
         "generated_file_sha256": file_hashes,
+        "validation_results": {
+            "status": "passed",
+            "checks": validation_checks,
+        },
         "manifest_excludes_itself": True,
     }
     return rendered, manifest
