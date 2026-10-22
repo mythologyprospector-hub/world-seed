@@ -113,6 +113,33 @@ class RecoveryStateAuditTests(unittest.TestCase):
             self.assertEqual(report["comparison"]["checks"]["repository_identity"]["status"], "match")
             self.assertNotIn("git@", json.dumps(report))
 
+    def test_recorded_repository_url_credentials_and_query_are_redacted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            parent = Path(temp)
+            repo, head = self.make_repo(parent)
+            state = parent / "state.json"
+            self.make_state(
+                state,
+                head,
+                origin="https://private-user:private-password@github.com/owner/alpha?token=private-query",
+            )
+            output = parent / "audit.json"
+            result = self.invoke(state, repo, output)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            raw_report = output.read_text(encoding="utf-8")
+            report = json.loads(raw_report)
+            self.assertNotIn("private-user", raw_report)
+            self.assertNotIn("private-password", raw_report)
+            self.assertNotIn("private-query", raw_report)
+            self.assertEqual(
+                report["state_record"]["repository_url_redacted"],
+                "https://github.com/owner/alpha",
+            )
+            self.assertEqual(
+                report["comparison"]["checks"]["repository_identity"]["status"],
+                "match",
+            )
+
     def test_wrong_project_and_invalid_state_fail_without_report(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             parent = Path(temp)
