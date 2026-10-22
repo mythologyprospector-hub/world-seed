@@ -167,6 +167,7 @@ def main() -> int:
     interrupted = False
     spawn_error: str | None = None
     exit_code = 127
+    threads: list[threading.Thread] = []
     base_record: dict[str, object] = {
         "schema_version": 2,
         "session_id": session_id,
@@ -219,6 +220,10 @@ def main() -> int:
             except subprocess.TimeoutExpired:
                 child.kill()
                 child.wait()
+        # Drain and persist any output already buffered by the reader threads
+        # before writing the final event; otherwise completion can race output.
+        for thread in threads:
+            thread.join()
         exit_code = 130
     except OSError as exc:
         spawn_error = f"{type(exc).__name__}: {exc}"
