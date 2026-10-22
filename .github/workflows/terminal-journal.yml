@@ -7,6 +7,7 @@ on:
       - "scripts/build_recovery_capsule.py"
       - "scripts/audit_recovery_state.py"
       - "scripts/propose_recovery_state_refresh.py"
+      - "scripts/render_recovery_brief.py"
       - "requirements-dev.txt"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
@@ -15,6 +16,7 @@ on:
       - "tests/test_recovery_project_state.py"
       - "tests/test_recovery_state_audit.py"
       - "tests/test_recovery_state_refresh.py"
+      - "tests/test_recovery_brief.py"
       - ".github/workflows/terminal-journal.yml"
   push:
     branches:
@@ -24,6 +26,7 @@ on:
       - "scripts/build_recovery_capsule.py"
       - "scripts/audit_recovery_state.py"
       - "scripts/propose_recovery_state_refresh.py"
+      - "scripts/render_recovery_brief.py"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
       - "schemas/recovery-project-state.schema.json"
@@ -31,6 +34,7 @@ on:
       - "tests/test_recovery_project_state.py"
       - "tests/test_recovery_state_audit.py"
       - "tests/test_recovery_state_refresh.py"
+      - "tests/test_recovery_brief.py"
       - ".github/workflows/terminal-journal.yml"
 
 permissions:
@@ -49,4 +53,4 @@ jobs:
       - name: Install project-state schema validator
         run: python -m pip install -r requirements-dev.txt
       - name: Run terminal journal, capsule, and project-state contract tests
-        run: python -m unittest tests.test_terminal_journal tests.test_recovery_capsule tests.test_recovery_project_state tests.test_recovery_state_audit tests.test_recovery_state_refresh -v
+        run: python -m unittest tests.test_terminal_journal tests.test_recovery_capsule tests.test_recovery_project_state tests.test_recovery_state_audit tests.test_recovery_state_refresh tests.test_recovery_brief -v
