@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "project": {
+    "name": "REPLACE_WITH_PROJECT_SLUG",
+    "repository_url": "https://github.com/OWNER/REPOSITORY",
+    "purpose": "UNKNOWN — replace with the canonical project purpose.",
+    "scope_notes": [
+      "Unknown information must remain explicitly unknown; do not infer."
+    ]
+  },
+  "record": {
+    "record_id": "initial-unreviewed-template",
+    "updated_at": null,
+    "updated_by": "human-maintained template; not yet reviewed for a real project",
+    "describes_commit": "unknown",
+    "freshness": "unknown",
+    "provenance": [
+      "Template only; no project-specific facts verified."
+    ],
+    "mismatches": []
+  },
+  "canon": {
+    "summary": "UNKNOWN — read the project's canonical documents before filling this in.",
+    "authoritative_documents": [],
+    "non_negotiable_rules": [
+      "UNKNOWN — verify against the actual canonical documents."
+    ],
+    "reference_only": []
+  },
+  "verification": [
+    {
+      "claim": "No verification claim recorded yet.",
+      "commit": "unknown",
+      "method": "not_run",
+      "result": "not_run",
+      "checked_at": null,
+      "evidence": [],
+      "scope_limitations": [
+        "Template placeholder; not evidence that any tests passed."
+      ]
+    }
+  ],
+  "decisions": {
+    "accepted": [],
+    "rejected": [],
+    "open": [
+      {
+        "statement": "Which project-specific decisions and unresolved questions are authoritative?",
+        "status": "undecided",
+        "provenance": "Template placeholder",
+        "scope": "Do not treat as a project decision.",
+        "evidence": []
+      }
+    ],
+    "superseded": []
+  },
+  "current_work": {
+    "completed": [],
+    "in_progress": [],
+    "risks_and_blockers": [
+      "State has not been populated from verified project evidence."
+    ],
+    "protect_do_not_disturb": [],
+    "deferred": []
+  },
+  "next_action": {
+    "action": "Read project canon and inspect the exact repository checkout before recording project state.",
+    "rationale": "The template must not invent current facts.",
+    "preconditions": [
+      "Verify repository identity and current commit."
+    ],
+    "expected_result": "A reviewed state record with provenance and explicit unknowns.",
+    "authorization": "safe_with_existing_authority"
+  },
+  "retrieval": {
+    "state_location": "UNKNOWN — record the actual authorized location.",
+    "evidence_locations": [],
+    "instructions": [
+      "Retrieve this record explicitly; do not assume a fresh assistant can access it automatically.",
+      "Verify repository identity and compare the current commit with record.describes_commit.",
+      "Check linked evidence for critical claims."
+    ],
+    "on_failure": [
+      "Report retrieval failure and use a clearly labelled provisional brief.",
+      "Do not guess missing values or claim recovery succeeded."
+    ]
+  }
+}
