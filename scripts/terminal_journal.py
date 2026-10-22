@@ -92,7 +92,8 @@ def pump(
     journal_errors: list[str],
 ) -> None:
     while True:
-        chunk = source.read(4096)
+        # read1 returns currently available pipe bytes instead of waiting to fill the requested size.
+        chunk = source.read1(4096)
         if not chunk:
             return
         collected.extend(chunk)
