@@ -1,16 +1,16 @@
 # Recovery State Refresh Design
 
-**Status:** Design checkpoint for the next local-only milestone. This document does not authorize remote retrieval, encryption, or data transfer.
+**Status:** Initial read-only audit implementation and focused CI tests are present on `feat/durable-terminal-journal`. This document does not authorize remote retrieval, encryption, or data transfer.
 
 ## Problem
 
 The versioned project-state record has the right broad sections, but it is currently a hand-maintained template. A future assistant must not mistake stale notes for current repository truth, silently rewrite human decisions, or claim a test passed because a log or summary merely says so.
 
-## First implementation: read-only audit and refresh proposal
+## Implemented first milestone: read-only audit and refresh proposal
 
 Implement a local command that reads one explicitly selected state JSON file and inspects one explicitly selected local Git checkout. It produces a separate **audit/proposal report**; it does not edit or replace the state file.
 
-The first version should:
+The initial implementation:
 
 1. Validate the supplied state against the versioned JSON Schema.
 2. Verify the requested project slug against `state.project.name`.
@@ -23,7 +23,7 @@ The first version should:
 9. Use explicit statuses such as `pass`, `mismatch`, and `unknown`; never turn unavailable evidence into success.
 10. Validate any generated JSON report with tests and keep the report distinct from independent test/CI evidence.
 
-## Non-goals for the first version
+## Non-goals for this version
 
 - No automatic edits to the project-state source record.
 - No inferred decisions, project purpose, canon, risks, or next action.
@@ -34,7 +34,7 @@ The first version should:
 - No changes to the terminal journal's raw event records.
 - No shell startup changes or automatic shell-wide capture.
 
-## Report contract
+## Run the audit\n\nFrom the World Seed checkout, after installing the pinned development dependency into the project virtual environment, run:\n\n```bash\n.venv/bin/python scripts/audit_recovery_state.py \\\n  --project world-seed \\\n  --state /path/to/reviewed-world-seed-state.json \\\n  --repo /path/to/world-seed-checkout \\\n  --output \"$HOME/.local/state/world-seed-recovery/world-seed-audit.json\"\n```\n\nReplace both input paths with the actual reviewed state file and checkout. The output path must not already exist. The tool is read-only with respect to the state input and writes a private report. It does not create a state record from the template for you.\n\n## Report contract
 
 The report should contain:
 
@@ -61,6 +61,6 @@ Do not include environment variables, command arguments from journal records, te
 - No network requests are made.
 - The local suite and hosted workflows pass on the exact implementation commit.
 
-## Authorization boundary
+## Current verification checkpoint\n\nThe focused workflow passed on commit `b943d7c97e041d1ec238e0f8cc22b5d1ae388625`; it includes the audit tests. The [Terminal Journal Tests run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39835737185) and [World Seed quality checks run](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39835737168) both passed for that exact commit. The operator's local suite on the new implementation remains to be run.\n\n## Authorization boundary
 
 The operator has authorized continued development of the local recovery workflow. That does not authorize a merge, destructive changes, secret disclosure, remote provisioning, or transfer of records. Keep this milestone local and reversible.
