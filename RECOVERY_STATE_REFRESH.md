@@ -1,6 +1,6 @@
 # Recovery State Refresh Design
 
-**Status:** Initial read-only audit implementation and focused CI tests are present on `feat/durable-terminal-journal`. This document does not authorize remote retrieval, encryption, or data transfer.
+**Status:** The read-only audit and a conservative candidate-state generator are implemented on `feat/durable-terminal-journal`; the new generator's local tests and CI are pending verification. This document does not authorize remote retrieval, encryption, or data transfer.
 
 ## Problem
 
@@ -23,9 +23,26 @@ The initial implementation:
 9. Use explicit statuses such as `pass`, `mismatch`, and `unknown`; never turn unavailable evidence into success.
 10. Validate any generated JSON report with tests and keep the report distinct from independent test/CI evidence.
 
+
+## Conservative candidate refresh
+
+After auditing a state record against a selected checkout, the proposal generator can write a **separate candidate JSON file**:
+
+```bash
+.venv/bin/python scripts/propose_recovery_state_refresh.py \
+  --project world-seed \
+  --state /path/to/reviewed-world-seed-state.json \
+  --repo /path/to/world-seed-checkout \
+  --output "$HOME/.local/state/world-seed-recovery/world-seed-state-candidate.json"
+```
+
+The source state and output candidate must be different paths, and the output must not already exist. The candidate is private on POSIX and contains the same state data except that `record.freshness` is replaced with the value derived by the local audit comparison. In particular, it preserves `record.describes_commit`, `updated_at`, provenance, decisions, canon, verification claims, current work, and next action exactly as supplied. It does not update the timestamp or imply that human-authored content was reviewed.
+
+Treat this output as a **proposal requiring inspection**, not as an authoritative refresh. Review the diff before deciding whether to replace the source state. The script performs no network access and does not check tests or hosted CI. It does not overwrite the source or any existing candidate.
+
 ## Non-goals for this version
 
-- No automatic edits to the project-state source record.
+- No automatic edits to the project-state source record; the optional output is a separate candidate that requires human review.
 - No inferred decisions, project purpose, canon, risks, or next action.
 - No running project tests automatically.
 - No treating local Git metadata as proof that a commit passed tests or CI.
@@ -64,7 +81,9 @@ Do not include environment variables, command arguments from journal records, te
 
 ## Acceptance tests
 
-- Valid, matching clean checkout is reported consistently without rewriting the state file.
+- Valid, matching clean checkout proposes `current` and produces a separate candidate without rewriting the source state.
+- Candidate differs from the source only at `record.freshness`; `record.describes_commit` and all human-maintained fields remain unchanged.
+- Dirty checkout proposes `possibly_stale`.
 - Dirty checkout is not called current.
 - Commit mismatch and origin mismatch are surfaced independently.
 - Invalid JSON, invalid schema, wrong project, missing Git checkout, and missing origin fail closed or are explicitly unknown.
