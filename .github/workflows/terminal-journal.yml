@@ -7,6 +7,9 @@ on:
       - "scripts/build_recovery_capsule.py"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
+      - "schemas/recovery-project-state.schema.json"
+      - "templates/recovery-project-state.template.json"
+      - "tests/test_recovery_project_state.py"
       - ".github/workflows/terminal-journal.yml"
   push:
     branches:
@@ -31,5 +34,5 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Run terminal journal and recovery capsule tests
-        run: python -m unittest tests.test_terminal_journal tests.test_recovery_capsule -v
+      - name: Run terminal journal, capsule, and project-state contract tests
+        run: python -m unittest tests.test_terminal_journal tests.test_recovery_capsule tests.test_recovery_project_state -v
