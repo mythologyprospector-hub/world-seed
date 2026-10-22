@@ -227,7 +227,7 @@ def main() -> int:
             "created_at": utc_now(),
             "project": project,
             "state_record": {
-                "repository_url": state["project"]["repository_url"],
+                "repository_url_redacted": redact_url(state["project"]["repository_url"]),
                 "describes_commit": state["record"]["describes_commit"],
                 "freshness": state["record"]["freshness"],
                 "input_unchanged_by_design": True,
