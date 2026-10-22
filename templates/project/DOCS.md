@@ -2,7 +2,7 @@
 
 **Status:** Canonical baseline
 **Governs:** Documentation shape and consistency within this repository.
-**Last verified:** 2026-10-21
+**Last verified:** 2026-10-22
 
 ## Format and naming
 
@@ -22,3 +22,13 @@ Distinguish **proposed**, **implemented**, **tested**, **verified**, **deprecate
 Lead with purpose, boundary, and what matters next. Prefer plain language, short paragraphs, meaningful lists, and tables only when comparison is clearer. Keep terminology, names, dates, and status labels consistent. Distinguish observed facts, assumptions, recommendations, decisions, and unknowns.
 
 Documentation must describe actual behavior. Do not promise capabilities the project cannot demonstrate. Preserve required attribution, copyright notices, and license conditions.
+
+
+## Public repository launch readiness
+
+If this repository is public, prepare a social preview image before calling it launch-ready.
+
+- Use PNG, JPG, or GIF under 1 MB; 1280 × 640 pixels is preferred.
+- Keep the source image in the repository.
+- Upload it through GitHub repository Settings → Social preview → Edit → Upload an image. Committing the image alone does not apply it.
+- Do not claim it is applied until the owner confirms the setting was completed. Check GitHub's current requirements before preparing it.
