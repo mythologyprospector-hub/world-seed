@@ -69,8 +69,8 @@ class CreateProjectTests(unittest.TestCase):
                 "Do not stop after creating its documents",
                 "Do not call the project useful, complete, or recovery-worthy",
             ):
-                self.assertIn("social preview", (created / "DOCS.md").read_text(encoding="utf-8").lower())
                 self.assertIn(requirement, guidance)
+            self.assertIn("social preview", (created / "DOCS.md").read_text(encoding="utf-8").lower())
 
     def test_custom_mission_replaces_marker_and_readme_placeholders(self):
         with tempfile.TemporaryDirectory() as temporary:
