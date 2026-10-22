@@ -54,7 +54,7 @@ The report should contain:
 
 - Report schema/version and UTC creation timestamp.
 - State-file path represented only as a user-local diagnostic if needed; avoid absolute paths in portable/shareable fields.
-- Project slug and recorded repository URL/commit/freshness.
+- Project slug and redacted recorded repository URL/commit/freshness; URL user information, query strings, and fragments are not copied into the report.
 - Observed Git root identity, origin URL, HEAD, branch or detached state, and dirty status.
 - Explicit comparisons for project identity, origin, commit, and freshness.
 - A freshness proposal derived from local Git comparisons. The observed HEAD is recorded separately; it is not automatically proposed as the state record's described commit.
@@ -72,6 +72,7 @@ Do not include environment variables, command arguments from journal records, te
 - Report output is private and an existing output is never overwritten.
 - State input bytes remain unchanged on every path, including failures.
 - Report never claims local Git inspection proves test or CI success.
+- Credentials and query-string values in a malformed or credential-bearing recorded repository URL are not copied into the report.
 - No network requests are made.
 - The local suite and hosted workflows pass on the exact implementation commit.
 
