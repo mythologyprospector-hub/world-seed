@@ -89,7 +89,11 @@ def validate_rendered_project(
     )
 
     readme = rendered.get("README.md", "")
-    readme_ok = "{{PROJECT_NAME}}" not in readme and "{{MISSION}}" not in readme
+    readme_ok = (
+        f"# {project_name}" in readme
+        and "{{PROJECT_NAME}}" not in readme
+        and "{{MISSION}}" not in readme
+    )
     record(
         "readme_placeholders_resolved",
         readme_ok,
@@ -99,7 +103,7 @@ def validate_rendered_project(
 
     unresolved = [
         name for name, content in rendered.items()
-        if re.search(r"\\{\\{[^{}]+\\}\\}", content)
+        if re.search(r"\{\{[^{}]+\}\}", content)
     ]
     record(
         "no_unresolved_template_markers",
@@ -113,7 +117,7 @@ def validate_rendered_project(
     for source_name, content in rendered.items():
         if not source_name.endswith(".md"):
             continue
-        for match in re.finditer(r"\\[[^\\]]*\\]\\(([^)]+)\\)", content):
+        for match in re.finditer(r"\[[^\]]*\]\(([^)]+)\)", content):
             href = match.group(1).strip()
             parsed = urlsplit(href)
             if not parsed.path or parsed.scheme or href.startswith("//"):
