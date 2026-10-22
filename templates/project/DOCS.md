@@ -2,7 +2,7 @@
 
 **Status:** Canonical baseline
 **Governs:** Documentation shape and consistency within this repository.
-**Last verified:** 2026-10-22
+**Last verified:** 2026-10-21
 
 ## Format and naming
 
