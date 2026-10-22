@@ -44,10 +44,9 @@ Source inspected: `mythologyprospector-hub/project_seed`, default branch `main`,
 3. Implement a versioned World Seed project template and generator that work without fetching or cloning Project Seed at runtime.
 4. Generate a disposable fixture with an explicit mission and manifest containing source revision, generated-file inventory, and validation results.
 5. Test portable defaults, mission customization, repeatability/idempotence, conflict handling, broken-link detection, and private-data exclusion.
-6. Prove the fixture's selective backup and isolated reconstruction; compare the restored result against its manifest and expected behavior.
-7. Demonstrate a fresh builder can generate and validate a project from World Seed alone.
-8. Only after the above evidence exists, recommend whether to archive Project Seed. Do not delete it or rewrite its history as part of this work.
-
+6. **Prove project quality first:** a fresh builder uses World Seed alone to create a coherent, useful, implemented project with mission-appropriate architecture, meaningful tests, reproducible setup, and evidence-backed documentation. A generated scaffold or green factory test suite alone does not satisfy this gate.
+7. After gate 6 passes, prove selective backup and isolated reconstruction of that worthy fixture; compare the restored result against its manifest and run relevant checks. Recovery must protect demonstrated value, not displace the project-quality milestone.
+8. Only after the preceding evidence exists, recommend whether to archive Project Seed. Do not delete it or rewrite its history as part of this work.
 ## Source-level audit update — 2026-10-21
 
 The following repository state has now been inspected directly:
