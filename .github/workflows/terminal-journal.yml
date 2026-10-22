@@ -4,13 +4,15 @@ on:
   pull_request:
     paths:
       - "scripts/terminal_journal.py"
-      - "scripts/build_recovery_capsule.py"\n      - "scripts/audit_recovery_state.py"
+      - "scripts/build_recovery_capsule.py"
+      - "scripts/audit_recovery_state.py"
       - "requirements-dev.txt"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
       - "schemas/recovery-project-state.schema.json"
       - "templates/recovery-project-state.template.json"
-      - "tests/test_recovery_project_state.py"\n      - "tests/test_recovery_state_audit.py"
+      - "tests/test_recovery_project_state.py"
+      - "tests/test_recovery_state_audit.py"
       - ".github/workflows/terminal-journal.yml"
   push:
     branches:
@@ -18,11 +20,13 @@ on:
     paths:
       - "scripts/terminal_journal.py"
       - "scripts/build_recovery_capsule.py"
+      - "scripts/audit_recovery_state.py"
       - "tests/test_terminal_journal.py"
       - "tests/test_recovery_capsule.py"
       - "schemas/recovery-project-state.schema.json"
       - "templates/recovery-project-state.template.json"
       - "tests/test_recovery_project_state.py"
+      - "tests/test_recovery_state_audit.py"
       - ".github/workflows/terminal-journal.yml"
 
 permissions:
