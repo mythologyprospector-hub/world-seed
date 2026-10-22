@@ -69,6 +69,9 @@ class RecoveryStateAuditTests(unittest.TestCase):
                 self.assertEqual(output.stat().st_mode & 0o777, 0o600)
                 self.assertEqual(output.parent.stat().st_mode & 0o777, 0o700)
             self.assertIn("does not verify tests", " ".join(report["limitations"]))
+            suggestions = report["comparison"]["suggested_metadata_changes"]
+            self.assertEqual([item["field"] for item in suggestions], ["record.freshness"])
+            self.assertEqual(report["observed_repository"]["head_commit"], head)
 
     def test_dirty_checkout_is_not_current(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
