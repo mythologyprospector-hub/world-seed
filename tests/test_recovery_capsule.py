@@ -64,7 +64,6 @@ class RecoveryCapsuleTests(unittest.TestCase):
                 {"session_id": "partial", "project": "alpha", "event": "command_started",
                  "recorded_at": "2026-10-22T10:00:00Z", "git_branch": "main"},
             ])
-            capsule = json.loads((Path(temp) / "unused.json").read_text()) if False else None
             from importlib.util import module_from_spec, spec_from_file_location
             spec = spec_from_file_location("capsule_script", SCRIPT)
             module = module_from_spec(spec)
