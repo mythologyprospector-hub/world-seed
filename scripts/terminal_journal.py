@@ -47,10 +47,11 @@ def git_context(cwd: Path) -> dict[str, str | bool | None]:
 
 
 def safe_project_name(value: str) -> str:
-    name = re.sub(r"[^A-Za-z0-9._-]+", "-", value).strip(".-")
-    if not name or name in {".", ".."}:
-        raise ValueError("project name must contain letters or numbers")
-    return name[:80]
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,79}", value):
+        raise ValueError("project name must be a 1-80 character repository-style slug")
+    if value in {".", ".."}:
+        raise ValueError("project name must not be a path component")
+    return value
 
 
 def ensure_private_directory(path: Path) -> None:
