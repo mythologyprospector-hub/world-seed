@@ -1,6 +1,6 @@
 # Recovery Capsule
 
-**Status:** Local recovery-capsule generator supports terminal-session metadata and an optional schema-validated project-state record on `feat/durable-terminal-journal`. Not a retrieval service; no network transfer or encryption is implemented.
+**Status:** Local recovery-capsule generator supports terminal-session metadata and an optional schema-validated project-state record on `feat/durable-terminal-journal`. The focused 21-test local suite and both relevant GitHub Actions workflows passed on commit `ecf795e49704599cd67065999de2d2598283dd69`. Not a retrieval service; no network transfer or encryption is implemented.
 
 ## Purpose
 
@@ -18,7 +18,7 @@ python3 scripts/build_recovery_capsule.py \
 
 The output must be a new file; existing files are never overwritten. The file is created with owner read/write permissions on POSIX. The tool reads only the selected project's immediate journal directory and does not make network requests.
 
-To include a reviewed state record, add `--project-state PATH`. The JSON must validate against `schemas/recovery-project-state.schema.json`, and `project.name` must exactly match the `--project` slug. Install the development dependency first with `python -m pip install -r requirements-dev.txt` (or the equivalent in your project virtual environment). Without `--project-state`, the capsule explicitly records `not_supplied`; it does not invent a state record.
+To include a reviewed state record, add `--project-state PATH`. The JSON must validate against `schemas/recovery-project-state.schema.json`, and `project.name` must exactly match the `--project` slug. Install the development dependency first with `uv pip install --python .venv/bin/python -r requirements-dev.txt` when using the documented project virtual environment, or use the equivalent installation for your environment. Without `--project-state`, the capsule explicitly records `not_supplied`; it does not invent a state record.
 
 If the journal was written to a non-default root, supply `--journal-root PATH`. Do not point this at an untrusted directory.
 
@@ -42,10 +42,16 @@ It deliberately omits command arguments, absolute working-directory paths, and s
 - Project slug filtering prevents accidental cross-lane aggregation in this tool; it is not a security boundary against a local user with filesystem access.
 - No upload, repository provisioning, destination choice, token-based retrieval, or key handling is implemented or authorized by this feature.
 
-## Initial verification gates
+## Verification checkpoint
 
-Tests cover omission of command/output text and absolute working paths, project-lane separation, invalid project names, incomplete sessions, malformed records, private output-file mode, refusal to overwrite an existing output, optional project-state inclusion, schema validation, and project-name matching. The generator is not considered accepted until the operator's local suite and the relevant GitHub Actions checks pass on the exact commit.
+On commit `ecf795e49704599cd67065999de2d2598283dd69`:
+
+- Local command `python -m unittest tests.test_terminal_journal tests.test_recovery_capsule tests.test_recovery_project_state -v`: **21 tests passed** after installing `requirements-dev.txt` into the project virtual environment.
+- [Terminal Journal Tests workflow](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39834428937): **passed**.
+- [World Seed quality checks workflow](https://github.com/mythologyprospector-hub/world-seed/actions/runs/39834428834): **passed**.
+
+These results apply only to the exact commit and test scope above. They do not establish that retrieval, encryption, or remote transfer works.
 
 ## Next milestone
 
-Next, verify this integration locally and in GitHub Actions. The next design milestone is a reliable way to maintain and refresh the state record from verified project evidence without inventing facts. Only later should we select and authorize a retrieval destination or transport.
+Design and implement a reliable, reviewable way to maintain and refresh the state record from verified project evidence without inventing facts. The first version should remain local and target-agnostic. Only later should we select and authorize a retrieval destination or transport.
