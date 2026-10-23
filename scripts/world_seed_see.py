@@ -92,7 +92,7 @@ def collect_shell_context() -> dict[str, str]:
             cwd=cwd, text=True, capture_output=True, check=True,
         )
         branch_result = subprocess.run(
-            ["git", "symbolic-ref", "--short", "HEAD"],
+            ["git", "branch", "--show-current"],
             cwd=cwd, text=True, capture_output=True, check=True,
         )
         branch = branch_result.stdout.strip() or "(detached HEAD)"
@@ -114,7 +114,7 @@ def collect_shell_context() -> dict[str, str]:
 
 
 def format_shell_context(label: str, context: dict[str, str]) -> str:
-    return (
+    return redact(
         f"----- {label} -----\n"
         f"Prompt-like timestamp (local): {context['timestamp_local']}\n"
         f"User/host: {context['user']}@{context['host']}\n"
