@@ -38,6 +38,24 @@ The journal is JSON Lines under `~/.local/state/world-seed-terminal-journal/`, s
 - Owner-only local permissions reduce exposure but do not make captured content harmless.
 - High-volume output may be slower because each event is durably written.
 
+## Explicit reviewed private handoff
+
+The local journal remains the source of raw terminal evidence. To share one selected session, prepare a bounded derivative report:
+
+```bash
+python3 scripts/terminal_handoff.py prepare --project world-seed
+```
+
+The command prints the private outbox path. Inspect that exact JSON report before publishing it. Review the command, stdout/stderr, paths, and redaction results; heuristic redaction is not guaranteed to remove every secret.
+
+Publish only after review and deliberate confirmation:
+
+```bash
+python3 scripts/terminal_handoff.py publish --report /path/to/reviewed-report.json --confirm-publish
+```
+
+Publishing is restricted to the explicitly allowlisted `mythologyprospector-hub/miracle-depot` repository and verifies that the repository is private at publish time. A private repository is still visible to all authorized collaborators. The raw JSONL journal is never uploaded by this handoff path. Preparation does not upload anything, and publishing requires the explicit confirmation flag.
+
 ## Acceptance
 
 The local journal is accepted only when tests verify stdout/stderr capture, successful and failing commands, exact exit-code preservation, incremental persistence, append/reopen behavior, project separation, file permissions, interruption handling, and journal-write failure behavior. This local journal alone does not let an assistant remotely inspect the terminal. Remote handoff and near-real-time snapshots are separate, explicitly bounded steps.
