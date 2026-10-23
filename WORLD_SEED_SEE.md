@@ -1,6 +1,6 @@
 # World Seed See: Near-Real-Time Terminal Snapshots
 
-**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, and prompt-like shell context. A harmless live snapshot test has demonstrated local output, intermediate remote snapshots, and final exit-code preservation.
+**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, and prompt-like shell context. The original harmless live test demonstrated local output, intermediate remote snapshots, and final exit-code preservation; the new prompt-context fields still require a fresh harmless live test before that enhancement is accepted.
 
 ## Run
 
