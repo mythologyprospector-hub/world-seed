@@ -14,7 +14,7 @@ on:
       - ".github/workflows/terminal-journal.yml"
   push:
     branches:
-      - "feat/terminal-journal-minimal"
+      - "feat/world-seed-see-minimal"
     paths:
       - "scripts/terminal_journal.py"
       - "tests/test_terminal_journal.py"
@@ -35,4 +35,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Run local terminal journal tests
-        run: python -m unittest discover -s tests -p 'test_terminal_journal.py' -v
+        run: |
+      python -m unittest discover -s tests -p 'test_terminal_journal.py' -v
+      python -m unittest discover -s tests -p 'test_terminal_handoff.py' -v
+      python -m unittest discover -s tests -p 'test_world_seed_see.py' -v
