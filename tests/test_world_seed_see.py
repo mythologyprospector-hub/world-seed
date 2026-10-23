@@ -55,7 +55,7 @@ class WorldSeedSeeTests(unittest.TestCase):
         popen.assert_not_called()
 
     def test_publish_latest_updates_stable_pointer(self):
-        response = subprocess.CompletedProcess([], 0, "old-blob-sha\\n", "")
+        response = subprocess.CompletedProcess([], 0, "old-blob-sha\n", "")
         with patch.object(MODULE, "gh", return_value=response) as gh, patch.object(MODULE, "upload", return_value="new-sha") as upload:
             MODULE.publish_latest("terminal-live/run.txt", "https://example.invalid/run.txt", "main")
         gh.assert_called_once_with(["api", f"repos/{MODULE.REPO}/contents/terminal-live/LATEST.txt", "--jq", ".sha"])
