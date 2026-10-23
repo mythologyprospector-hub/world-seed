@@ -8,6 +8,10 @@ This repository is portable operating machinery for an AI-assisted GitHub ecosys
 
 This public seed is not the authority for any one operator's private account inventory, personal circumstances, or exact reset scope. Before account-specific action, the steward must load the authorized private operator configuration and recovery manifest. If those are unavailable, record the limitation and do not guess, ask the operator to repeat context only after checking the available durable sources, and never infer private repository identifiers from this public document.
 
+## ACTIVE REBUILD SCOPE — READ THE INSTANCE MISSION
+
+For this World Seed rebuild, [MISSION-RESET-AND-ACCEPTANCE.md](MISSION-RESET-AND-ACCEPTANCE.md) is the controlling execution order and finish line. Complete only demonstrated foundation blockers, the bounded terminal-visibility/handoff path, and the fresh-project quality trial. Recovery expansion, omni-context, broad non-blocking audits, new subsystems, and unrelated cleanup are deferred until the project-quality gate passes. Generic capability lists below do not authorize doing every capability before that gate. Do not move the finish line without a demonstrated blocker or an explicit change in the human owner's mission.
+
 ## OPERATING RULES — CANON
 
 1. **If you aren't having fun, you're doing it wrong.**
