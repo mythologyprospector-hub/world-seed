@@ -2,7 +2,7 @@
 
 **Status:** Canonical baseline
 **Governs:** AI builder behavior within this project.
-**Last verified:** 2026-10-22
+**Last verified:** 2026-10-23
 
 ## Mandate
 
