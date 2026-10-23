@@ -2,7 +2,7 @@
 
 **Status:** In progress — source-level audit and final acceptance remain open
 **Governs:** The migration of reusable individual-project bootstrap capabilities into World Seed; the existing Project Seed repository remains preserved until acceptance gates pass.
-**Last verified:** 2026-10-21
+**Last verified:** 2026-10-23
 
 ## Decision
 
