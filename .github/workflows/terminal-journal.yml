@@ -19,6 +19,9 @@ on:
       - "scripts/terminal_journal.py"
       - "tests/test_terminal_journal.py"
       - "TERMINAL_JOURNAL.md"
+      - "scripts/world_seed_see.py"
+      - "tests/test_world_seed_see.py"
+      - "WORLD_SEED_SEE.md"
       - ".github/workflows/terminal-journal.yml"
 
 permissions:
@@ -36,6 +39,6 @@ jobs:
           python-version: "3.12"
       - name: Run local terminal journal tests
         run: |
-      python -m unittest discover -s tests -p 'test_terminal_journal.py' -v
-      python -m unittest discover -s tests -p 'test_terminal_handoff.py' -v
-      python -m unittest discover -s tests -p 'test_world_seed_see.py' -v
+        python -m unittest discover -s tests -p 'test_terminal_journal.py' -v
+        python -m unittest discover -s tests -p 'test_terminal_handoff.py' -v
+        python -m unittest discover -s tests -p 'test_world_seed_see.py' -v
