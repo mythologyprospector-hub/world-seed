@@ -11,6 +11,32 @@ Episteme, Praxis, and the other experimental projects are lessons, not products 
 
 **The primary milestone is a genuinely good new project produced by World Seed.** A passing unit suite, a complete checklist, or an impressive recovery mechanism cannot substitute for that result.
 
+## Active execution lock — 2026-10-23
+
+**This section is the controlling scope and finish-line decision for the current World Seed rebuild.** It resolves any broader or older sequencing language elsewhere in the portable seed. This is a feature freeze, not a claim that every existing component is finished.
+
+### The only work allowed before the first successful factory trial
+
+1. **Close demonstrated foundation blockers** that prevent a clean generation, usable generated onboarding, safe project boundaries, meaningful verification, or the trial itself. Do not add polish or capabilities merely because they might be useful someday.
+2. **Finish the terminal-visibility path already underway.** Keep this deliberately bounded to the opt-in local terminal journal, an explicit reviewed handoff to the configured private Intake Dock / Miracle Depot, and the explicit near-real-time snapshot wrapper needed to let the operator and assistant inspect command output. Preserve local-only raw journaling, require deliberate invocation, verify the remote destination is private, bound and cautiously redact shared reports, state that redaction is heuristic, and never describe snapshots as a live chat connection. Verify with harmless synthetic commands before relying on it. Do not upload sensitive output.
+3. **Run the factory acceptance trial.** Generate a fresh disposable project from World Seed alone, have a fresh builder follow its generated instructions and build a genuinely useful end-to-end slice, run meaningful tests, and record evidence and factory-caused defects. Fix only the defects that prevent this acceptance bar, then repeat the trial.
+
+### Explicitly deferred until after project-quality proof
+
+- Recovery expansion, broad recovery acceptance, account-wide recovery, and restoration engineering.
+- Omni-context, general memory/continuity infrastructure beyond the bounded terminal journal and handoff required above.
+- Broad account/repository audits that do not resolve a concrete trial blocker.
+- New subsystems, optional features, architecture redesigns, unrelated cleanup, and revival or preservation of experimental projects.
+- Any GitHub reset or destructive repository action before the quality gate and a separate exact inventory/authorization gate.
+
+Existing work is not automatically in scope just because a pull request or issue exists. Review the terminal stack in dependency order and verify each layer; do not merge untested drafts blindly. Other open work is deferred unless evidence shows that it blocks one of the three allowed work items above.
+
+### The finish line
+
+World Seed is **done enough for the first trial** when (a) its documented generator can create a clean project with coherent canon, usable onboarding, correct provenance, and no operator-private leakage; (b) the terminal path has passed a harmless end-to-end local test with the intended privacy and exit-status behavior; and (c) a fresh builder has produced a useful, implemented project with meaningful tests and reproducible setup. Record the exact evidence and remaining limitations. Do not extend the finish line to include recovery or omni-context.
+
+A defect exposed by the trial may justify a narrow factory fix. A new idea, a theoretical future risk without a demonstrated blocker, or a desire to make the factory more comprehensive does not reopen feature scope.
+
 ## Priority order
 
 1. **Finish the foundation and plumbing.** Close concrete gaps in the builder, generated-project template, onboarding, governance, documentation, tests, and verification. Absorb useful Project Seed capabilities into World Seed so generation does not depend on a separate seed repository.
