@@ -59,6 +59,26 @@ def upload(path: str, body: str, sha: str | None, branch: str) -> str:
     return str(json.loads(result.stdout)["content"]["sha"])
 
 
+def publish_latest(report_path: str, report_url: str, branch: str) -> None:
+    """Point a stable private-repo path at the current run's report."""
+    pointer_path = "terminal-live/LATEST.txt"
+    try:
+        existing = gh(["api", f"repos/{REPO}/contents/{pointer_path}", "--jq", ".sha"])
+        pointer_sha = existing.stdout.strip() or None
+    except (OSError, subprocess.CalledProcessError):
+        # A missing pointer is expected on the first run. If lookup failed for
+        # another reason, the write below will fail and the caller will warn.
+        pointer_sha = None
+    body = (
+        "Latest World Seed See report\n"
+        f"Updated (UTC): {dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds')}\n"
+        f"Report path: {report_path}\n"
+        f"Report URL: {report_url}\n"
+        "This pointer identifies the newest run; fetch the report itself for current output.\n"
+    )
+    upload(pointer_path, body, pointer_sha, branch)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Run a command, show its output, and share redacted snapshots about every 10 seconds."
@@ -116,6 +136,10 @@ def main() -> int:
         print(f"[world-seed-see] Could not create the private live report; command not started: {exc}", file=sys.stderr)
         return 125
     last_upload = time.monotonic()
+    try:
+        publish_latest(path, url, branch)
+    except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
+        print(f"[world-seed-see] Could not refresh latest-report pointer; use the printed report URL: {exc}", file=sys.stderr, flush=True)
     print(f"[world-seed-see] Live report: {url}", flush=True)
     print("[world-seed-see] Explicitly wrapped output is shared to the private repo about every 10 seconds.", flush=True)
     print("[world-seed-see] Redaction is heuristic; never run commands whose output contains secrets.", flush=True)

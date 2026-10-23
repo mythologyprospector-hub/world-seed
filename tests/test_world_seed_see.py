@@ -54,6 +54,18 @@ class WorldSeedSeeTests(unittest.TestCase):
         upload.assert_called_once()
         popen.assert_not_called()
 
+    def test_publish_latest_updates_stable_pointer(self):
+        response = subprocess.CompletedProcess([], 0, "old-blob-sha\n", "")
+        with patch.object(MODULE, "gh", return_value=response) as gh, patch.object(MODULE, "upload", return_value="new-sha") as upload:
+            MODULE.publish_latest("terminal-live/run.txt", "https://example.invalid/run.txt", "main")
+        gh.assert_called_once_with(["api", f"repos/{MODULE.REPO}/contents/terminal-live/LATEST.txt", "--jq", ".sha"])
+        args = upload.call_args.args
+        self.assertEqual(args[0], "terminal-live/LATEST.txt")
+        self.assertIn("terminal-live/run.txt", args[1])
+        self.assertIn("https://example.invalid/run.txt", args[1])
+        self.assertEqual(args[2], "old-blob-sha")
+        self.assertEqual(args[3], "main")
+
     def test_streams_bounded_output_and_preserves_exit_code(self):
         reports = []
         def fake_upload(path, body, sha, branch):

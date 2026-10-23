@@ -18,7 +18,7 @@ python3 scripts/world_seed_see.py -- git status --short --branch
 
 The wrapper streams combined stdout/stderr to the local terminal and creates a report in the private `mythologyprospector-hub/miracle-depot` repository. It verifies that the repository is private and reads its actual default branch before starting the command. If either check or the initial upload fails, the command does not start.
 
-The report is refreshed about every 10 seconds and at command completion. Output is bounded (24 KiB by default; 1 KiB to 1 MiB allowed), the command's exit code is returned, and the report URL is printed for the assistant to reread when asked. This is **near-real-time snapshots, not a live terminal connection**; it does not push a notification into ChatGPT.
+The report is refreshed about every 10 seconds and at command completion. At the start of each run, the wrapper also updates the stable private-repository pointer [terminal-live/LATEST.txt](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/LATEST.txt), which identifies the newest report path and URL. The report URL is printed as before. Output is bounded (24 KiB by default; 1 KiB to 1 MiB allowed), and the command's exit code is returned. This makes the newest report discoverable without copying its unique URL, but it is still **near-real-time snapshots, not a live terminal connection**; it does not push a notification into ChatGPT or wake this conversation.
 
 ## Privacy and limitations
 
