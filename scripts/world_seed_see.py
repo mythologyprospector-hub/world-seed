@@ -29,6 +29,10 @@ PATTERNS = [
     (re.compile(r"(?i)(\b(?:password|passwd|token|secret|api[_-]?key|client[_-]?secret|access[_-]?key|authorization)\b\s*[=:]\s*)[^\s,;]+"), r"\1[REDACTED]"),
     (re.compile(r"(?i)(https?://[^\s/?#]+/[^\s?#]*\?)[^\s#]+"), r"\1[REDACTED_QUERY]"),
     (re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----"), "[REDACTED_PRIVATE_KEY]"),
+    (re.compile(r"(?i)(--?(?:password|passwd|token|secret|api[_-]?key|client[_-]?secret|access[_-]?key)(?:=|\s+))([^\s,;]+)"), r"\1[REDACTED]"),
+    (re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"), "[REDACTED_API_TOKEN]"),
+    (re.compile(r"\bxox[baprs]-[A-Za-z0-9-]{10,}\b"), "[REDACTED_SLACK_TOKEN]"),
+    (re.compile(r"\bnpm_[A-Za-z0-9]{20,}\b"), "[REDACTED_NPM_TOKEN]"),
 ]
 
 
@@ -47,12 +51,11 @@ def upload(path: str, body: str, sha: str | None, branch: str) -> str:
     args = [
         "api", "--method", "PUT", f"repos/{REPO}/contents/{path}",
         "-f", "message=Refresh live terminal snapshot",
-        "-f", f"content={payload}", "-f", "branch=main",
+        "-f", f"content={payload}", "-f", f"branch={branch}",
     ]
     if sha:
         args.extend(["-f", f"sha={sha}"])
     result = gh(args)
-    import json
     return str(json.loads(result.stdout)["content"]["sha"])
 
 
@@ -76,13 +79,23 @@ def main() -> int:
     except (OSError, subprocess.CalledProcessError) as exc:
         print(f"[world-seed-see] Cannot verify GitHub CLI access to {REPO}: {exc}", file=sys.stderr)
         return 125
-    if check.stdout.strip().lower() != "true":
+    try:
+        repo_info = json.loads(check.stdout)
+    except (TypeError, json.JSONDecodeError):
+        print(f"[world-seed-see] Refusing to upload: could not parse repository privacy/default-branch metadata for {REPO}.", file=sys.stderr)
+        return 125
+    if repo_info.get("isPrivate") is not True:
         print(f"[world-seed-see] Refusing to upload: {REPO} was not verified private.", file=sys.stderr)
+        return 125
+    default_ref = repo_info.get("defaultBranchRef")
+    branch = default_ref.get("name") if isinstance(default_ref, dict) else None
+    if not isinstance(branch, str) or not branch:
+        print(f"[world-seed-see] Refusing to upload: could not verify the default branch for {REPO}.", file=sys.stderr)
         return 125
 
     now = dt.datetime.now(dt.timezone.utc)
     path = f"terminal-live/world-seed-see-{now.strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}.txt"
-    url = f"https://github.com/{REPO}/blob/main/{path}"
+    url = f"https://github.com/{REPO}/blob/{branch}/{path}"
     started = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
     retained = bytearray()
     truncated = False
@@ -92,7 +105,6 @@ def main() -> int:
     header = (
         "World Seed See — live terminal snapshot\n"
         f"Started (UTC): {started}\n"
-        f"Working directory: {Path.cwd()}\n"
         f"Command: {redact(' '.join(command))}\n"
         "NOTE: output is heuristically redacted, not guaranteed secret-free.\n"
         "----- output -----\n"
