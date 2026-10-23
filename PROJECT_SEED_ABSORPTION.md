@@ -83,7 +83,7 @@ Project Seed is **not yet cleared for retirement**. No repository deletion is au
 
 ## Reconciliation pass — 2026-10-23
 
-The source inventory was re-read from the current Project Seed default-branch tree. Its tree SHA remains `e5f9cc7d5b7962b8fcbb16ab9b3d1e9ee2d2dbe2`; the most recent source commit is still `e5f9cc7d5b7962b8fcbb16ab9b3d1e9ee2d2dbe2` (2026-10-19, Project-First Rule). The tree contains exactly these ten tracked files:
+The source inventory was re-read from the current Project Seed default-branch tree. The default branch still points to commit `e5f9cc7d5b7962b8fcbb16ab9b3d1e9ee2d2dbe2` (2026-10-19, Project-First Rule); its recursive file inventory was fetched directly. The tree contains exactly these ten tracked files:
 
 - `.github/workflows/project-seed-sync.yml`
 - `AGENTS.md`
