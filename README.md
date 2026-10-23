@@ -22,6 +22,7 @@ It is deliberately **mission-portable and operator-aware**:
 
 - [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md) and [scripts/terminal_journal.py](scripts/terminal_journal.py) — opt-in, durable local command/output capture; raw journal data remains local and remote transfer is separate.
 - [scripts/terminal_handoff.py](scripts/terminal_handoff.py) — prepares a bounded report for human review and requires explicit confirmation before publishing to the verified private Intake Dock.
+- [WORLD_SEED_SEE.md](WORLD_SEED_SEE.md) and [scripts/world_seed_see.py](scripts/world_seed_see.py) — explicitly share bounded, heuristically redacted terminal snapshots to the private Intake Dock about every 10 seconds; not a live chat connection.
 
 - [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
 - [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
