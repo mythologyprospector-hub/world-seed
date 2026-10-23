@@ -2,7 +2,7 @@
 
 **Status:** Implemented baseline; full factory acceptance remains incomplete.  
 **Governs:** Creation of a new project from the portable World Seed template; recovery requirements remain in `RECOVERY.md`.  
-**Last verified:** 2026-10-22
+**Last verified:** 2026-10-23
 
 ## Purpose
 
