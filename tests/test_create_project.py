@@ -37,9 +37,23 @@ class CreateProjectTests(unittest.TestCase):
             manifest = json.loads((created / "world-seed-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["project_name"], "example-project")
             self.assertEqual(manifest["mission"], "Help people solve a useful problem.")
-            self.assertEqual(manifest["template_version"], "1.1.0")
+            self.assertEqual(manifest["template_version"], "1.2.0")
             self.assertEqual(manifest["source_revision"], "a" * 40)
             self.assertTrue(manifest["manifest_excludes_itself"])
+            validation = manifest["validation_results"]
+            self.assertEqual(validation["status"], "passed")
+            self.assertTrue(validation["checks"])
+            self.assertTrue(all(check["status"] == "passed" for check in validation["checks"]))
+            self.assertEqual(
+                {check["id"] for check in validation["checks"]},
+                {
+                    "required_file_inventory",
+                    "mission_substitution",
+                    "readme_placeholders_resolved",
+                    "no_unresolved_template_markers",
+                    "local_markdown_links_resolve",
+                },
+            )
             self.assertEqual(set(manifest["generated_files"]), set(GENERATOR.PROJECT_FILES))
             self.assertEqual(set(manifest["generated_file_sha256"]), set(GENERATOR.PROJECT_FILES))
             for name in GENERATOR.PROJECT_FILES:
@@ -72,6 +86,24 @@ class CreateProjectTests(unittest.TestCase):
             ):
                 self.assertIn(requirement, guidance)
             self.assertIn("social preview", (created / "DOCS.md").read_text(encoding="utf-8").lower())
+
+    def test_rendered_project_validation_rejects_broken_local_links(self):
+        rendered, _manifest = GENERATOR.render_project(
+            ROOT,
+            "broken-link-project",
+            "A useful project mission.",
+            "a" * 40,
+        )
+        rendered["README.md"] += "\n[Missing document](NOT-THERE.md)\n"
+        with self.assertRaisesRegex(
+            GENERATOR.ProjectGenerationError,
+            "local_markdown_links_resolve",
+        ):
+            GENERATOR.validate_rendered_project(
+                rendered,
+                "broken-link-project",
+                "A useful project mission.",
+            )
 
     def test_custom_mission_replaces_marker_and_readme_placeholders(self):
         with tempfile.TemporaryDirectory() as temporary:

@@ -45,7 +45,7 @@ def inspect_project(path: Path) -> dict[str, object]:
     except (OSError, UnicodeError, json.JSONDecodeError):
         record.update(status="invalid-manifest", verification="manifest-unreadable-or-invalid-json")
         return record
-    if not isinstance(manifest, dict) or manifest.get("schema_version") != 1:
+    if not isinstance(manifest, dict) or manifest.get("schema_version") not in (1, 2):
         record.update(status="invalid-manifest", verification="unsupported-manifest-schema")
         return record
     generated_files = manifest.get("generated_files")

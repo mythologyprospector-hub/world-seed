@@ -16,6 +16,10 @@ python scripts/project_library.py \
 
 Repeat `--root` to inspect another parent directory. The scan is one level deep; it does not follow symlinked project directories and does not recursively walk arbitrary project files. Keep the output outside every scanned root. The output is written atomically with owner-only permissions.
 
+## Manifest compatibility
+
+The catalog accepts World Seed project manifest schemas 1 and 2. Schema 2 records the generator's pre-write validation results; the catalog treats those results as recorded metadata, not independently authenticated proof.
+
 ## Catalog states
 
 - `unmanaged-directory` — a directory was found without a World Seed manifest. The catalog does not inspect its files.

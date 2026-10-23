@@ -33,7 +33,7 @@ The generator creates:
 - `MACHINE.md` — a portable placeholder for facts to be discovered locally; no Bucky-specific values are embedded.
 - `ORGANS.md` — conditional integration guidance that requires checking actual contracts.
 - `README.md` — project entry point.
-- `world-seed-manifest.json` — template version, source revision, mission, generated-file inventory, SHA-256 hashes for each generated file, and generation timestamp.
+- `world-seed-manifest.json` — template version, source revision, mission, generated-file inventory, SHA-256 hashes for each generated file, generation timestamp, and pre-write validation results covering required files, mission substitution, unresolved template markers, and local Markdown links.
 
 The project template version is recorded in `templates/project/PROJECT_TEMPLATE_VERSION` and the generated manifest. Changes to the generated builder contract must bump that version and update the generation tests. The generated `LICENSE` deliberately retains `<YEAR>` and `<COPYRIGHT HOLDER>` placeholders because the portable generator does not yet load an authorized operator profile. Complete those fields accurately before publication; do not guess ownership.
 
@@ -54,7 +54,7 @@ After generation, the builder must continue beyond the scaffold:
 
 ## Verification and limits
 
-Automated tests cover bundle completeness, mission substitution, manifest provenance and file hashes, invalid names, refusal to overwrite, refusal to generate inside the factory source checkout, exclusion of operator machine details and credentials, and the presence of the generated first-build quality protocol.
+Automated tests cover bundle completeness, mission substitution, manifest provenance and file hashes, the recorded pre-write validation checks, rejection of broken local Markdown links, invalid names, refusal to overwrite, refusal to generate inside the factory source checkout, exclusion of operator machine details and credentials, and the presence of the generated first-build quality protocol.
 
 CI also runs `scripts/run_generated_project_recovery_drill.py`, which generates a disposable project, adds synthetic user-authored text and binary data, captures and restores the tree including its manifest, verifies the source remains unchanged, and confirms the restored project catalogs as `generated-files-match`.
 
