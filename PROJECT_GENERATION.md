@@ -2,7 +2,7 @@
 
 **Status:** Implemented baseline; full factory acceptance remains incomplete.  
 **Governs:** Creation of a new project from the portable World Seed template; recovery requirements remain in `RECOVERY.md`.  
-**Last verified:** 2026-10-22
+**Last verified:** 2026-10-23
 
 ## Purpose
 
@@ -26,7 +26,7 @@ The name must be a lowercase slug. The destination must not already exist and mu
 The generator creates:
 
 - `MISSION.md` — the shared discovery method with the supplied mission sentence.
-- `AGENTS.md` — project-builder instructions, including a first-build protocol that requires real implementation, meaningful tests, reproducible setup, whole-project review, and evidence-backed status rather than stopping at a scaffold.
+- `AGENTS.md` — project-builder instructions, including the first-build quality protocol, accountable delegation/context economy, durable handoffs, and licensing/attribution checks.
 - `CONSTITUTION.md` and `HUMAN.md` — project operating rules and human/AI working boundaries.
 - `LICENSE` — the MIT license template with copyright placeholders that must be completed accurately before publication.
 - `DOCS.md` — documentation conventions.
@@ -35,7 +35,7 @@ The generator creates:
 - `README.md` — project entry point.
 - `world-seed-manifest.json` — template version, source revision, mission, generated-file inventory, SHA-256 hashes for each generated file, generation timestamp, and pre-write validation results covering required files, mission substitution, unresolved template markers, and local Markdown links.
 
-The project template version is recorded in `templates/project/PROJECT_TEMPLATE_VERSION` and the generated manifest. Changes to the generated builder contract must bump that version and update the generation tests. The generated `LICENSE` deliberately retains `<YEAR>` and `<COPYRIGHT HOLDER>` placeholders because the portable generator does not yet load an authorized operator profile. Complete those fields accurately before publication; do not guess ownership.
+The project template version is recorded in `templates/project/PROJECT_TEMPLATE_VERSION` and the generated manifest. Changes to the generated builder contract must bump that version and update the generation tests. Template version `1.3.0` also carries forward Project Seed's reusable implementation-agent handoff/context-economy rules and its MIT-by-default guidance for new software projects, while keeping owner identity out of the portable template. The generated `LICENSE` deliberately retains `<YEAR>` and `<COPYRIGHT HOLDER>` placeholders because the portable generator does not yet load an authorized operator profile. Complete those fields accurately before publication; do not guess ownership.
 
 The manifest records the initial generated bundle, not future changes to it. It excludes itself from its own generated-file list. Hashes detect later changes to listed files; they do not authenticate the manifest or capture user-added data. The [Local Project Library](PROJECT_LIBRARY.md) can compare listed generated files with these hashes. A match is only a local integrity signal, not a backup or restore guarantee.
 

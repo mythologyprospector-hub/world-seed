@@ -37,7 +37,7 @@ class CreateProjectTests(unittest.TestCase):
             manifest = json.loads((created / "world-seed-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["project_name"], "example-project")
             self.assertEqual(manifest["mission"], "Help people solve a useful problem.")
-            self.assertEqual(manifest["template_version"], "1.2.0")
+            self.assertEqual(manifest["template_version"], "1.3.0")
             self.assertEqual(manifest["source_revision"], "a" * 40)
             self.assertTrue(manifest["manifest_excludes_itself"])
             validation = manifest["validation_results"]
@@ -83,6 +83,12 @@ class CreateProjectTests(unittest.TestCase):
                 "Review the whole project",
                 "Do not stop after creating its documents",
                 "Do not call the project useful, complete, or recovery-worthy",
+                "Division of labor and context economy",
+                "Do not claim delegation or verification without evidence.",
+                "Keep decisions and findings in the repository's canonical files",
+                "Licensing and attribution",
+                "use the MIT License by default",
+                "replace every placeholder in the generated `LICENSE`",
             ):
                 self.assertIn(requirement, guidance)
             self.assertIn("social preview", (created / "DOCS.md").read_text(encoding="utf-8").lower())

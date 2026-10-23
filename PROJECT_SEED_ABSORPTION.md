@@ -2,7 +2,7 @@
 
 **Status:** In progress — source-level audit and final acceptance remain open
 **Governs:** The migration of reusable individual-project bootstrap capabilities into World Seed; the existing Project Seed repository remains preserved until acceptance gates pass.
-**Last verified:** 2026-10-21
+**Last verified:** 2026-10-23
 
 ## Decision
 
@@ -80,3 +80,51 @@ As of 2026-10-21, Praxis PR [#6](https://github.com/mythologyprospector-hub/prax
 World Seed now has its own generator, templates, local Project Library, profile-package scaffolding, selective recovery, and isolated synthetic recovery drills. The protected-branch check on integrated `main` passed on 2026-10-21 (193 tests, both recovery drills, and 112 required-file/Markdown-link checks). After PRs #29 and #30 were merged, the exact latest main commit `0c5d33b8b355f088fee1b25b1db57b2b86057ac4` also passed its Actions check. This proves those specific tested paths only.
 
 Project Seed is **not yet cleared for retirement**. No repository deletion is authorized by this map. The next acceptance work is to finish the semantic comparison, verify the generated-project contract and source provenance, and document any accepted omissions. The factory's actual demolition rehearsals for Praxis and Renaissance, GitHub-only record preservation, and independent operator/personal-data restoration remain separate gates.
+
+## Reconciliation pass — 2026-10-23
+
+The source inventory was re-read from the current Project Seed default-branch tree. The default branch still points to commit `e5f9cc7d5b7962b8fcbb16ab9b3d1e9ee2d2dbe2` (2026-10-19, Project-First Rule); its recursive file inventory was fetched directly. The tree contains exactly these ten tracked files:
+
+- `.github/workflows/project-seed-sync.yml`
+- `AGENTS.md`
+- `DOCS.md`
+- `HUMAN.md`
+- `LICENSE`
+- `MACHINE.md`
+- `ORGANS.md`
+- `README.md`
+- `SEED_SYNC.md`
+- `WORKTREE_LIFECYCLE.md`
+
+The list contains ten paths, including the workflow; no additional source files were present in the recursive tree. The 54 KB `AGENTS.md` was reviewed by its complete section structure and its distinctive operating-policy sections, alongside the complete supporting documents and sync workflow. This pass records targeted dispositions; it is **not** a claim that every sentence has passed a final legal or line-by-line equivalence review.
+
+### Reusable operating rules and disposition
+
+| Project Seed rule or capability | World Seed destination / evidence | Disposition |
+|---|---|---|
+| Genie Principle and unbounded-mission discovery | `MISSION.md`, root `AGENTS.md`, generated project `AGENTS.md` | Represented. Builder must discover the right form of solution instead of demanding a technical specification. |
+| Human gate, delegated initiative, Dots Principle, chain of command | `HUMAN.md`, `CONSTITUTION.md`, root `AGENTS.md` | Represented in portable terms. Owner retains consequential authority; the builder owns routine direction and coordination. |
+| Fun Rule and Project-First Rule | `CONSTITUTION.md`, `HUMAN.md` | Represented as Rule #1 and Rule #2. |
+| Miracle Tokens: director/implementation labor/durable memory/evidence loop and context economy | Root leadership/evidence rules existed; generated builder contract was thinner on bounded delegation and compact handoffs. | Added to generated `templates/project/AGENTS.md` in template version 1.3.0, with regression assertions. The portable template describes the method without requiring a particular tool or promising unlimited usage. |
+| Durable truth, inspect-before-change, truth discipline, retry discipline, standard work loop | Root `AGENTS.md`, `PROJECT_GENERATION.md`, generated first-build protocol and existing tests | Substantially represented. Exact operational details remain subject to the final clause-level pass; retry rules must never bypass safety or permissions. |
+| Default MIT licensing and attribution safeguards | Generated `LICENSE` template, profile boundary, generated builder contract | Added generic MIT-by-default guidance for new software projects, subject to ownership and third-party obligations. Copyright identity stays profile-authorized; generated placeholders must be completed before publication. No source-specific personal identity is hard-coded into the portable template. |
+| Documentation style, status language, naming, drift control, social preview | `CONSISTENCY_STANDARD.md`, generated `templates/project/DOCS.md` | Represented across the canonical and generated standards. Public preview preparation and owner-side upload are separate states. |
+| Operator machine context | `MACHINE_PROFILE.md`, `PROFILE_PACKAGES.md`, generated `MACHINE.md` placeholder | Boundary represented; source `MACHINE.md` must not be copied because it contains Bucky-specific paths and runtime locations. |
+| Organs external-runtime and contract-first boundary | Root and generated `ORGANS.md` | Represented. Organs remains optional per project; the live Organs repository/installation is authoritative for current technical details. |
+| Worktree discovery, tracking, preservation, retirement | World Seed `WORKTREE_LIFECYCLE.md` | Previously merged and adapted to avoid treating machine-specific paths as universal. Real recovery use remains unproven. |
+| Seed synchronization and cross-repository write workflow | Source `SEED_SYNC.md` and `.github/workflows/project-seed-sync.yml` | Exclude from the portable factory. The source workflow uses `PROJECT_SEED_SYNC_TOKEN`, six target mappings, reference snapshots, and PR creation. Never reproduce its token or cross-repository write authority. Before retirement, confirm no required downstream project depends on future Project Seed sync and preserve relevant PR/branch/history records. |
+| Source license and history | Source `LICENSE` and Git history | Preserve source repository/history as provenance until acceptance. Reusing text does not justify deleting source history or silently changing another project's license. |
+
+### Automation and downstream status
+
+The most recent Project Seed sync workflow run observed during this pass was successful on 2026-10-19. That establishes only that run's result; it does not establish that every target remains configured or that future synchronization is unnecessary.
+
+The previously recorded Praxis PR #6 and Renaissance PR #13 could not be retrieved by their direct pull-request API URLs during this pass (both returned 404). Their current state is therefore **unverified**, not presumed closed or open. Before Project Seed retirement, rediscover the relevant downstream sync PRs and branches through the authorized GitHub connection and record their actual state and disposition.
+
+### Remaining gates
+
+1. Complete the clause-level comparison of Project Seed's operating constitution and supporting documents; record any omissions as accepted, adapted, or deliberately excluded.
+2. Verify sync dependencies, downstream PR/branch state, and the retirement plan for `PROJECT_SEED_SYNC_TOKEN` without exposing or copying the secret.
+3. Run the World Seed generator test suite and relevant CI for template version 1.3.0; do not infer green status from this proposed change.
+4. Pass the fresh-project quality gate with a real mission and useful implemented result.
+5. Only after the quality gate, perform the separate isolated recovery proof and then recommend archive/retirement. Deletion remains unauthorized by this map.

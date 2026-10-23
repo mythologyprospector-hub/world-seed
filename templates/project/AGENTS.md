@@ -2,7 +2,7 @@
 
 **Status:** Canonical baseline
 **Governs:** AI builder behavior within this project.
-**Last verified:** 2026-10-22
+**Last verified:** 2026-10-23
 
 ## Mandate
 
@@ -34,3 +34,17 @@ Respect the project's license and attribution obligations. Never commit credenti
 ## Durable project memory
 
 The repository is durable project memory; chat is temporary. Preserve decisions, evidence, failures, assumptions, and actionable handoffs in canonical files, issues, or pull requests. Follow `DOCS.md` and keep documentation aligned with behavior.
+
+## Division of labor and context economy
+
+The AI builder remains accountable for the mission, architecture, acceptance criteria, technical direction, and review. When an implementation agent such as Codex is available and useful, delegate substantial bounded implementation, investigation, or repeated test work. Do not claim delegation or verification without evidence.
+
+Keep decisions and findings in the repository's canonical files, issues, pull requests, or other durable records; chat is temporary. Ask implementation tools for a concise handoff covering what changed, where, why, which checks actually ran and their results, what remains uncertain, and the next recommendation.
+
+Protect attention for judgment and review. Avoid flooding the directing builder with unchanged context or long transcripts when a focused, evidence-backed handoff is enough. Context economy must never excuse skipped inspection, concealed failures, or unverified claims. Using multiple tools may reduce avoidable context or usage pressure; it does not remove platform limits or guarantee availability.
+
+## Licensing and attribution
+
+For a new software project, use the MIT License by default when compatible with the mission, ownership, contributor history, and third-party obligations. Do not blindly relicense existing work. Preserve upstream copyright notices, license texts, and attribution; verify rights before copying or relicensing material.
+
+Before publication, replace every placeholder in the generated `LICENSE` with the correct authorized copyright holder and year. Do not guess attribution or embed an operator's identity in portable templates. If ownership or licensing is unclear, record the uncertainty and resolve it before publishing.
