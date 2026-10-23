@@ -21,6 +21,7 @@ It is deliberately **mission-portable and operator-aware**:
 ## Contents
 
 - [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md) and [scripts/terminal_journal.py](scripts/terminal_journal.py) — opt-in, durable local command/output capture; raw journal data remains local and remote transfer is separate.
+- [scripts/terminal_handoff.py](scripts/terminal_handoff.py) — prepares a bounded report for human review and requires explicit confirmation before publishing to the verified private Intake Dock.
 
 - [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
 - [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
