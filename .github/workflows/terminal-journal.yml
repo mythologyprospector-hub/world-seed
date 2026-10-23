@@ -5,6 +5,8 @@ on:
     paths:
       - "scripts/terminal_journal.py"
       - "tests/test_terminal_journal.py"
+      - "scripts/terminal_handoff.py"
+      - "tests/test_terminal_handoff.py"
       - "TERMINAL_JOURNAL.md"
       - ".github/workflows/terminal-journal.yml"
   push:
