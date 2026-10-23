@@ -66,6 +66,17 @@ class WorldSeedSeeTests(unittest.TestCase):
         self.assertEqual(args[2], "old-blob-sha")
         self.assertEqual(args[3], "main")
 
+    def test_collect_shell_context_includes_prompt_dashboard_fields(self):
+        context = MODULE.collect_shell_context()
+        for key in ("timestamp_local", "user", "host", "cwd", "git_branch", "git_state"):
+            self.assertIn(key, context)
+            self.assertTrue(context[key])
+        rendered = MODULE.format_shell_context("test context", context)
+        self.assertIn("User/host:", rendered)
+        self.assertIn("Working directory:", rendered)
+        self.assertIn("Git branch:", rendered)
+        self.assertIn("Git working tree:", rendered)
+
     def test_streams_bounded_output_and_preserves_exit_code(self):
         reports = []
         def fake_upload(path, body, sha, branch):
@@ -86,7 +97,10 @@ class WorldSeedSeeTests(unittest.TestCase):
         self.assertIn("SYNTHETIC_OK", final_report)
         self.assertIn("[OUTPUT TRUNCATED LOCALLY]", final_report)
         self.assertIn("Exit code: 7", final_report)
-        self.assertNotIn(str(Path.cwd()), final_report)
+        self.assertIn(str(Path.cwd()), final_report)
+        self.assertIn("shell context at wrapper start", final_report)
+        self.assertIn("current shell/repository context", final_report)
+        self.assertIn("Git working tree:", final_report)
         self.assertIn("SYNTHETIC_OK", out.buffer.getvalue().decode())
 
 
