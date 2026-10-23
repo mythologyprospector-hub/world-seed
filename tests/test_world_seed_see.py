@@ -47,6 +47,7 @@ class WorldSeedSeeTests(unittest.TestCase):
         err = io.TextIOWrapper(io.BytesIO(), encoding="utf-8")
         response = subprocess.CompletedProcess([], 0, json.dumps({"isPrivate": True, "defaultBranchRef": {"name": "main"}}), "")
         with patch.object(MODULE, "gh", return_value=response), patch.object(MODULE, "upload", side_effect=subprocess.CalledProcessError(1, ["gh"])) as upload, \
+             patch.object(MODULE, "collect_shell_context", return_value={"timestamp_local": "00:00:00", "user": "test", "host": "test-host", "cwd": "/tmp/test", "git_branch": "test", "git_state": "clean"}), \
              patch.object(MODULE.subprocess, "Popen") as popen, patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--", sys.executable, "-c", "print('SHOULD_NOT_RUN')"]), \
              patch("sys.stdout", out), patch("sys.stderr", err):
             result = MODULE.main()
