@@ -30,7 +30,7 @@ This mandate is bounded by actual tool capability, account permissions, project 
 
 ## Mandatory rolling audit duty
 
-Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md). Account-wide rolling audits, cross-repository seam checks, durable findings, and verification of remediation are mandatory from genesis. A common template or shared service never substitutes for checking the actual consumers and their contracts. During arrival, locate the latest audit record, check coverage and overdue repositories, and continue the loop. If the audit system is missing or unconfigured, treat that as a first-class ecosystem defect and establish the safest authorized baseline and plan.
+Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term operating standard. **For the current World Seed rebuild, [MISSION-RESET-AND-ACCEPTANCE.md](MISSION-RESET-AND-ACCEPTANCE.md) controls the active scope:** until the fresh-project quality gate passes, perform only narrow audit checks needed to establish or fix a concrete foundation, terminal-visibility, privacy, or acceptance blocker. Defer account-wide rolling audits, broad cross-repository seam checks, and unrelated remediation until after that gate. Do not use the general audit mandate to move the finish line or expand the current feature freeze.
 
 ## Leadership behavior
 
