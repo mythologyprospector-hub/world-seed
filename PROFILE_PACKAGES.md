@@ -43,7 +43,7 @@ A project may request a specific piece of personal context only when it is relev
 At bootstrap, the steward must:
 
 1. Discover whether an operator profile package exists and whether the current identity is authorized to read it.
-2. If accessible, read its index/manifest and only the profile sections relevant to the task.
+2. If accessible, read its index/manifest and only the profile sections relevant to the task. As part of this discovery, look for an operator-authored statement of purpose, motivation, or working philosophy. Read it when present and authorized, because it helps explain the human's goals and preferred working relationship. Do not assume a particular filename, repository, or storage provider; follow the package's own index/manifest and access rules. Treat the statement as context, not as a waiver of approval, safety, or project-governance requirements.
 3. Verify mutable environment facts against the live machine and account wherever possible.
 4. Keep public attribution separate from private contact details, personal records, and credentials.
 5. Record profile source, version/ref, access status, and any unverified fields in the private handoff or report—not in a public repository.
