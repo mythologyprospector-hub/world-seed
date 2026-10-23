@@ -37,6 +37,7 @@ class WorldSeedSeeTests(unittest.TestCase):
              patch("sys.stdout", out), patch("sys.stderr", err):
             result = MODULE.main()
         self.assertEqual(result, 125)
+        err.flush()
         upload.assert_not_called()
         popen.assert_not_called()
         self.assertIn("not verified private", err.buffer.getvalue().decode())
