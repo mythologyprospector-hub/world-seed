@@ -70,11 +70,11 @@ def publish_latest(report_path: str, report_url: str, branch: str) -> None:
         # another reason, the write below will fail and the caller will warn.
         pointer_sha = None
     body = (
-        "Latest World Seed See report\\n"
-        f"Updated (UTC): {dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds')}\\n"
-        f"Report path: {report_path}\\n"
-        f"Report URL: {report_url}\\n"
-        "This pointer identifies the newest run; fetch the report itself for current output.\\n"
+        "Latest World Seed See report\n"
+        f"Updated (UTC): {dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds')}\n"
+        f"Report path: {report_path}\n"
+        f"Report URL: {report_url}\n"
+        "This pointer identifies the newest run; fetch the report itself for current output.\n"
     )
     upload(pointer_path, body, pointer_sha, branch)
 
