@@ -1,6 +1,6 @@
 # World Seed See: Near-Real-Time Terminal Snapshots
 
-**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, and prompt-like shell context. The original harmless live test demonstrated local output, intermediate remote snapshots, and final exit-code preservation; the new prompt-context fields still require a fresh harmless live test before that enhancement is accepted.
+**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, and prompt-like shell context. Verification passed on 2026-10-23: both required GitHub Actions workflows passed, and a fresh harmless live smoke test confirmed local output, the uploaded report, all expected prompt-like context fields, and exit code 0. This is verified near-real-time snapshot reporting, not a live terminal connection.
 
 ## Run
 
@@ -32,4 +32,11 @@ Each report includes a prompt-like context snapshot: local time, user and host, 
 
 ## Acceptance gate
 
-Do not treat this as accepted until the required GitHub Actions checks pass and an operator runs a harmless synthetic command locally, confirms that output appears in the terminal, confirms the private report updates, verifies the final exit code and URL, and confirms that no sensitive output was used. The report should also show the expected user/host, working directory, branch, and clean/dirty state.
+## Acceptance evidence (2026-10-23)
+
+- Both required GitHub Actions workflows passed on the PR commit before this documentation update.
+- A fresh harmless synthetic command ran locally and printed `World Seed See prompt-context smoke test passed`.
+- The private `terminal-live/LATEST.txt` pointer advanced to the new report, which contained the expected user/host, working directory, branch, clean/dirty state, output, final process state, and exit code `0`.
+- No sensitive command output was used.
+
+The enhancement's CI and live smoke-test acceptance checks are satisfied. Any later code changes must be verified again against their resulting commit.
