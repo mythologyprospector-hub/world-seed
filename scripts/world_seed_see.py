@@ -9,11 +9,13 @@ from __future__ import annotations
 import argparse
 import base64
 import datetime as dt
+import getpass
 import json
 import os
 from pathlib import Path
 import re
 import selectors
+import socket
 import subprocess
 import sys
 import time
@@ -79,6 +81,49 @@ def publish_latest(report_path: str, report_url: str, branch: str) -> None:
     upload(pointer_path, body, pointer_sha, branch)
 
 
+def collect_shell_context() -> dict[str, str]:
+    """Capture prompt-like context without recording shell history or arbitrary environment."""
+    cwd = str(Path.cwd())
+    branch = "(unavailable)"
+    git_state = "not a Git worktree"
+    try:
+        subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            cwd=cwd, text=True, capture_output=True, check=True,
+        )
+        branch_result = subprocess.run(
+            ["git", "branch", "--show-current"],
+            cwd=cwd, text=True, capture_output=True, check=True,
+        )
+        branch = branch_result.stdout.strip() or "(detached HEAD)"
+        status_result = subprocess.run(
+            ["git", "status", "--short"],
+            cwd=cwd, text=True, capture_output=True, check=True,
+        )
+        git_state = "dirty" if status_result.stdout.strip() else "clean"
+    except (OSError, subprocess.CalledProcessError):
+        pass
+    return {
+        "timestamp_local": dt.datetime.now().astimezone().strftime("%H:%M:%S"),
+        "user": getpass.getuser(),
+        "host": socket.gethostname(),
+        "cwd": cwd,
+        "git_branch": branch,
+        "git_state": git_state,
+    }
+
+
+def format_shell_context(label: str, context: dict[str, str]) -> str:
+    return redact(
+        f"----- {label} -----\n"
+        f"Prompt-like timestamp (local): {context['timestamp_local']}\n"
+        f"User/host: {context['user']}@{context['host']}\n"
+        f"Working directory: {context['cwd']}\n"
+        f"Git branch: {context['git_branch']}\n"
+        f"Git working tree: {context['git_state']}\n"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Run a command, show its output, and share redacted snapshots about every 10 seconds."
@@ -117,6 +162,7 @@ def main() -> int:
     path = f"terminal-live/world-seed-see-{now.strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:8]}.txt"
     url = f"https://github.com/{REPO}/blob/{branch}/{path}"
     started = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
+    start_context = collect_shell_context()
     retained = bytearray()
     truncated = False
     sha: str | None = None
@@ -127,9 +173,13 @@ def main() -> int:
         f"Started (UTC): {started}\n"
         f"Command: {redact(' '.join(command))}\n"
         "NOTE: output is heuristically redacted, not guaranteed secret-free.\n"
-        "----- output -----\n"
     )
-    initial_report = header + "[Waiting for command output]\n"
+    initial_report = (
+        header
+        + format_shell_context("shell context at wrapper start", start_context)
+        + "----- output -----\n"
+        + "[Waiting for command output]\n"
+    )
     try:
         sha = upload(path, initial_report, None, branch)
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
@@ -173,11 +223,17 @@ def main() -> int:
                 decoded = retained.decode("utf-8", errors="replace")
                 if truncated:
                     decoded += "\n[OUTPUT TRUNCATED LOCALLY]\n"
-                report = header + redact(decoded) + (
-                    f"\n----- status -----\n"
-                    f"Snapshot (UTC): {dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds')}\n"
-                    f"Process state: {'finished' if finished else 'running'}\n"
-                    f"Exit code: {proc.returncode if finished else 'not yet available'}\n"
+                current_context = collect_shell_context()
+                report = (
+                    header
+                    + format_shell_context("shell context at wrapper start", start_context)
+                    + format_shell_context("current shell/repository context", current_context)
+                    + "----- output -----\n"
+                    + redact(decoded)
+                    + f"\n----- status -----\n"
+                    + f"Snapshot (UTC): {dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds')}\n"
+                    + f"Process state: {'finished' if finished else 'running'}\n"
+                    + f"Exit code: {proc.returncode if finished else 'not yet available'}\n"
                 )
                 try:
                     sha = upload(path, report, sha, branch)

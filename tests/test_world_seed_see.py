@@ -47,6 +47,7 @@ class WorldSeedSeeTests(unittest.TestCase):
         err = io.TextIOWrapper(io.BytesIO(), encoding="utf-8")
         response = subprocess.CompletedProcess([], 0, json.dumps({"isPrivate": True, "defaultBranchRef": {"name": "main"}}), "")
         with patch.object(MODULE, "gh", return_value=response), patch.object(MODULE, "upload", side_effect=subprocess.CalledProcessError(1, ["gh"])) as upload, \
+             patch.object(MODULE, "collect_shell_context", return_value={"timestamp_local": "00:00:00", "user": "test", "host": "test-host", "cwd": "/tmp/test", "git_branch": "test", "git_state": "clean"}), \
              patch.object(MODULE.subprocess, "Popen") as popen, patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--", sys.executable, "-c", "print('SHOULD_NOT_RUN')"]), \
              patch("sys.stdout", out), patch("sys.stderr", err):
             result = MODULE.main()
@@ -65,6 +66,17 @@ class WorldSeedSeeTests(unittest.TestCase):
         self.assertIn("https://example.invalid/run.txt", args[1])
         self.assertEqual(args[2], "old-blob-sha")
         self.assertEqual(args[3], "main")
+
+    def test_collect_shell_context_includes_prompt_dashboard_fields(self):
+        context = MODULE.collect_shell_context()
+        for key in ("timestamp_local", "user", "host", "cwd", "git_branch", "git_state"):
+            self.assertIn(key, context)
+            self.assertTrue(context[key])
+        rendered = MODULE.format_shell_context("test context", context)
+        self.assertIn("User/host:", rendered)
+        self.assertIn("Working directory:", rendered)
+        self.assertIn("Git branch:", rendered)
+        self.assertIn("Git working tree:", rendered)
 
     def test_streams_bounded_output_and_preserves_exit_code(self):
         reports = []
@@ -86,7 +98,10 @@ class WorldSeedSeeTests(unittest.TestCase):
         self.assertIn("SYNTHETIC_OK", final_report)
         self.assertIn("[OUTPUT TRUNCATED LOCALLY]", final_report)
         self.assertIn("Exit code: 7", final_report)
-        self.assertNotIn(str(Path.cwd()), final_report)
+        self.assertIn(str(Path.cwd()), final_report)
+        self.assertIn("shell context at wrapper start", final_report)
+        self.assertIn("current shell/repository context", final_report)
+        self.assertIn("Git working tree:", final_report)
         self.assertIn("SYNTHETIC_OK", out.buffer.getvalue().decode())
 
 
