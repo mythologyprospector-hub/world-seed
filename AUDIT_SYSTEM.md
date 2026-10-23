@@ -4,6 +4,11 @@
 **Governs:** Repository health, cross-repository coherence, account-wide integrity, and continuous drift detection.
 **Last verified:** 2026-10-19
 
+## Current World Seed rebuild scope override — 2026-10-23
+
+This document defines the reusable long-term audit system. For the active rebuild of this repository, [MISSION-RESET-AND-ACCEPTANCE.md](MISSION-RESET-AND-ACCEPTANCE.md) takes precedence over the general audit cadence until the fresh-project quality gate passes. During this bounded phase, run only checks that directly establish or resolve a concrete foundation, terminal-visibility, privacy, or acceptance blocker. Defer account-wide inventory cycles, broad cross-repository seam audits, and unrelated remediation. Resume the broader audit program after project-quality proof; do not treat this temporary sequencing decision as a permanent exemption for future projects.
+
+
 ## Why this exists
 
 A shared template, common service, or successful initial setup does not prove that the resulting ecosystem is coherent. Repositories can diverge, defects can remain hidden between components, workflows can decay, and assumptions can become false. A one-time audit discovers a snapshot; a rolling audit system continually checks whether the whole remains fit for purpose.
@@ -12,7 +17,7 @@ A shared template, common service, or successful initial setup does not prove th
 
 ## Non-negotiable operating rule
 
-Every bootstrapped ecosystem must establish an account-wide rolling audit loop at genesis. Before broad project construction, define its scope, evidence model, cadence, ownership, findings ledger, remediation path, and recovery procedure. If the account lacks the permissions or automation needed for full coverage, record the gap as a blocking readiness risk and implement the best safe partial coverage possible.
+As a general operating standard, every bootstrapped ecosystem should establish an account-wide rolling audit loop early, with a defined scope, evidence model, cadence, ownership, findings ledger, remediation path, and recovery procedure. **For the current World Seed rebuild, defer that broad loop until the project-quality gate in the scope override above.** Until then, record or fix only audit findings that directly block the approved acceptance path. If later account permissions or automation limit coverage, document the supported scope and residual risk rather than claiming complete coverage.
 
 The steward is responsible for the audit program: plan it, operate it, review the evidence, assign remediation, recheck fixes, and report remaining risks. The human should not have to design or manually coordinate this machinery.
 
