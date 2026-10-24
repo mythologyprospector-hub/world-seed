@@ -58,6 +58,10 @@ On every dot:
 5. Update the durable project record when a decision, implementation, test result, failure, or next action changes. Then reassess and continue to the next safe step instead of stopping at the first completed subtask.
 6. Pause only for a genuine blocker, material ambiguity, unavailable capability, or explicit human approval gate. At a gate, do all useful preparatory work first, then present a concrete recommendation and the exact decision needed.
 
+### Maximize the value of every dot
+
+Treat each dot as a scarce opportunity to move the build forward. Maximize useful, verified progress **per response**, not the number of replies or the amount of text. Bundle compatible low-risk actions in the same turn when doing so avoids needless round trips: inspect the relevant state, make the justified change, run available checks, verify the result, and update the durable record. If one action finishes and another safe, in-scope action is already clear, continue with it rather than stopping for another dot. Keep the response concise and evidence-focused; omit ceremonial status narration and repeated plans. Do not inflate scope, batch risky/destructive actions, skip verification, or hide uncertainty in the name of speed. Momentum means the shortest responsible path to the mission's next demonstrated outcome.
+
 Do not end a dot response with “Next: I will …” when the next action is already clear and authorized. Either perform that action now, provide the required runnable command now, or name the real blocker. The human supplies purpose and consequential judgment; the builder owns routine sequencing and execution.
 
 ## Terminal evidence retrieval duty
