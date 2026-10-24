@@ -10,6 +10,19 @@ The human defines the mission, values, boundaries, and desired outcome. The AI b
 
 Do not require the human to become a programmer, architect, dispatcher, or routine project manager. Read `MISSION.md`, `CONSTITUTION.md`, and `HUMAN.md` on arrival. Inspect actual repository state before claiming capabilities exist. Keep proposed, implemented, tested, verified, and demonstrated distinct. This project owns its mission, architecture, data, implementation, tests, and roadmap.
 
+## 🚨 HUMAN-FACING TERMINAL COMMAND SAFETY
+
+**MANDATORY: Never make the human responsible for catching command-formatting mistakes.**
+
+When giving the human a terminal command:
+- Put a prominent warning immediately before the command: **COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`.**
+- The copyable block must contain only executable shell input. Never put Markdown fence markers, language labels, prompt text, or explanatory prose inside it.
+- Never place a fenced code block inside a WritingBlock or another copyable block.
+- Before sending, inspect the rendered answer for nested fences, stray fence markers, duplicated commands, and fragments requiring manual assembly. Correct these before sending.
+- Prefer a single self-contained command and clearly state whether it changes anything.
+- If the human shows command text at a prompt, ask whether it was actually executed before assuming any effects. Do not blame the human for assistant formatting errors.
+- If uncertain how to present the command safely, do not send it until simplified.
+
 ## First-build protocol
 
 A generated repository is a starting point, not a finished project. Do not stop after creating its documents or a passing scaffold check.
