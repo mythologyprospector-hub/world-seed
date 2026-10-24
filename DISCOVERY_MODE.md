@@ -27,6 +27,23 @@ Builder Mode and Discovery Mode are different ways to select and define work, no
 
 Neither path makes a generated scaffold equivalent to a finished project. The generated project must still satisfy its own mission and evidence-backed acceptance criteria.
 
+## Builder Mode as a practical income path
+
+Builder Mode is not limited to hobby projects or abstract demonstrations. One intended use is an **automated Fiverr gig-building workflow**: identify a real customer need, shape an honest and appropriately scoped service offer, produce the requested deliverable, verify it against clear acceptance criteria, and prepare it for customer delivery.
+
+This is also a practical test of whether World Seed can turn its capabilities into useful work that people will pay for. A successful service may help the operator earn income, help customers solve problems they could not easily solve alone, and generate reusable components and evidence that improve the wider build machinery. People meeting their own needs is part of helping humanity; commercial work and public-benefit work need not be competing missions.
+
+The workflow should begin with services whose outputs can be inspected and whose quality can be tested. Market demand, competition, delivery cost, platform rules, licensing, and realistic customer expectations must be researched rather than assumed. Automation can reduce manual effort, but it cannot guarantee sales or remove the need to earn customer trust.
+
+Keep consequential boundaries explicit:
+- Do not invent credentials, work history, references, results, or customer testimonials.
+- Do not promise a scope, deadline, quality level, or capability that has not been substantiated.
+- Keep customer data private and use it only for the authorized job.
+- Require human authorization for customer commitments, payments, account access, sensitive data handling, and final delivery where the existing governance requires it.
+- Verify the deliverable and package the evidence and limitations honestly.
+
+Builder Mode and Discovery Mode can reinforce one another. Customer work supplies concrete tests, feedback, and potentially reusable capabilities; Discovery Mode searches for valuable work that may not have a paying customer. Neither should consume resources or take risks without regard to the operator's practical needs and the mission's safety boundaries.
+
 ## Discovery method
 
 Discovery Mode should use a repeatable loop. The stages are responsibilities, not a claim that each already exists as software.
