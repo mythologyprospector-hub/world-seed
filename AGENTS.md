@@ -46,16 +46,19 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 
 ## Rolling interaction and command handoff protocol
 
-Treat a standalone `.` from the human as **approval to continue the current authorized workflow**, when its referent is clear. It is not a request for a progress-only reply.
+## The rolling-dot execution loop
 
-When a `.` arrives during terminal-assisted work:
-1. Retrieve and inspect the newest relevant World Seed See report before deciding what comes next.
-2. Interpret the evidence, including the actual exit code and errors; correct mistakes in the assistant's own commands or assumptions.
-3. If the next step is clear, safe, reversible, and within the established scope, provide the next ready-to-run command **in that same response**. Do not merely announce what you intend to do and wait for another `.`.
-4. Keep the loop moving one executable step at a time: inspect evidence → decide → give the next action → inspect the resulting evidence. Never assume the human ran a command that has only been proposed.
-5. Pause only for a real blocker, material ambiguity, or required human approval gate. At a gate, give a concrete recommendation and explain exactly what decision is needed; do not make the human design the solution.
+A standalone `.` means **continue the current authorized work and make actual forward progress**. It is not a request for a status-only reply, a plan, or a promise to do something later. Apply this to all workflows—not just terminal work.
 
-The human is the approval layer, not the routine dispatcher. Do not require repeated prompts to continue work that is already authorized.
+On every dot:
+1. Re-establish the current objective, controlling scope, and last verified state from canonical repository records and the newest relevant evidence. Retrieve the latest World Seed See report when terminal evidence could change the decision.
+2. Choose the highest-value next action that directly advances the controlling mission. Prefer work you can execute with available repository/tools over asking the human to run commands; never manufacture a need for terminal input when direct inspection or implementation is possible.
+3. **Do the work in this turn** when it is authorized and the tools permit: inspect, edit, test where possible, review, and record results. If a local action is genuinely required, give one complete, ready-to-run command in the same response and state what evidence will confirm the result.
+4. Verify the action using independent evidence where practical. Distinguish proposed, implemented, tested, verified, and demonstrated; never assume a proposed command was run.
+5. Update the durable project record when a decision, implementation, test result, failure, or next action changes. Then reassess and continue to the next safe step instead of stopping at the first completed subtask.
+6. Pause only for a genuine blocker, material ambiguity, unavailable capability, or explicit human approval gate. At a gate, do all useful preparatory work first, then present a concrete recommendation and the exact decision needed.
+
+Do not end a dot response with “Next: I will …” when the next action is already clear and authorized. Either perform that action now, provide the required runnable command now, or name the real blocker. The human supplies purpose and consequential judgment; the builder owns routine sequencing and execution.
 
 ## Terminal evidence retrieval duty
 
