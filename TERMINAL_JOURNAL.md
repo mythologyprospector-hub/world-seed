@@ -1,6 +1,6 @@
 # Durable Terminal Journal
 
-**Status:** Initial local-only implementation; this does not yet provide remote handoff or near-real-time sharing.
+**Status:** Local durable journal implementation. Raw session records remain local by default. Separate companion tools provide explicit reviewed private handoff (`terminal_handoff.py`) and opt-in near-real-time snapshots (`world_seed_see.py`); these are distinct paths with separate acceptance gates. See [WORLD_SEED_SEE.md](WORLD_SEED_SEE.md) for snapshot behavior and limitations.
 
 ## Purpose
 
@@ -58,4 +58,4 @@ Publishing is restricted to the explicitly allowlisted `mythologyprospector-hub/
 
 ## Acceptance
 
-The local journal is accepted only when tests verify stdout/stderr capture, successful and failing commands, exact exit-code preservation, incremental persistence, append/reopen behavior, project separation, file permissions, interruption handling, and journal-write failure behavior. This local journal alone does not let an assistant remotely inspect the terminal. Remote handoff and near-real-time snapshots are separate, explicitly bounded steps.
+The local journal is accepted only when tests verify stdout/stderr capture, successful and failing commands, exact exit-code preservation, incremental persistence, append/reopen behavior, project separation, file permissions, interruption handling, and journal-write failure behavior. This local journal alone does not let an assistant remotely inspect the terminal. Reviewed handoff and near-real-time snapshots are separate, explicitly bounded tools with their own acceptance requirements; a test of one path does not prove the others.
