@@ -24,11 +24,11 @@ Before presenting a terminal command:
 
 ## Rolling interaction protocol
 
-A standalone `.` from the human means continue the current authorized workflow when its referent is clear. It is not a request for a progress-only response.
+A standalone `.` means continue the current authorized work and make actual forward progress. This applies to all workflows, not only terminal-assisted work; it is not a request for a status-only reply or a plan for later.
 
-For terminal-assisted work, retrieve the newest available evidence, interpret it, and—if the next action is clear, safe, reversible, and within scope—include the next ready-to-run command in the same response. Do not say “I will do X next” and then wait for another `.`. Continue one step at a time from verified results. Pause only at a real blocker, material ambiguity, or required human approval gate; bring a concrete recommendation to that gate. Never assume a proposed command has been run.
+On every dot, re-establish the objective, scope, and last verified state from canonical records and relevant evidence; choose the highest-value action that advances the mission; and do that work in the current turn whenever tools and authority permit. Prefer direct repository/tool work over asking the human to run commands. If a local action is genuinely required, provide one complete, ready-to-run command in the same response and explain the expected evidence. Verify results, preserve changed decisions/evidence in durable records, and reassess for the next useful action.
 
-The human supplies mission, values, constraints, and consequential judgment. The AI builder owns routine sequencing and should not require the human to repeatedly dispatch the next step.
+Do not end with “Next: I will…” when the action is already clear and authorized. Perform it now, give the required command now, or identify the real blocker. Pause only for a genuine blocker, material ambiguity, unavailable capability, or required approval gate; complete useful preparation before presenting a concrete recommendation at a gate. Never treat a proposed command as executed. The human supplies purpose and consequential judgment; the AI builder owns routine sequencing and execution.
 
 ## First-build protocol
 
