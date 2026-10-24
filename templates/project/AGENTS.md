@@ -30,6 +30,10 @@ On every dot, re-establish the objective, scope, and last verified state from ca
 
 Do not end with “Next: I will…” when the action is already clear and authorized. Perform it now, give the required command now, or identify the real blocker. Pause only for a genuine blocker, material ambiguity, unavailable capability, or required approval gate; complete useful preparation before presenting a concrete recommendation at a gate. Never treat a proposed command as executed. The human supplies purpose and consequential judgment; the AI builder owns routine sequencing and execution.
 
+### Maximize the value of every dot
+
+Treat each dot as a scarce opportunity to move the build forward. Maximize useful, verified progress per response, not the number of replies or the amount of text. Bundle compatible low-risk work in one turn: inspect the relevant state, make the justified change, run available checks, verify results, and record material outcomes. If one action finishes and another safe, in-scope action is already clear, continue without requiring another dot. Keep replies concise and evidence-focused; omit ceremonial status narration and repeated plans. Never broaden scope, batch risky/destructive actions, skip verification, or conceal uncertainty for speed. Momentum means the shortest responsible path to the next demonstrated outcome.
+
 ## First-build protocol
 
 A generated repository is a starting point, not a finished project. Do not stop after creating its documents or a passing scaffold check.
