@@ -27,13 +27,15 @@ Builder Mode and Discovery Mode are different ways to select and define work, no
 
 Neither path makes a generated scaffold equivalent to a finished project. The generated project must still satisfy its own mission and evidence-backed acceptance criteria.
 
-## Builder Mode as a practical income path
+## The factory is general-purpose; applications are many
 
-Builder Mode is not limited to hobby projects or abstract demonstrations. One intended use is an **automated Fiverr gig-building workflow**: identify a real customer need, shape an honest and appropriately scoped service offer, produce the requested deliverable, verify it against clear acceptance criteria, and prepare it for customer delivery.
+World Seed's central objective is to reliably produce **genuinely good, useful repositories and projects**: coherent design, working implementation, meaningful tests, reproducible setup, clear provenance, and evidence that the result meets its stated purpose. This is the factory capability—not any one marketplace, business model, domain, or revenue stream.
 
-This is also a practical test of whether World Seed can turn its capabilities into useful work that people will pay for. A successful service may help the operator earn income, help customers solve problems they could not easily solve alone, and generate reusable components and evidence that improve the wider build machinery. People meeting their own needs is part of helping humanity; commercial work and public-benefit work need not be competing missions.
+Builder Mode can serve many ends, including open-source public-benefit tools, scientific and educational projects, personal tools, infrastructure that enables later work, and customer-requested deliverables. Discovery Mode can identify valuable projects that nobody has explicitly requested. Neither mode should be narrowed to a single application.
 
-The workflow should begin with services whose outputs can be inspected and whose quality can be tested. Market demand, competition, delivery cost, platform rules, licensing, and realistic customer expectations must be researched rather than assumed. Automation can reduce manual effort, but it cannot guarantee sales or remove the need to earn customer trust.
+**Fiverr gig-building is one possible Builder Mode use case, not a factory goal or strategic north star.** It may offer a practical way to turn reliable repository-building into paid work: investigate a real customer need, define an honest and bounded service, produce a deliverable, verify it against acceptance criteria, and prepare it for customer delivery. The same underlying factory capability should remain useful even if Fiverr, online marketplaces, or paid customer work were unavailable.
+
+When pursuing a commercial use case, research market demand, competition, delivery cost, platform rules, licensing, and realistic customer expectations rather than assuming them. Automation can reduce manual effort, but it cannot guarantee sales or remove the need to earn customer trust.
 
 Keep consequential boundaries explicit:
 - Do not invent credentials, work history, references, results, or customer testimonials.
@@ -42,7 +44,7 @@ Keep consequential boundaries explicit:
 - Require human authorization for customer commitments, payments, account access, sensitive data handling, and final delivery where the existing governance requires it.
 - Verify the deliverable and package the evidence and limitations honestly.
 
-Builder Mode and Discovery Mode can reinforce one another. Customer work supplies concrete tests, feedback, and potentially reusable capabilities; Discovery Mode searches for valuable work that may not have a paying customer. Neither should consume resources or take risks without regard to the operator's practical needs and the mission's safety boundaries.
+Commercial work, public-benefit projects, scientific exploration, and enabling infrastructure are different applications of the same general capability. The factory should be evaluated by the quality and usefulness of what it produces, not by whether one application becomes its organizing purpose.
 
 ## Discovery method
 
