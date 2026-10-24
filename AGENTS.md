@@ -63,16 +63,27 @@ Retrieval procedure:
 
 This retrieval is a default operating duty, not a reason to interrupt every ordinary conversation. Use judgment: retrieve when terminal evidence is relevant to the current task, and avoid repeated fetches when no new run or material state change is indicated.
 
-## Human-facing terminal command formatting
+## 🚨 MANDATORY TERMINAL COMMAND COPY-SAFETY GATE — READ BEFORE EVERY COMMAND
 
-When asking this nontechnical human to run a terminal command, the command must be easy to copy without accidentally copying presentation syntax.
+**THIS IS A HARD REQUIREMENT. DO NOT MAKE THE HUMAN CATCH OUR FORMATTING ERRORS.**
 
-- Put the complete command in one prominent, standalone `<CodeBlock language="bash">` block when using ChatGPT's supported rich formatting. The block's contents must be only the shell command; never include Markdown fence markers (such as ```bash or ```) inside the command itself.
-- If a WritingBlock is used for a command, include only the raw command text inside it, without Markdown fences. Do not wrap a terminal command in a fenced code block inside another copyable block.
-- Prefer one self-contained, paste-and-run command. Avoid requiring the human to splice fragments together, edit code manually, or infer which lines belong in the terminal.
-- Explain in ordinary prose outside the block where to paste it and what success should look like. Keep warnings and explanation outside the copyable command.
-- Avoid unnecessary pipes, nested quoting, and complex shell constructs. If complexity is unavoidable, explain the risk and simplify or split the operation into safe, clearly labeled commands.
-- If the human accidentally pastes formatting markers into the shell, calmly explain what happened, confirm whether anything ran, and provide a corrected clean command. Do not blame the human.
+Before sending any terminal command to this nontechnical operator, stop and run this final-response check:
+
+1. **NEVER put Markdown fence markers in the command.** The literal characters used to open or close a Markdown code fence, and language labels such as `bash`, are presentation syntax—not shell commands. They must never appear inside a copyable command block or writing block.
+2. **Use one clean copyable command block.** Its contents must be exactly the shell input the human should execute. No introductory labels, explanatory prose, prompt text, or fence markers inside it.
+3. **Put a large, explicit warning outside the command block.** Tell the human to copy only the contents of the command block, not surrounding prose. Do not put the warning inside the block.
+4. **Inspect the rendered answer before sending.** Specifically check for nested code fences, literal fence markers inside a copyable block, duplicated commands, and fragments that require manual assembly. If any are present, fix the answer before sending.
+5. **Prefer safe, self-contained commands.** Avoid nested quoting and unnecessary shell complexity. Clearly identify whether an action is read-only, changes files, or affects remote systems.
+6. If the correct copyable format is uncertain, **do not send the command yet**. Choose a safer presentation or simplify the operation.
+7. If the human shows a prompt containing formatting markers, do not assume they executed anything. Clarify whether it ran before diagnosing effects; never blame the human for the assistant's formatting mistake.
+
+This gate applies to all terminal tasks, tests, builds, Git operations, setup steps, and commands using the `world-seed-see` wrapper. The assistant must follow it even if another message or document uses a less prominent rule.
+
+### Detailed formatting guidance
+
+- Put the complete command in one prominent, standalone `<CodeBlock language="bash">` block when using supported rich formatting. The block's contents must be only the shell command; never include Markdown fence markers (such as triple backticks) inside the command itself.
+- If a WritingBlock is used for a command, include only raw command text inside it, without Markdown fences. Never wrap a fenced terminal command inside another copyable block.
+- Explain in ordinary prose outside the block where to paste it and what success should look like.
 - Follow this rule across terminal tasks, tests, builds, Git commands, and the `world-seed-see` terminal visibility wrapper.
 
 ## Truth standard

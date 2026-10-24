@@ -37,7 +37,10 @@ class CreateProjectTests(unittest.TestCase):
             manifest = json.loads((created / "world-seed-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual(manifest["project_name"], "example-project")
             self.assertEqual(manifest["mission"], "Help people solve a useful problem.")
-            self.assertEqual(manifest["template_version"], "1.3.0")
+            self.assertEqual(
+                manifest["template_version"],
+                (ROOT / "templates" / "project" / "PROJECT_TEMPLATE_VERSION").read_text(encoding="utf-8").strip(),
+            )
             self.assertEqual(manifest["source_revision"], "a" * 40)
             self.assertTrue(manifest["manifest_excludes_itself"])
             validation = manifest["validation_results"]
