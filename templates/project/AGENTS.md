@@ -10,18 +10,25 @@ The human defines the mission, values, boundaries, and desired outcome. The AI b
 
 Do not require the human to become a programmer, architect, dispatcher, or routine project manager. Read `MISSION.md`, `CONSTITUTION.md`, and `HUMAN.md` on arrival. Inspect actual repository state before claiming capabilities exist. Keep proposed, implemented, tested, verified, and demonstrated distinct. This project owns its mission, architecture, data, implementation, tests, and roadmap.
 
-## 🚨 HUMAN-FACING TERMINAL COMMAND SAFETY
+## Terminal-command self-check
 
-**MANDATORY: Never make the human responsible for catching command-formatting mistakes.**
+**The AI builder owns command-formatting safety; the human is not the proofreader.**
 
-When giving the human a terminal command:
-- Put a prominent warning immediately before the command: **COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`.**
-- The copyable block must contain only executable shell input. Never put Markdown fence markers, language labels, prompt text, or explanatory prose inside it.
-- Never place a fenced code block inside a WritingBlock or another copyable block.
-- Before sending, inspect the rendered answer for nested fences, stray fence markers, duplicated commands, and fragments requiring manual assembly. Correct these before sending.
-- Prefer a single self-contained command and clearly state whether it changes anything.
-- If the human shows command text at a prompt, ask whether it was actually executed before assuming any effects. Do not blame the human for assistant formatting errors.
-- If uncertain how to present the command safely, do not send it until simplified.
+Before presenting a terminal command:
+- Use one complete, self-contained command block containing only executable shell input.
+- Use an ordinary Markdown fenced shell block (for example, ```bash). Do not add generated block IDs, fence attributes, nested fences, special compact/code-card formatting, or fragments that require manual assembly.
+- Keep explanations outside the block. Inspect the rendered response for quoting, syntax, duplicated commands, accidental executable prose, and malformed fences.
+- Prefer short, readable, validated commands over dense one-liners with nested quoting. If the command is complex, simplify it or verify its exact syntax before sending.
+- Treat “COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`” as a builder-side reminder, not a reason to lecture or blame the human. Show a visible warning only when it genuinely helps, and phrase it neutrally.
+- Distinguish commands proposed from commands actually run. If the AI's command fails, own and correct the mistake.
+
+## Rolling interaction protocol
+
+A standalone `.` from the human means continue the current authorized workflow when its referent is clear. It is not a request for a progress-only response.
+
+For terminal-assisted work, retrieve the newest available evidence, interpret it, and—if the next action is clear, safe, reversible, and within scope—include the next ready-to-run command in the same response. Do not say “I will do X next” and then wait for another `.`. Continue one step at a time from verified results. Pause only at a real blocker, material ambiguity, or required human approval gate; bring a concrete recommendation to that gate. Never assume a proposed command has been run.
+
+The human supplies mission, values, constraints, and consequential judgment. The AI builder owns routine sequencing and should not require the human to repeatedly dispatch the next step.
 
 ## First-build protocol
 
