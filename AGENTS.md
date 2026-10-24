@@ -44,6 +44,19 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 - When blocked, investigate alternatives and complete useful work that remains authorized.
 - Leave a durable handoff before a context/session boundary interrupts unfinished work.
 
+## Rolling interaction and command handoff protocol
+
+Treat a standalone `.` from the human as **approval to continue the current authorized workflow**, when its referent is clear. It is not a request for a progress-only reply.
+
+When a `.` arrives during terminal-assisted work:
+1. Retrieve and inspect the newest relevant World Seed See report before deciding what comes next.
+2. Interpret the evidence, including the actual exit code and errors; correct mistakes in the assistant's own commands or assumptions.
+3. If the next step is clear, safe, reversible, and within the established scope, provide the next ready-to-run command **in that same response**. Do not merely announce what you intend to do and wait for another `.`.
+4. Keep the loop moving one executable step at a time: inspect evidence → decide → give the next action → inspect the resulting evidence. Never assume the human ran a command that has only been proposed.
+5. Pause only for a real blocker, material ambiguity, or required human approval gate. At a gate, give a concrete recommendation and explain exactly what decision is needed; do not make the human design the solution.
+
+The human is the approval layer, not the routine dispatcher. Do not require repeated prompts to continue work that is already authorized.
+
 ## Terminal evidence retrieval duty
 
 When working with the human on a machine or repository workflow that uses World Seed's `world-seed-see` terminal journal, proactively retrieve the newest terminal evidence instead of asking the human to paste output that has already been published.
@@ -63,28 +76,19 @@ Retrieval procedure:
 
 This retrieval is a default operating duty, not a reason to interrupt every ordinary conversation. Use judgment: retrieve when terminal evidence is relevant to the current task, and avoid repeated fetches when no new run or material state change is indicated.
 
-## 🚨 MANDATORY TERMINAL COMMAND COPY-SAFETY GATE — READ BEFORE EVERY COMMAND
+## Mandatory terminal-command self-check
 
-**THIS IS A HARD REQUIREMENT. DO NOT MAKE THE HUMAN CATCH OUR FORMATTING ERRORS.**
+**The assistant owns command-formatting safety. The human must not be expected to catch our formatting mistakes.** Before sending a terminal command, perform this check:
 
-Before sending any terminal command to this nontechnical operator, stop and run this final-response check:
+1. Use one complete, self-contained command block containing only executable shell input.
+2. Render it as an ordinary Markdown fenced shell block (for example, ```bash). Do not add generated block IDs, fence attributes, nested fences, a special compact/code-card format, or fragments requiring manual assembly.
+3. Keep explanations outside the command block. Do not put prompt text, labels, prose, or fence markers inside it.
+4. Inspect the rendered response before sending: verify quoting, newlines, pipes, redirects, and shell/Python syntax; check for duplicated commands, nested fences, and accidental text that would be executed.
+5. Prefer simple, readable commands and small diagnostic steps over dense nested quoting or clever one-liners. If complexity is unavoidable, validate the exact command mentally or with available tools before presenting it.
+6. Treat the prominent “COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`” reminder as an **assistant-side checklist label**, not a lecture to a human who already understands copying. Do not repeatedly display it as though the human is at fault. If a visible reminder is genuinely useful, keep it brief and neutral.
+7. If command execution is uncertain, distinguish “proposed” from “run.” If a failure is caused by the assistant's command, own it, correct it, and continue from verified evidence; never blame the human for an assistant formatting mistake.
 
-1. **NEVER put Markdown fence markers in the command.** The literal characters used to open or close a Markdown code fence, and language labels such as `bash`, are presentation syntax—not shell commands. They must never appear inside a copyable command block or writing block.
-2. **Use one clean copyable command block.** Its contents must be exactly the shell input the human should execute. No introductory labels, explanatory prose, prompt text, or fence markers inside it.
-3. **Put a large, explicit warning outside the command block.** Tell the human to copy only the contents of the command block, not surrounding prose. Do not put the warning inside the block.
-4. **Inspect the rendered answer before sending.** Specifically check for nested code fences, literal fence markers inside a copyable block, duplicated commands, and fragments that require manual assembly. If any are present, fix the answer before sending.
-5. **Prefer safe, self-contained commands.** Avoid nested quoting and unnecessary shell complexity. Clearly identify whether an action is read-only, changes files, or affects remote systems.
-6. If the correct copyable format is uncertain, **do not send the command yet**. Choose a safer presentation or simplify the operation.
-7. If the human shows a prompt containing formatting markers, do not assume they executed anything. Clarify whether it ran before diagnosing effects; never blame the human for the assistant's formatting mistake.
-
-This gate applies to all terminal tasks, tests, builds, Git operations, setup steps, and commands using the `world-seed-see` wrapper. The assistant must follow it even if another message or document uses a less prominent rule.
-
-### Detailed formatting guidance
-
-- Put the complete command in one prominent, standalone `<CodeBlock language="bash">` block when using supported rich formatting. The block's contents must be only the shell command; never include Markdown fence markers (such as triple backticks) inside the command itself.
-- If a WritingBlock is used for a command, include only raw command text inside it, without Markdown fences. Never wrap a fenced terminal command inside another copyable block.
-- Explain in ordinary prose outside the block where to paste it and what success should look like.
-- Follow this rule across terminal tasks, tests, builds, Git commands, and the `world-seed-see` terminal visibility wrapper.
+This check applies to terminal commands, tests, builds, Git operations, setup steps, and commands using the `world-seed-see` wrapper. It is a required assistant behavior, not a burden to delegate to the human.
 
 ## Truth standard
 
