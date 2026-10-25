@@ -18,6 +18,26 @@ When you exit that shell, the launcher prints the local journal path. The journa
 
 Use `--log-dir PATH` to select a different local journal root, or `--shell /absolute/path/to/shell` to choose an interactive shell. The journal directory is created with owner-only permissions (0700) and journal files with owner-only permissions (0600) on POSIX systems.
 
+
+## Enroll a terminal profile
+
+To make this the normal behavior for a chosen World Seed terminal profile, configure that profile's **custom command** to run the launcher from a known checkout:
+
+```text
+python3 /absolute/path/to/world-seed/scripts/terminal_session.py
+```
+
+Replace the example path with the actual checkout path. The launcher starts the user's configured shell (from `$SHELL`, falling back to Bash) inside the PTY. Create a separate profile such as **World Seed — journaled** first; do not replace the default profile until the enrolled profile has been tested and the user explicitly chooses that behavior.
+
+This is profile-level enrollment, not machine-wide capture:
+- Terminals started with the enrolled profile are journaled from shell startup.
+- Existing terminal windows and other profiles are unaffected.
+- The launcher requires a POSIX PTY and an interactive terminal.
+- Keep a plain, unjournaled profile available for recovery if the launcher or journal path fails.
+- The profile command points to a particular checkout. If that checkout is moved or removed, update the profile command.
+
+The profile integration itself must be tested on the target terminal emulator before claiming native end-to-end acceptance. In particular, verify startup, interactive input, window resizing, Ctrl-C, Ctrl-D, shell exit status, journal permissions, and what happens if the journal cannot be written.
+
 ## Privacy and publication
 
 - The journal is local-only. This launcher does not upload transcripts to GitHub or Miracle Depot.
