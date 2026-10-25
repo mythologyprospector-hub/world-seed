@@ -26,6 +26,12 @@ import uuid
 DEFAULT_LOG_ROOT = Path.home() / ".local/state/world-seed-terminal-journal"
 
 
+class SessionTerminated(Exception):
+    def __init__(self, signum: int):
+        self.signum = signum
+        super().__init__(f"received signal {signum}")
+
+
 def utc_now() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="milliseconds")
 
@@ -107,11 +113,19 @@ def main() -> int:
     interrupted = False
     stdin_eof = False
     old_winch = None
+    old_signal_handlers: dict[int, object] = {}
     try:
+        old_attrs = termios.tcgetattr(sys.stdin.fileno())
+
+        def terminate_session(signum: int, _frame: object) -> None:
+            raise SessionTerminated(signum)
+
+        for signum in (signal.SIGTERM, signal.SIGHUP):
+            old_signal_handlers[signum] = signal.signal(signum, terminate_session)
+
         child_pid, master_fd = pty.fork()
         if child_pid == 0:
             os.execv(str(shell), [str(shell), "-i"])
-        old_attrs = termios.tcgetattr(sys.stdin.fileno())
         tty.setraw(sys.stdin.fileno())
 
         def copy_terminal_size() -> None:
@@ -158,21 +172,29 @@ def main() -> int:
                 os.write(sys.stdout.fileno(), chunk)
         _, wait_status = os.waitpid(child_pid, 0)
         exit_code = status_code(wait_status)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, SessionTerminated) as exc:
         interrupted = True
+        termination_signal = exc.signum if isinstance(exc, SessionTerminated) else signal.SIGINT
         if child_pid > 0:
             try:
                 os.kill(child_pid, signal.SIGTERM)
             except ProcessLookupError:
                 pass
-            _, wait_status = os.waitpid(child_pid, 0)
-            exit_code = status_code(wait_status)
+            try:
+                _, wait_status = os.waitpid(child_pid, 0)
+                exit_code = status_code(wait_status)
+            except ChildProcessError:
+                exit_code = 128 + termination_signal
+        else:
+            exit_code = 128 + termination_signal
     except OSError as exc:
         failure = f"{type(exc).__name__}: {exc}"
         exit_code = 125
     finally:
         if old_winch is not None:
             signal.signal(signal.SIGWINCH, old_winch)
+        for signum, handler in old_signal_handlers.items():
+            signal.signal(signum, handler)
         if old_attrs is not None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old_attrs)
         if master_fd >= 0:

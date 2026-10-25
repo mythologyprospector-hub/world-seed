@@ -147,3 +147,46 @@ def test_interactive_pty_session_refuses_to_launch_without_writable_journal(tmp_
             process.kill()
             process.wait()
         os.close(master)
+
+
+
+def test_interactive_pty_session_cleans_up_on_sigterm(tmp_path: Path) -> None:
+    master, slave = pty.openpty()
+    env = os.environ.copy()
+    env["HOME"] = str(tmp_path)
+    env["SHELL"] = "/bin/bash"
+    process = subprocess.Popen(
+        [sys.executable, str(SCRIPT), "--log-dir", str(tmp_path / "journal")],
+        stdin=slave, stdout=slave, stderr=slave, env=env, close_fds=True,
+    )
+    os.close(slave)
+    try:
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    chunk = os.read(master, 4096)
+                except OSError:
+                    chunk = b""
+                if b"bash-" in chunk or b"$ " in chunk:
+                    break
+            if process.poll() is not None:
+                break
+        assert process.poll() is None, "interactive shell exited before signal test"
+        process.terminate()
+        process.wait(timeout=5)
+        assert process.returncode == 143
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+        os.close(master)
+
+    journal_files = list((tmp_path / "journal" / "interactive").glob("*.jsonl"))
+    assert len(journal_files) == 1
+    records = [json.loads(line) for line in journal_files[0].read_text().splitlines()]
+    assert records[0]["event"] == "session_started"
+    assert records[-1]["event"] == "session_finished"
+    assert records[-1]["interrupted"] is True
+    assert records[-1]["exit_code"] == 143
