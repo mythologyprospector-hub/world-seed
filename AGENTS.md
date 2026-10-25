@@ -63,6 +63,19 @@ Retrieval procedure:
 
 This retrieval is a default operating duty, not a reason to interrupt every ordinary conversation. Use judgment: retrieve when terminal evidence is relevant to the current task, and avoid repeated fetches when no new run or material state change is indicated.
 
+## Mandatory wrapper-first terminal workflow
+
+**Operating rule: when the assistant asks the human to run a terminal command, use `world-seed-see` so the assistant can retrieve and inspect the result.** Terminal visibility is a core workflow dependency, not an optional convenience.
+
+1. Prefer one complete, safe command invocation through `python3 scripts/world_seed_see.py -- <command> [arguments...]` from a checkout that contains the wrapper and is configured for the approved private report destination.
+2. After the human indicates the command was run, fetch `terminal-live/LATEST.txt` and the exact report it points to. Inspect the command, timestamp, process state, exit code, and output before selecting the next step.
+3. Do not ask the human to paste output that should be available in the published report. Do not proceed as if a command succeeded when its report has not been retrieved and checked.
+4. If the wrapper cannot safely be used—for example, because the command may expose secrets, sensitive paths, or private data—do not publish that command's output. Explain the specific limitation and choose the narrowest safe alternative; never silently fall back to an unwrapped command and then claim visibility.
+5. Keep the wrapper's limits explicit: it sees only commands passed through it, publication is not continuous monitoring, and heuristic redaction is not a guarantee that secrets are removed. Never wrap commands with output that may contain credentials or other sensitive material.
+6. For a sequence of terminal steps, repeat the capture-and-read-back cycle at each decision point where the result determines what happens next.
+
+This rule applies to routine inspection, tests, builds, setup, Git operations, and acceptance checks. It does not override human approval gates for consequential actions or the requirement to review a report before any separate handoff publication.
+
 ## 🚨 MANDATORY TERMINAL COMMAND COPY-SAFETY GATE — READ BEFORE EVERY COMMAND
 
 **THIS IS A HARD REQUIREMENT. DO NOT MAKE THE HUMAN CATCH OUR FORMATTING ERRORS.**
