@@ -51,7 +51,7 @@ class PortableProfileBoundaryTests(unittest.TestCase):
 
     def test_terminal_snapshot_docs_do_not_embed_absolute_home_paths(self):
         content = (ROOT / "WORLD_SEED_SEE.md").read_text(encoding="utf-8")
-        self.assertIsNone(re.search(r"/home/[^/\\s`]+", content))
+        self.assertIsNone(re.search(r"/home/[^/`]+", content))
 
     def test_human_guidance_uses_the_profile_loading_contract(self):
         content = (ROOT / "HUMAN.md").read_text(encoding="utf-8")
