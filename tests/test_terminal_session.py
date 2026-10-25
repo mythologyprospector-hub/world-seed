@@ -115,3 +115,35 @@ def test_interactive_pty_session_exits_cleanly_on_ctrl_d(tmp_path: Path) -> None
     assert records[0]["event"] == "session_started"
     assert records[-1]["event"] == "session_finished"
     assert records[-1]["exit_code"] == 0
+
+def test_interactive_pty_session_refuses_to_launch_without_writable_journal(tmp_path: Path) -> None:
+    blocked_log_root = tmp_path / "not-a-directory"
+    blocked_log_root.write_text("block journal creation")
+    master, slave = pty.openpty()
+    env = os.environ.copy()
+    env["HOME"] = str(tmp_path)
+    env["SHELL"] = "/bin/bash"
+    process = subprocess.Popen(
+        [sys.executable, str(SCRIPT), "--log-dir", str(blocked_log_root)],
+        stdin=slave, stdout=slave, stderr=slave, env=env, close_fds=True,
+    )
+    os.close(slave)
+    captured = bytearray()
+    try:
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline and process.poll() is None:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    captured.extend(os.read(master, 4096))
+                except OSError:
+                    break
+        assert process.poll() is not None, "launcher did not fail promptly when journaling was unavailable"
+        assert process.returncode == 125
+        assert b"cannot persist session start" in captured
+        assert b"PTY_SESSION_SENTINEL" not in captured
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+        os.close(master)
