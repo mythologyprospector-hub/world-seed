@@ -50,9 +50,9 @@ Do not wrap a shell script containing single quotes inside a single-quoted `bash
 
 ## Acceptance evidence (2026-10-24)
 
-- The installed launcher resolves from `PATH` as `/home/jimmydev/.local/bin/world-seed-see`; direct inspection showed the launcher had been repaired to forward arguments with `"$@"`.
+- The installed launcher resolves from `PATH` as `$HOME/.local/bin/world-seed-see`; direct inspection showed the launcher had been repaired to forward arguments with `"$@"`.
 - A harmless smoke test from the home directory printed `Launcher arguments work` and returned exit code 0. [Private terminal report](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/world-seed-see-20261024T175300Z-3f6d558a.txt)
-- The setup sequence was run directly (not nested inside the reporting wrapper), then its final wrapped smoke test printed `Stable launcher smoke test passed`, returned exit code 0, and recorded `/home/jimmydev/projects/world-seed`, branch `main`, and a clean working tree. [Private terminal report](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/world-seed-see-20261024T175455Z-e25f4634.txt)
+- The setup sequence was run directly (not nested inside the reporting wrapper), then its final wrapped smoke test printed `Stable launcher smoke test passed`, returned exit code 0, and recorded `$HOME/projects/world-seed`, branch `main`, and a clean working tree. [Private terminal report](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/world-seed-see-20261024T175455Z-e25f4634.txt)
 - The latest-report pointer advanced to each fresh report. No sensitive command output was used in these tests.
 
 These checks establish launcher argument forwarding, a stable source path, local output, fresh private reports, and exit-status reporting for the harmless commands above. They do not by themselves establish acceptance of every terminal-journal/handoff component. Keep the full terminal-stack acceptance gate open until the remaining layers and final acceptance record are reviewed.
