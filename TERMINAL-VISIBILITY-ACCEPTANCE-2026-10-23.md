@@ -36,7 +36,7 @@ This verifies that the remote report was committed more than once while the time
 ## Remaining acceptance limits
 
 - The evidence does **not** establish that the assistant receives push notifications or automatically watches updates. The assistant still has to query GitHub; this is near-real-time remote evidence, not a live chat connection.
-- The report does not independently prove that the operator visually confirmed the output on the local terminal. That local-display confirmation remains outstanding unless separately confirmed.
+- This 2023 timing run does not independently prove that the operator visually confirmed the output on the local terminal. A later harmless launcher smoke test is recorded in `WORLD_SEED_SEE.md`; its report confirms local output was emitted and uploaded, but this document does not treat that alone as proof of the operator's visual confirmation.
 - This was a harmless synthetic test, not permission to share real sensitive output. Redaction remains heuristic, and reports are retained in repository history.
 
 ## Decision
