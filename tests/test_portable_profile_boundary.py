@@ -16,6 +16,7 @@ PORTABLE_DOCS = (
     "LICENSE",
     "MACHINE_PROFILE.md",
     "MISSION.md",
+    "WORLD_SEED_SEE.md",
     "ONBOARDING_PROMPT.md",
     "PROFILE_PACKAGES.md",
     "scripts/prepare_local_handoff_backup.sh",
@@ -47,6 +48,10 @@ class PortableProfileBoundaryTests(unittest.TestCase):
         content = (ROOT / "LICENSE").read_text(encoding="utf-8")
         self.assertIn("<YEAR>", content)
         self.assertIn("<COPYRIGHT HOLDER>", content)
+
+    def test_terminal_snapshot_docs_do_not_embed_absolute_home_paths(self):
+        content = (ROOT / "WORLD_SEED_SEE.md").read_text(encoding="utf-8")
+        self.assertIsNone(re.search(r"/home/[^/\\s`]+", content))
 
     def test_human_guidance_uses_the_profile_loading_contract(self):
         content = (ROOT / "HUMAN.md").read_text(encoding="utf-8")
