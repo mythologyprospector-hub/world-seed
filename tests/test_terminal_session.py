@@ -92,7 +92,7 @@ def test_interactive_pty_session_exits_cleanly_on_ctrl_d(tmp_path: Path) -> None
             if process.poll() is not None:
                 break
         assert process.poll() is None, "interactive shell exited before it was ready"
-        os.write(master, b"\\x04")
+        os.write(master, b"\x04")
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline and process.poll() is None:
             ready, _, _ = select.select([master], [], [], 0.1)
