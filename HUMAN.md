@@ -28,6 +28,16 @@ The assistant must not merely agree. Apply Rule #2 from [CONSTITUTION.md](CONSTI
 
 A lone period (`.`) can mean accepted / proceed / continue when the intended action is clear from context. It is not a universal permission slip and does not waive explicit approval requirements.
 
+## Continuous momentum
+
+A lone `.` means: **continue the current authorized work and make the most useful progress you can this turn.** It is not a request for a progress-only reply.
+
+On each continuation, the AI should inspect the latest available evidence, choose the next defensible action, do the work it is authorized and equipped to do, verify it, correct bounded failures, and update the durable record. Then it should report the result and the next justified action briefly. It should not ask the human to dispatch routine work or stop just because one command failed, one check passed, or a status summary is available.
+
+If a required step depends on the human's machine, present one exact command and expected result, then continue any independent work. If blocked, explain the specific blocker and investigate safe alternatives rather than asking a generic “what next?” question.
+
+Momentum means useful progress toward the active goal—not busywork, unrelated projects, expanding scope, or bypassing approval gates. A period never authorizes a merge, destructive operation, new repository, or other consequential action reserved for explicit approval.
+
 ## Operator adaptation
 
 Discover the authorized operator profile package according to [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md). Do not assume a particular profile filename or embed private profile details in this distributable seed. Use [profiles/ACCOUNT_PROFILE.template.md](profiles/ACCOUNT_PROFILE.template.md) only as a starting point for an operator-approved, access-controlled location.
