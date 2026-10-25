@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import fcntl
 import hashlib
 import json
 import os
@@ -15,6 +16,7 @@ from pathlib import Path
 import pty
 import select
 import signal
+import struct
 import sys
 import termios
 import time
@@ -103,19 +105,38 @@ def main() -> int:
     exit_code = 1
     failure = None
     interrupted = False
+    stdin_eof = False
+    old_winch = None
     try:
         child_pid, master_fd = pty.fork()
         if child_pid == 0:
             os.execv(str(shell), [str(shell), "-i"])
         old_attrs = termios.tcgetattr(sys.stdin.fileno())
         tty.setraw(sys.stdin.fileno())
+
+        def copy_terminal_size() -> None:
+            try:
+                size = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, b"\\x00" * 8)
+                fcntl.ioctl(master_fd, termios.TIOCSWINSZ, size)
+            except OSError:
+                pass
+
+        copy_terminal_size()
+        old_winch = signal.signal(signal.SIGWINCH, lambda _signum, _frame: copy_terminal_size())
         while True:
-            readable, _, _ = select.select([sys.stdin.fileno(), master_fd], [], [])
+            watched = [master_fd]
+            if not stdin_eof:
+                watched.append(sys.stdin.fileno())
+            readable, _, _ = select.select(watched, [], [])
             if sys.stdin.fileno() in readable:
                 incoming = os.read(sys.stdin.fileno(), 4096)
                 if not incoming:
-                    break
-                os.write(master_fd, incoming)
+                    # Treat a closed input stream as one Ctrl-D, then keep
+                    # draining output until the shell actually exits.
+                    stdin_eof = True
+                    os.write(master_fd, b"\\x04")
+                else:
+                    os.write(master_fd, incoming)
             if master_fd in readable:
                 try:
                     chunk = os.read(master_fd, 4096)
@@ -150,6 +171,8 @@ def main() -> int:
         failure = f"{type(exc).__name__}: {exc}"
         exit_code = 125
     finally:
+        if old_winch is not None:
+            signal.signal(signal.SIGWINCH, old_winch)
         if old_attrs is not None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old_attrs)
         if master_fd >= 0:
