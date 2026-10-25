@@ -10,18 +10,29 @@ The human defines the mission, values, boundaries, and desired outcome. The AI b
 
 Do not require the human to become a programmer, architect, dispatcher, or routine project manager. Read `MISSION.md`, `CONSTITUTION.md`, and `HUMAN.md` on arrival. Inspect actual repository state before claiming capabilities exist. Keep proposed, implemented, tested, verified, and demonstrated distinct. This project owns its mission, architecture, data, implementation, tests, and roadmap.
 
-## 🚨 HUMAN-FACING TERMINAL COMMAND SAFETY
+## Terminal-command self-check
 
-**MANDATORY: Never make the human responsible for catching command-formatting mistakes.**
+**The AI builder owns command-formatting safety; the human is not the proofreader.**
 
-When giving the human a terminal command:
-- Put a prominent warning immediately before the command: **COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`.**
-- The copyable block must contain only executable shell input. Never put Markdown fence markers, language labels, prompt text, or explanatory prose inside it.
-- Never place a fenced code block inside a WritingBlock or another copyable block.
-- Before sending, inspect the rendered answer for nested fences, stray fence markers, duplicated commands, and fragments requiring manual assembly. Correct these before sending.
-- Prefer a single self-contained command and clearly state whether it changes anything.
-- If the human shows command text at a prompt, ask whether it was actually executed before assuming any effects. Do not blame the human for assistant formatting errors.
-- If uncertain how to present the command safely, do not send it until simplified.
+Before presenting a terminal command:
+- Use one complete, self-contained command block containing only executable shell input.
+- Use an ordinary Markdown fenced shell block (for example, ```bash). Do not add generated block IDs, fence attributes, nested fences, special compact/code-card formatting, or fragments that require manual assembly.
+- Keep explanations outside the block. Inspect the rendered response for quoting, syntax, duplicated commands, accidental executable prose, and malformed fences.
+- Prefer short, readable, validated commands over dense one-liners with nested quoting. If the command is complex, simplify it or verify its exact syntax before sending.
+- Treat “COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`” as a builder-side reminder, not a reason to lecture or blame the human. Show a visible warning only when it genuinely helps, and phrase it neutrally.
+- Distinguish commands proposed from commands actually run. If the AI's command fails, own and correct the mistake.
+
+## Rolling interaction protocol
+
+A standalone `.` means continue the current authorized work and make actual forward progress. This applies to all workflows, not only terminal-assisted work; it is not a request for a status-only reply or a plan for later.
+
+On every dot, re-establish the objective, scope, and last verified state from canonical records and relevant evidence; choose the highest-value action that advances the mission; and do that work in the current turn whenever tools and authority permit. Prefer direct repository/tool work over asking the human to run commands. If a local action is genuinely required, provide one complete, ready-to-run command in the same response and explain the expected evidence. Verify results, preserve changed decisions/evidence in durable records, and reassess for the next useful action.
+
+Do not end with “Next: I will…” when the action is already clear and authorized. Perform it now, give the required command now, or identify the real blocker. Pause only for a genuine blocker, material ambiguity, unavailable capability, or required approval gate; complete useful preparation before presenting a concrete recommendation at a gate. Never treat a proposed command as executed. The human supplies purpose and consequential judgment; the AI builder owns routine sequencing and execution.
+
+### Maximize the value of every dot
+
+Treat each dot as a scarce opportunity to move the build forward. Maximize useful, verified progress per response, not the number of replies or the amount of text. Bundle compatible low-risk work in one turn: inspect the relevant state, make the justified change, run available checks, verify results, and record material outcomes. If one action finishes and another safe, in-scope action is already clear, continue without requiring another dot. Keep replies concise and evidence-focused; omit ceremonial status narration and repeated plans. Never broaden scope, batch risky/destructive actions, skip verification, or conceal uncertainty for speed. Momentum means the shortest responsible path to the next demonstrated outcome.
 
 ## First-build protocol
 

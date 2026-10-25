@@ -44,6 +44,26 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 - When blocked, investigate alternatives and complete useful work that remains authorized.
 - Leave a durable handoff before a context/session boundary interrupts unfinished work.
 
+## Rolling interaction and command handoff protocol
+
+## The rolling-dot execution loop
+
+A standalone `.` means **continue the current authorized work and make actual forward progress**. It is not a request for a status-only reply, a plan, or a promise to do something later. Apply this to all workflows—not just terminal work.
+
+On every dot:
+1. Re-establish the current objective, controlling scope, and last verified state from canonical repository records and the newest relevant evidence. Retrieve the latest World Seed See report when terminal evidence could change the decision.
+2. Choose the highest-value next action that directly advances the controlling mission. Prefer work you can execute with available repository/tools over asking the human to run commands; never manufacture a need for terminal input when direct inspection or implementation is possible.
+3. **Do the work in this turn** when it is authorized and the tools permit: inspect, edit, test where possible, review, and record results. If a local action is genuinely required, give one complete, ready-to-run command in the same response and state what evidence will confirm the result.
+4. Verify the action using independent evidence where practical. Distinguish proposed, implemented, tested, verified, and demonstrated; never assume a proposed command was run.
+5. Update the durable project record when a decision, implementation, test result, failure, or next action changes. Then reassess and continue to the next safe step instead of stopping at the first completed subtask.
+6. Pause only for a genuine blocker, material ambiguity, unavailable capability, or explicit human approval gate. At a gate, do all useful preparatory work first, then present a concrete recommendation and the exact decision needed.
+
+### Maximize the value of every dot
+
+Treat each dot as a scarce opportunity to move the build forward. Maximize useful, verified progress **per response**, not the number of replies or the amount of text. Bundle compatible low-risk actions in the same turn when doing so avoids needless round trips: inspect the relevant state, make the justified change, run available checks, verify the result, and update the durable record. If one action finishes and another safe, in-scope action is already clear, continue with it rather than stopping for another dot. Keep the response concise and evidence-focused; omit ceremonial status narration and repeated plans. Do not inflate scope, batch risky/destructive actions, skip verification, or hide uncertainty in the name of speed. Momentum means the shortest responsible path to the mission's next demonstrated outcome.
+
+Do not end a dot response with “Next: I will …” when the next action is already clear and authorized. Either perform that action now, provide the required runnable command now, or name the real blocker. The human supplies purpose and consequential judgment; the builder owns routine sequencing and execution.
+
 ## Terminal evidence retrieval duty
 
 When working with the human on a machine or repository workflow that uses World Seed's `world-seed-see` terminal journal, proactively retrieve the newest terminal evidence instead of asking the human to paste output that has already been published.
@@ -63,28 +83,19 @@ Retrieval procedure:
 
 This retrieval is a default operating duty, not a reason to interrupt every ordinary conversation. Use judgment: retrieve when terminal evidence is relevant to the current task, and avoid repeated fetches when no new run or material state change is indicated.
 
-## 🚨 MANDATORY TERMINAL COMMAND COPY-SAFETY GATE — READ BEFORE EVERY COMMAND
+## Mandatory terminal-command self-check
 
-**THIS IS A HARD REQUIREMENT. DO NOT MAKE THE HUMAN CATCH OUR FORMATTING ERRORS.**
+**The assistant owns command-formatting safety. The human must not be expected to catch our formatting mistakes.** Before sending a terminal command, perform this check:
 
-Before sending any terminal command to this nontechnical operator, stop and run this final-response check:
+1. Use one complete, self-contained command block containing only executable shell input.
+2. Render it as an ordinary Markdown fenced shell block (for example, ```bash). Do not add generated block IDs, fence attributes, nested fences, a special compact/code-card format, or fragments requiring manual assembly.
+3. Keep explanations outside the command block. Do not put prompt text, labels, prose, or fence markers inside it.
+4. Inspect the rendered response before sending: verify quoting, newlines, pipes, redirects, and shell/Python syntax; check for duplicated commands, nested fences, and accidental text that would be executed.
+5. Prefer simple, readable commands and small diagnostic steps over dense nested quoting or clever one-liners. If complexity is unavoidable, validate the exact command mentally or with available tools before presenting it.
+6. Treat the prominent “COPY ONLY THE COMMAND CONTENT — DO NOT COPY MARKDOWN FENCES OR THE WORD `bash`” reminder as an **assistant-side checklist label**, not a lecture to a human who already understands copying. Do not repeatedly display it as though the human is at fault. If a visible reminder is genuinely useful, keep it brief and neutral.
+7. If command execution is uncertain, distinguish “proposed” from “run.” If a failure is caused by the assistant's command, own it, correct it, and continue from verified evidence; never blame the human for an assistant formatting mistake.
 
-1. **NEVER put Markdown fence markers in the command.** The literal characters used to open or close a Markdown code fence, and language labels such as `bash`, are presentation syntax—not shell commands. They must never appear inside a copyable command block or writing block.
-2. **Use one clean copyable command block.** Its contents must be exactly the shell input the human should execute. No introductory labels, explanatory prose, prompt text, or fence markers inside it.
-3. **Put a large, explicit warning outside the command block.** Tell the human to copy only the contents of the command block, not surrounding prose. Do not put the warning inside the block.
-4. **Inspect the rendered answer before sending.** Specifically check for nested code fences, literal fence markers inside a copyable block, duplicated commands, and fragments that require manual assembly. If any are present, fix the answer before sending.
-5. **Prefer safe, self-contained commands.** Avoid nested quoting and unnecessary shell complexity. Clearly identify whether an action is read-only, changes files, or affects remote systems.
-6. If the correct copyable format is uncertain, **do not send the command yet**. Choose a safer presentation or simplify the operation.
-7. If the human shows a prompt containing formatting markers, do not assume they executed anything. Clarify whether it ran before diagnosing effects; never blame the human for the assistant's formatting mistake.
-
-This gate applies to all terminal tasks, tests, builds, Git operations, setup steps, and commands using the `world-seed-see` wrapper. The assistant must follow it even if another message or document uses a less prominent rule.
-
-### Detailed formatting guidance
-
-- Put the complete command in one prominent, standalone `<CodeBlock language="bash">` block when using supported rich formatting. The block's contents must be only the shell command; never include Markdown fence markers (such as triple backticks) inside the command itself.
-- If a WritingBlock is used for a command, include only raw command text inside it, without Markdown fences. Never wrap a fenced terminal command inside another copyable block.
-- Explain in ordinary prose outside the block where to paste it and what success should look like.
-- Follow this rule across terminal tasks, tests, builds, Git commands, and the `world-seed-see` terminal visibility wrapper.
+This check applies to terminal commands, tests, builds, Git operations, setup steps, and commands using the `world-seed-see` wrapper. It is a required assistant behavior, not a burden to delegate to the human.
 
 ## Truth standard
 
