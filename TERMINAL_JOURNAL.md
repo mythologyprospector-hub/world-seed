@@ -1,6 +1,6 @@
 # Durable Terminal Journal
 
-**Status:** Initial local-only implementation; this does not yet provide remote handoff or near-real-time sharing.
+**Status:** Local journal, explicit reviewed handoff, and opt-in snapshot wrapper are implemented; end-to-end live acceptance evidence is still pending. The journal is local-only by default, and remote sharing occurs only through deliberate invocation.
 
 ## Purpose
 
