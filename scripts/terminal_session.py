@@ -116,7 +116,7 @@ def main() -> int:
 
         def copy_terminal_size() -> None:
             try:
-                size = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, b"\\x00" * 8)
+                size = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, b"\x00" * 8)
                 fcntl.ioctl(master_fd, termios.TIOCSWINSZ, size)
             except OSError:
                 pass
@@ -134,7 +134,7 @@ def main() -> int:
                     # Treat a closed input stream as one Ctrl-D, then keep
                     # draining output until the shell actually exits.
                     stdin_eof = True
-                    os.write(master_fd, b"\\x04")
+                    os.write(master_fd, b"\x04")
                 else:
                     os.write(master_fd, incoming)
             if master_fd in readable:
