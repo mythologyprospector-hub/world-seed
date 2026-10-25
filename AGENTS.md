@@ -44,6 +44,14 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 - When blocked, investigate alternatives and complete useful work that remains authorized.
 - Leave a durable handoff before a context/session boundary interrupts unfinished work.
 
+## Mandatory use of the terminal evidence wrapper
+
+When asking the human to run a terminal command in a workflow using World Seed's `world-seed-see`, invoke the command through the wrapper by default. This applies to tests, builds, Git inspection, diagnostics, and other commands whose output may inform the next decision. Use the form `world-seed-see -- COMMAND ARGUMENTS...`; keep the command simple and avoid nested quoting where possible.
+
+Exceptions are limited to commands that must bootstrap, repair, or inspect the wrapper itself, or cases where invoking the wrapper would recurse or make the operation impossible. State the reason for an exception plainly. Do not silently send a bare command and then expect its output to appear in Miracle Depot.
+
+After the human runs a wrapped command and signals that it is ready, retrieve `terminal-live/LATEST.txt` and the exact report it names before deciding what happened. Confirm that the report timestamp and command match the intended run, and inspect its exit code and captured output. A stale pointer is not evidence that a command ran; a wrapper invocation is not proof that publication succeeded. If publication failed, acknowledge that and use another evidence path only when necessary.
+
 ## Terminal evidence retrieval duty
 
 When working with the human on a machine or repository workflow that uses World Seed's `world-seed-see` terminal journal, proactively retrieve the newest terminal evidence instead of asking the human to paste output that has already been published.
