@@ -22,7 +22,7 @@ Each report includes a prompt-like context snapshot: local time, user and host, 
 
 ## Stable installed launcher
 
-The supported installed launcher is `$HOME/.local/bin/world-seed-see`, expected to resolve through the user's `PATH`. Its stable source is the tracked script `$HOME/projects/world-seed/scripts/world_seed_see.py` from the clean `main` checkout—not a temporary or dirty feature worktree. The launcher must forward arguments with `"$@"`:
+The intended installed launcher is `$HOME/.local/bin/world-seed-see`, resolving through the user's `PATH`. Its stable source should be the tracked script `$HOME/projects/world-seed/scripts/world_seed_see.py` from the clean `main` checkout—not a temporary or dirty feature worktree. The launcher must forward arguments with `"$@"`:
 
 ```bash
 #!/usr/bin/env bash
@@ -30,13 +30,15 @@ set -eu
 exec python3 "$HOME/projects/world-seed/scripts/world_seed_see.py" "$@"
 ```
 
-To inspect the installed launcher, run `type -a world-seed-see` and `cat "$HOME/.local/bin/world-seed-see"`. To smoke-test it, use only harmless output, for example:
+A previous local inspection and harmless smoke test are recorded below. To gather current evidence without asking the operator to paste output into chat, run this **read-only diagnostic** from a World Seed checkout through the installed wrapper:
 
 ```bash
-world-seed-see -- printf 'Stable launcher smoke test passed\\n'
+world-seed-see -- bash scripts/inspect_world_seed_see_launcher.sh
 ```
 
-Do not wrap a shell script containing single quotes inside a single-quoted `bash -lc '...'` argument; the nested quoting can cause the wrapper to receive an empty command. Run multi-step setup scripts directly, and use the wrapper for the harmless final smoke test.
+The report includes the resolved launcher path, a bounded launcher source excerpt, current World Seed worktree paths/branches, and checkout status. The wrapper uploads this output and the local machine/path context to the configured private repository. Do not run it if you do not want those paths stored there. The diagnostic does not change files and does not decide acceptance automatically; the builder must compare the launcher target and any referenced script with the actual worktree list.
+
+Do not wrap a shell script containing single quotes inside a single-quoted `bash -lc '...'` argument; nested quoting can cause the wrapper to receive an empty command. Run multi-step setup scripts directly, and use the wrapper for harmless final smoke tests.
 
 ## Privacy and limitations
 
@@ -50,9 +52,9 @@ Do not wrap a shell script containing single quotes inside a single-quoted `bash
 
 ## Acceptance evidence (2026-10-24)
 
-- The installed launcher resolves from `PATH` as `$HOME/.local/bin/world-seed-see`; direct inspection showed the launcher had been repaired to forward arguments with `"$@"`.
+- The installed launcher was reported to resolve from `PATH` as `$HOME/.local/bin/world-seed-see`; direct inspection reportedly showed the launcher forwarding arguments with `"$@"`.
 - A harmless smoke test from the home directory printed `Launcher arguments work` and returned exit code 0. [Private terminal report](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/world-seed-see-20261024T175300Z-3f6d558a.txt)
-- The setup sequence was run directly (not nested inside the reporting wrapper), then its final wrapped smoke test printed `Stable launcher smoke test passed`, returned exit code 0, and recorded `$HOME/projects/world-seed`, branch `main`, and a clean working tree. [Private terminal report](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/world-seed-see-20261024T175455Z-e25f4634.txt)
+- The setup sequence was run directly (not nested inside the reporting wrapper), then its final wrapped smoke test printed `Stable launcher smoke test passed`, returned exit code 0, and recorded the World Seed checkout on branch `main` with a clean working tree. [Private terminal report](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/world-seed-see-20261024T175455Z-e25f4634.txt)
 - The latest-report pointer advanced to each fresh report. No sensitive command output was used in these tests.
 
-These checks establish launcher argument forwarding, a stable source path, local output, fresh private reports, and exit-status reporting for the harmless commands above. They do not by themselves establish acceptance of every terminal-journal/handoff component. Keep the full terminal-stack acceptance gate open until the remaining layers and final acceptance record are reviewed.
+These checks support launcher argument forwarding, a stable source path, local output, fresh private reports, and exit-status reporting for the harmless commands above. The current diagnostic provides a way to recheck the actual installed launcher against the current worktree inventory. Keep the full terminal-stack acceptance gate open until current launcher evidence and the remaining journal/handoff layers are reviewed.
