@@ -46,6 +46,8 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 
 ## Terminal evidence retrieval duty
 
+The intended native architecture and its explicit acceptance gaps are recorded in [TERMINAL_VISIBILITY_CONTRACT.md](docs/TERMINAL_VISIBILITY_CONTRACT.md). Treat that contract as the target design; do not mistake the current command wrapper for completed session-level integration.
+
 When working with the human on a machine or repository workflow that uses World Seed's `world-seed-see` terminal journal, proactively retrieve the newest terminal evidence instead of asking the human to paste output that has already been published.
 
 Check the journal:
