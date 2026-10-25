@@ -220,7 +220,39 @@ def publish(args: argparse.Namespace) -> int:
         url = response.get("content", {}).get("html_url")
         commit = response.get("commit", {}).get("sha")
         if not url or not commit:
-            raise ValueError("GitHub response lacked a file URL or commit SHA; inspect repository before retrying")
+            raise ValueError(
+                "GitHub upload response lacked a file URL or commit SHA; "
+                "the upload may already exist, so inspect the repository before retrying"
+            )
+        # The PUT response is not proof that the remote bytes match the reviewed
+        # local report. Read the exact path back from the verified branch before
+        # writing any success receipt.
+        readback = subprocess.run(
+            [gh, "api", f"repos/{args.repo}/contents/{remote_path}?ref={branch}"],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+        if readback.returncode:
+            raise ValueError(
+                "GitHub read-back failed after upload; the remote upload may already exist. "
+                "Inspect the repository before retrying; no success receipt was written."
+            )
+        try:
+            remote = json.loads(readback.stdout)
+            if not isinstance(remote, dict) or remote.get("encoding") != "base64" or not isinstance(remote.get("content"), str):
+                raise ValueError("read-back response did not contain base64 file content")
+            # The Contents API may line-wrap base64 content; whitespace is not data.
+            remote_payload = base64.b64decode("".join(remote["content"].split()), validate=True)
+        except (json.JSONDecodeError, TypeError, KeyError, ValueError) as exc:
+            raise ValueError(
+                "GitHub read-back response was malformed; the upload may already exist. "
+                "Inspect the repository before retrying; no success receipt was written."
+            ) from exc
+        if remote_payload != payload:
+            raise ValueError(
+                "GitHub read-back content does not match the reviewed local report; "
+                "the upload may already exist. Inspect the repository before retrying; "
+                "no success receipt was written."
+            )
         receipt = report_path.with_suffix(".receipt.json")
         receipt_data = {"uploaded_at": utc_now(), "repository": args.repo, "url": url, "commit_sha": commit, "report_sha256": hashlib.sha256(payload).hexdigest()}
         fd = os.open(receipt, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

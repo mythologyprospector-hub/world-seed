@@ -23,6 +23,13 @@ class WorldSeedSeeTests(unittest.TestCase):
             self.assertNotIn(secret, result)
         self.assertIn("[REDACTED]", result)
 
+    def test_redacts_quoted_and_json_style_secret_fields(self):
+        value = '{"password": "json secret with spaces", "api_key":"json-api-secret", "token": "json-token"}'
+        result = MODULE.redact(value)
+        for secret in ("json secret with spaces", "json-api-secret", "json-token"):
+            self.assertNotIn(secret, result)
+        self.assertIn("[REDACTED]", result)
+
     def test_redacts_common_api_token_shapes(self):
         for token in ("ghp_" + "A" * 30, "sk-" + "B" * 30, "xoxb-" + "C" * 20, "npm_" + "D" * 30):
             with self.subTest(prefix=token.split("-")[0][:4]):
