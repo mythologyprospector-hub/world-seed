@@ -137,7 +137,7 @@ class TerminalHandoffTests(unittest.TestCase):
             "import base64, json, os, pathlib, sys\n"
             "args = sys.argv[1:]\n"
             "if args[:2] == ['repo', 'view']:\n"
-            " print('true\\\tmain')\n"
+            " print('true\\tmain')\n"
             "elif args and args[0] == 'api' and '--method' in args and 'PUT' in args:\n"
             " encoded = next(a.split('=', 1)[1] for a in args if a.startswith('content='))\n"
             " pathlib.Path(os.environ['FAKE_GH_STORE']).write_bytes(base64.b64decode(encoded))\n"
