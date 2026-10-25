@@ -107,7 +107,7 @@ class TerminalHandoffTests(unittest.TestCase):
             fakebin = root / "bin"
             fakebin.mkdir()
             gh = fakebin / "gh"
-            gh.write_text("#!/bin/sh\nprintf 'false\\tmain\\n'\n")
+            gh.write_text("#!/bin/sh\nprintf 'false\tmain\n'\n")
             gh.chmod(0o755)
             env = os.environ.copy()
             env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
@@ -133,23 +133,23 @@ class TerminalHandoffTests(unittest.TestCase):
         fakebin.mkdir()
         gh = fakebin / "gh"
         gh.write_text(
-            "#!/usr/bin/env python3\\n"
-            "import base64, json, os, pathlib, sys\\n"
-            "args = sys.argv[1:]\\n"
-            "if args[:2] == ['repo', 'view']:\\n"
-            " print('true\\\\tmain')\\n"
-            "elif args and args[0] == 'api' and '--method' in args and 'PUT' in args:\\n"
-            " encoded = next(a.split('=', 1)[1] for a in args if a.startswith('content='))\\n"
-            " pathlib.Path(os.environ['FAKE_GH_STORE']).write_bytes(base64.b64decode(encoded))\\n"
-            " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\\n"
-            "elif args and args[0] == 'api':\\n"
-            " if os.environ.get('FAKE_GH_READBACK_MODE') == 'failure':\\n"
-            "  print('simulated read-back failure', file=sys.stderr); sys.exit(1)\\n"
-            " payload = pathlib.Path(os.environ['FAKE_GH_STORE']).read_bytes()\\n"
-            " if os.environ.get('FAKE_GH_READBACK_MODE') == 'mismatch': payload = b'different remote bytes'\\n"
-            " print(json.dumps({'encoding': 'base64', 'content': base64.b64encode(payload).decode('ascii')}))\\n"
-            "else:\\n"
-            " sys.exit(2)\\n",
+            "#!/usr/bin/env python3\n"
+            "import base64, json, os, pathlib, sys\n"
+            "args = sys.argv[1:]\n"
+            "if args[:2] == ['repo', 'view']:\n"
+            " print('true\\\tmain')\n"
+            "elif args and args[0] == 'api' and '--method' in args and 'PUT' in args:\n"
+            " encoded = next(a.split('=', 1)[1] for a in args if a.startswith('content='))\n"
+            " pathlib.Path(os.environ['FAKE_GH_STORE']).write_bytes(base64.b64decode(encoded))\n"
+            " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
+            "elif args and args[0] == 'api':\n"
+            " if os.environ.get('FAKE_GH_READBACK_MODE') == 'failure':\n"
+            "  print('simulated read-back failure', file=sys.stderr); sys.exit(1)\n"
+            " payload = pathlib.Path(os.environ['FAKE_GH_STORE']).read_bytes()\n"
+            " if os.environ.get('FAKE_GH_READBACK_MODE') == 'mismatch': payload = b'different remote bytes'\n"
+            " print(json.dumps({'encoding': 'base64', 'content': base64.b64encode(payload).decode('ascii')}))\n"
+            "else:\n"
+            " sys.exit(2)\n",
             encoding="utf-8",
         )
         gh.chmod(0o755)
