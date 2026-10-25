@@ -44,6 +44,25 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 - When blocked, investigate alternatives and complete useful work that remains authorized.
 - Leave a durable handoff before a context/session boundary interrupts unfinished work.
 
+## Mandatory continuous-momentum protocol
+
+A short approval signal such as `.` means **continue driving the current authorized objective**, not merely acknowledge the message or repeat a status report. Treat this as an execution instruction.
+
+For every continuation turn:
+
+1. Reconstruct the live state from canonical repository records, open work, checks, and the newest relevant terminal report when available. Do not make the human repeat evidence already accessible.
+2. Name the single highest-leverage next action consistent with the active mission and scope lock. Prefer closing an existing acceptance gate over creating more machinery.
+3. Perform the action now when tools and authority permit. Inspect before changing; use reversible, reviewable work; run the relevant checks; diagnose failures and make a bounded repair/retry when justified.
+4. If one path is blocked, investigate safe alternatives and complete independent useful work. Do not stop at the first error, a green check, a plan, or a summary if another authorized step remains.
+5. Update durable status, evidence, and the next action in the owning repository or reviewable PR. Keep claims limited to what was actually observed and verified.
+6. End with a concise report of what changed or was learned, the evidence, any true blocker, and the next action. Do not ask a generic “what next?” question when the next step is inferable.
+
+Maximize **useful progress per turn**, not activity, verbosity, new files, or subsystem count. Keep the active objective and feature freeze intact. A failed command is a problem to diagnose, not an automatic stopping point. A task is not complete merely because its status was reported.
+
+The human remains the approval gate for merges, destructive actions, new repositories, and other consequential decisions defined in `CONSTITUTION.md`. A period does not waive those gates. When only a human-machine action can unblock progress, give one exact, minimal command and expected result; continue any other work that does not depend on it.
+
+This protocol governs behavior while the builder is active. It does not imply that a chat model runs in the background, receives terminal snapshots automatically, or can act without an active turn and available tools. Never claim autonomous background execution unless a real configured mechanism demonstrates it.
+
 ## Terminal evidence retrieval duty
 
 When working with the human on a machine or repository workflow that uses World Seed's `world-seed-see` terminal journal, proactively retrieve the newest terminal evidence instead of asking the human to paste output that has already been published.
