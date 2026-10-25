@@ -108,3 +108,20 @@ Project Seed absorption audit PR #28 has since been verified merged at `64a5b290
 4. Prefer read-only inspection first. Keep personal files and private-repository details out of public notes.
 5. Update this handoff and issue #12 as meaningful milestones are verified.
 6. Never describe a repository as retirement-ready until isolated restore and verification are complete and all significant preservation gaps are disclosed.
+
+
+## Additional verified local-only commit recovery (2026-10-22)
+
+A later audit of the original local repositories' reflogs found two commits that were not reachable from the refs in the fresh GitHub mirrors:
+
+- **Praxis** — `4b79cae21bbec27636e02917a136e9cae74cf645`, subject `Add repository social preview image`, dated 2026-10-04. The inspected commit adds `praxis.jpeg` (785,128 bytes).
+- **Renaissance** — `e5b4258a1f7b1967f6dc6545846a21a10abb0fe5`, subject `Add repository social preview image`, dated 2026-10-04.
+
+Each commit was made explicitly reachable by a named local recovery ref and exported to its own bundle under the operator's private preservation directory:
+
+- `local-only-commits/praxis-social-preview.bundle`
+- `local-only-commits/renaissance-social-preview.bundle`
+
+Both bundles passed `git bundle verify` and `git bundle list-heads`. Each was then cloned into a separate isolated bare repository and passed `git fsck --full --no-reflogs`. The observed object checks were 1,037 for Praxis and 85 for Renaissance; both restore tests passed. SHA-256 fingerprints were recorded in the private local recovery log. The original repositories and recovery refs remain intact.
+
+This is additional evidence of recoverable Git history, not a claim that either whole repository is ready for retirement. The private bundles and their checksums are not published here. The broader inventory of local-only data, ignored files, worktrees, GitHub-only records, and real isolated recovery checks remains in progress. No repository is approved for retirement or deletion.
