@@ -86,14 +86,20 @@ This report inventories visible evidence for source/history and optional GitHub 
 
 ## Local quality gate
 
-Run the dependency-free baseline checks and unit tests from the repository root:
+From the repository root, run the dependency-free structural check:
 
 ```bash
 python scripts/validate_seed.py
+```
+
+To run the full unit suite, install the pinned development dependencies first, then run the tests:
+
+```bash
+python -m pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 ```
 
-GitHub Actions runs these checks on pull requests and pushes, supports manual execution, and schedules a weekly repository-local check. This is the first executable quality gate—not the complete account-wide audit. It checks required seed documents and obvious broken relative Markdown links. It does not prove semantic consistency, private-repository coverage, security posture, runtime health, or recovery readiness.
+The structural validator itself is dependency-free. The full test suite includes tests that require the development dependencies, including JSON Schema validation. GitHub Actions installs `requirements-dev.txt` before running the full suite. These checks are the first executable quality gate—not the complete account-wide audit. The structural validator checks required seed documents and obvious broken relative Markdown links; the tests cover the behavior represented by their fixtures. Neither proves semantic consistency, private-repository coverage, security posture, runtime health, or recovery readiness.
 
 
 ## GitHub governance safeguards
