@@ -286,9 +286,10 @@ def publish(args: argparse.Namespace) -> int:
             )
         try:
             remote = json.loads(readback.stdout)
-            if remote.get("encoding") != "base64" or not isinstance(remote.get("content"), str):
+            if not isinstance(remote, dict) or remote.get("encoding") != "base64" or not isinstance(remote.get("content"), str):
                 raise ValueError("read-back response did not contain base64 file content")
-            remote_payload = base64.b64decode(remote["content"], validate=True)
+            # The Contents API may line-wrap base64 content; whitespace is not data.
+            remote_payload = base64.b64decode("".join(remote["content"].split()), validate=True)
         except (json.JSONDecodeError, TypeError, KeyError, ValueError) as exc:
             raise ValueError(
                 "GitHub read-back response was malformed; the upload may already exist. "
