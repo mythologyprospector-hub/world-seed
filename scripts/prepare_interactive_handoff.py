@@ -38,8 +38,10 @@ def prepare(args: argparse.Namespace) -> int:
                         continue
                     try:
                         record = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
+                    except json.JSONDecodeError as exc:
+                        raise ValueError(
+                            f"malformed JSONL record in {path.name}; refusing to prepare a potentially incomplete handoff"
+                        ) from exc
                     if isinstance(record, dict) and record.get("session_id") == args.session:
                         matches.append(record)
                         source = path
