@@ -30,14 +30,14 @@ from terminal_handoff import (
 # Remove terminal display controls, while retaining printable text and line breaks.
 # This is a readable transcript, not a perfect reconstruction of the terminal screen.
 _ANSI_CONTROL_RE = re.compile(
-    r"\\x1B(?:\\[[0-?]*[ -/]*[@-~]|\\][^\\x07]*(?:\\x07|\\x1B\\\\)|[@-_])"
+    r"\x1B(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\)|[@-_])"
 )
 
 
 def readable_terminal_text(value: str) -> str:
     value = _ANSI_CONTROL_RE.sub("", value)
-    value = value.replace("\\r\\n", "\\n").replace("\\r", "\\n")
-    return "".join(ch for ch in value if ch in "\\n\\t" or ord(ch) >= 32 and ord(ch) != 127)
+    value = value.replace("\r\n", "\n").replace("\r", "\n")
+    return "".join(ch for ch in value if ch in "\n\t" or ord(ch) >= 32 and ord(ch) != 127)
 
 
 def git_context(cwd: str) -> tuple[str | None, str | None, bool | None]:
