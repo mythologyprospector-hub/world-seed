@@ -178,6 +178,18 @@ class TerminalJournalTests(unittest.TestCase):
             self.assertEqual(invalid.returncode, 2)
             self.assertFalse((Path(temp) / "escape").exists())
 
+    def test_refuses_command_when_start_record_cannot_be_saved(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            log_dir = Path(temp) / "not-a-directory"
+            log_dir.write_text("blocking journal directory", encoding="utf-8")
+            result = self.invoke(
+                log_dir, "--", sys.executable, "-c",
+                "print(\"COMMAND_MUST_NOT_RUN\")",
+            )
+            self.assertEqual(result.returncode, 125)
+            self.assertNotIn("COMMAND_MUST_NOT_RUN", result.stdout)
+            self.assertIn("command not run", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()
