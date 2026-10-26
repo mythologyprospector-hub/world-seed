@@ -56,10 +56,13 @@ def redact(value: str) -> tuple[str, bool]:
 
 
 def read_session(journal_root: Path, project: str, session_id: str | None) -> tuple[dict[str, Any], list[dict[str, Any]], Path]:
-    project_dir = journal_root.expanduser() / project
-    files = sorted(project_dir.glob("*.jsonl"))
+    root = journal_root.expanduser()
+    project_dir = root / project
+    # Command journals are grouped by project; interactive PTY sessions have
+    # their own lane because the launcher captures a whole shell, not commands.
+    files = sorted(project_dir.glob("*.jsonl")) + sorted((root / "interactive").glob("*.jsonl"))
     if not files:
-        raise ValueError(f"no journal files found for project {project!r} under {project_dir}")
+        raise ValueError(f"no journal files found for project {project!r} or interactive sessions under {root}")
     sessions: dict[str, list[dict[str, Any]]] = {}
     source_by_session: dict[str, Path] = {}
     warnings = 0
@@ -90,19 +93,30 @@ def read_session(journal_root: Path, project: str, session_id: str | None) -> tu
         selected = session_id
     else:
         def sort_key(item: tuple[str, list[dict[str, Any]]]) -> str:
-            starts = [str(r.get("recorded_at", "")) for r in item[1] if r.get("event") == "command_started"]
+            starts = [
+                str(r.get("recorded_at", ""))
+                for r in item[1]
+                if r.get("event") in {"command_started", "session_started"}
+            ]
             return max(starts, default="")
         selected = max(sessions.items(), key=sort_key)[0]
     records = sorted(sessions[selected], key=lambda r: int(r.get("sequence", 0)) if str(r.get("sequence", "0")).isdigit() else 0)
-    starts = [r for r in records if r.get("event") == "command_started"]
-    finishes = [r for r in records if r.get("event") == "command_finished"]
+    starts = [r for r in records if r.get("event") in {"command_started", "session_started"}]
     if not starts:
-        raise ValueError("selected session has no command_started event")
+        raise ValueError("selected session has no command_started or session_started event")
     return starts[0], records, source_by_session[selected]
 
 
 def output_for(records: list[dict[str, Any]], stream_name: str) -> str:
-    return "".join(str(r.get("text", "")) for r in records if r.get("event") == "output" and r.get("stream") == stream_name)
+    chunks = []
+    for record in records:
+        if record.get("event") == "output" and record.get("stream") == stream_name:
+            chunks.append(str(record.get("text", "")))
+        elif record.get("event") == "terminal_output" and stream_name == "stdout":
+            # PTY output is the terminal's combined visible stream, including
+            # shell echo. It is still reviewed and redacted before publication.
+            chunks.append(str(record.get("text", "")))
+    return "".join(chunks)
 
 
 def bounded_text(value: str, limit: int) -> tuple[str, bool]:
@@ -118,13 +132,18 @@ def bounded_text(value: str, limit: int) -> tuple[str, bool]:
 def prepare(args: argparse.Namespace) -> int:
     try:
         started, records, source = read_session(args.journal_root, args.project, args.session)
-        finished = next((r for r in reversed(records) if r.get("event") == "command_finished"), None)
+        finished = next(
+            (r for r in reversed(records) if r.get("event") in {"command_finished", "session_finished"}),
+            None,
+        )
         stdout, redacted_out = redact(output_for(records, "stdout"))
         stderr, redacted_err = redact(output_for(records, "stderr"))
         half = args.max_output_bytes // 2
         stdout, trunc_out = bounded_text(stdout, half)
         stderr, trunc_err = bounded_text(stderr, args.max_output_bytes - half)
-        command = started.get("command", "[command unavailable]")
+        command = started.get("command")
+        if command is None and started.get("event") == "session_started":
+            command = {"interactive_shell": started.get("shell", "[shell unavailable]")}
         command_text = json.dumps(command, ensure_ascii=False) if not isinstance(command, str) else command
         command_text, redacted_command = redact(command_text)
         report = {
@@ -140,6 +159,7 @@ def prepare(args: argparse.Namespace) -> int:
             "finished_at": finished.get("recorded_at") if finished else None,
             "exit_code": finished.get("exit_code") if finished else None,
             "completion": "recorded" if finished else "incomplete_or_unrecorded",
+            "session_kind": "interactive_pty" if started.get("event") == "session_started" else "wrapped_command",
             "stdout": stdout,
             "stderr": stderr,
             "truncated": bool(trunc_out or trunc_err),
