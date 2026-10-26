@@ -172,6 +172,57 @@ def prepare(args: argparse.Namespace) -> int:
         return 2
 
 
+
+def update_latest_index(
+    gh: str, repo: str, branch: str, report_url: str, report_path: str,
+    report_commit: str, report: dict[str, Any], report_sha256: str,
+) -> str:
+    """Point the private Intake Dock's latest.json at a published report."""
+    index_path = "terminal-handoffs/latest.json"
+    endpoint = f"repos/{repo}/contents/{index_path}"
+    current = subprocess.run(
+        [gh, "api", endpoint, "--jq", ".sha"],
+        capture_output=True, text=True, timeout=20, check=False,
+    )
+    index_sha: str | None = None
+    if current.returncode == 0:
+        candidate = current.stdout.strip()
+        if re.fullmatch(r"[0-9a-f]{40}", candidate):
+            index_sha = candidate
+        elif candidate not in {"", "null"}:
+            raise ValueError("could not parse existing latest handoff index SHA")
+    elif "404" not in current.stderr and "Not Found" not in current.stderr:
+        raise ValueError("could not read latest handoff index; published report remains available")
+
+    index = {
+        "schema": "world-seed-terminal-handoff-index/v1",
+        "updated_at": utc_now(),
+        "latest": {
+            "repository": repo, "path": report_path, "url": report_url,
+            "commit_sha": report_commit, "report_sha256": report_sha256,
+            "session_id": report.get("session_id"), "project": report.get("project"),
+            "branch": report.get("branch"), "created_at": report.get("created_at"),
+            "exit_code": report.get("exit_code"), "completion": report.get("completion"),
+        },
+    }
+    encoded = base64.b64encode((json.dumps(index, indent=2) + "\n").encode("utf-8")).decode("ascii")
+    args = [gh, "api", endpoint, "--method", "PUT",
+            "-f", "message=Update latest reviewed terminal handoff",
+            "-f", f"content={encoded}", "-f", f"branch={branch}"]
+    if index_sha:
+        args.extend(["-f", f"sha={index_sha}"])
+    result = subprocess.run(args, capture_output=True, text=True, timeout=60, check=False)
+    if result.returncode:
+        raise ValueError("report was uploaded, but updating latest.json failed; inspect the Intake Dock before retrying")
+    try:
+        response = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise ValueError("report was uploaded, but latest.json update response was invalid") from exc
+    if not response.get("content", {}).get("html_url") or not response.get("commit", {}).get("sha"):
+        raise ValueError("report was uploaded, but GitHub did not confirm the latest.json update")
+    return response["content"]["html_url"]
+
+
 def publish(args: argparse.Namespace) -> int:
     report_path = args.report.expanduser().resolve()
     outbox = args.outbox.expanduser().resolve()
@@ -221,16 +272,27 @@ def publish(args: argparse.Namespace) -> int:
         commit = response.get("commit", {}).get("sha")
         if not url or not commit:
             raise ValueError("GitHub response lacked a file URL or commit SHA; inspect repository before retrying")
+        report_sha256 = hashlib.sha256(payload).hexdigest()
         receipt = report_path.with_suffix(".receipt.json")
-        receipt_data = {"uploaded_at": utc_now(), "repository": args.repo, "url": url, "commit_sha": commit, "report_sha256": hashlib.sha256(payload).hexdigest()}
+        receipt_data = {"uploaded_at": utc_now(), "repository": args.repo, "url": url, "commit_sha": commit, "report_sha256": report_sha256}
         fd = os.open(receipt, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(fd, "w", encoding="utf-8") as stream:
             json.dump(receipt_data, stream, indent=2)
-            stream.write("\n")
+            stream.write("\\n")
             stream.flush()
             os.fsync(stream.fileno())
+        try:
+            index_url = update_latest_index(
+                gh, args.repo, branch, url, remote_path, commit, report, report_sha256,
+            )
+        except ValueError:
+            print(f"[terminal-handoff] uploaded: {url}")
+            print(f"[terminal-handoff] commit: {commit}")
+            print(f"[terminal-handoff] receipt: {receipt}")
+            raise
         print(f"[terminal-handoff] uploaded: {url}")
         print(f"[terminal-handoff] commit: {commit}")
+        print(f"[terminal-handoff] latest index: {index_url}")
         print(f"[terminal-handoff] receipt: {receipt}")
         return 0
     except (OSError, ValueError, json.JSONDecodeError, subprocess.TimeoutExpired) as exc:
