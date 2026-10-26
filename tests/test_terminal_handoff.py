@@ -205,7 +205,7 @@ class TerminalHandoffTests(unittest.TestCase):
              "event": "session_finished", "sequence": 2, "recorded_at": "2026-10-26T11:00:02+00:00",
              "exit_code": exit_code, "interrupted": False, "error": None},
         ]
-        journal.write_text("".join(json.dumps(record) + "\\n" for record in records), encoding="utf-8")
+        journal.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
         return journal, sid
 
     def test_prepare_interactive_pty_session_without_upload(self) -> None:
