@@ -18,7 +18,6 @@ When you exit that shell, the launcher prints the local journal path. The journa
 
 Use `--log-dir PATH` to select a different local journal root, or `--shell /absolute/path/to/shell` to choose an interactive shell. The journal directory is created with owner-only permissions (0700) and journal files with owner-only permissions (0600) on POSIX systems.
 
-
 ## Enroll a terminal profile
 
 To make this the normal behavior for a chosen World Seed terminal profile, configure that profile's **custom command** to run the launcher from a known checkout:
@@ -37,6 +36,18 @@ This is profile-level enrollment, not machine-wide capture:
 - The profile command points to a particular checkout. If that checkout is moved or removed, update the profile command.
 
 The profile integration itself must be tested on the target terminal emulator before claiming native end-to-end acceptance. In particular, verify startup, interactive input, window resizing, Ctrl-C, Ctrl-D, shell exit status, journal permissions, and what happens if the journal cannot be written.
+
+## Operator acceptance evidence — 2026-10-26
+
+The operator tested the dedicated **World Seed — journaled** GNOME Terminal profile using only synthetic marker text. The marker `WORLD_SEED_PROFILE_SMOKE_TEST` was found in the local JSONL journal.
+
+The operator then inspected the corresponding session record and confirmed:
+- The journal directory mode was `0700`.
+- The journal file mode was `0600`.
+- The profile test session emitted a `session_started` record and a `session_finished` record.
+- The finished session reported exit code `0`, `interrupted: false`, and no recorded error.
+
+This verifies that the selected GNOME Terminal profile launched the journaled shell and locally recorded its synthetic output and clean exit. It does **not** mean the assistant can automatically read the local journal from another environment, and it does not verify remote publication, Miracle Depot read-back, intermediate snapshots, Ctrl-C, resize behavior, or journal-write failure recovery. Those remain separate acceptance gates. No raw journal content is included here.
 
 ## Privacy and publication
 
@@ -63,7 +74,7 @@ python3 scripts/terminal_session.py
 At the new prompt, type:
 
 ```bash
-printf 'WORLD_SEED_SESSION_SMOKE_TEST\n'
+printf 'WORLD_SEED_SESSION_SMOKE_TEST\\n'
 exit
 ```
 
