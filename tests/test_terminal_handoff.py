@@ -107,7 +107,7 @@ class TerminalHandoffTests(unittest.TestCase):
             fakebin = root / "bin"
             fakebin.mkdir()
             gh = fakebin / "gh"
-            gh.write_text("#!/bin/sh\nprintf 'false\\tmain\\n'\n")
+            gh.write_text("#!/bin/sh\nprintf 'false\tmain\n'\n")
             gh.chmod(0o755)
             env = os.environ.copy()
             env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
@@ -118,40 +118,136 @@ class TerminalHandoffTests(unittest.TestCase):
 
 
 
-    def test_publish_success_writes_receipt_from_github_response(self) -> None:
+    def _run_publish_with_readback(self, mode: str) -> tuple[subprocess.CompletedProcess[str], Path, Path]:
+        root = Path(tempfile.mkdtemp())
+        self.addCleanup(lambda: __import__("shutil").rmtree(root, ignore_errors=True))
+        outbox = root / "outbox"
+        outbox.mkdir()
+        report = outbox / "report.json"
+        report.write_text(json.dumps({
+            "handoff_schema": "world-seed-terminal-output-handoff/v1",
+            "session_id": "test-session",
+        }), encoding="utf-8")
+        store = root / "remote-content.bin"
+        fakebin = root / "bin"
+        fakebin.mkdir()
+        gh = fakebin / "gh"
+        gh.write_text(
+            "#!/usr/bin/env python3\n"
+            "import base64, json, os, pathlib, sys\n"
+            "args = sys.argv[1:]\n"
+            "if args[:2] == ['repo', 'view']:\n"
+            " print('true\\tmain')\n"
+            "elif args and args[0] == 'api' and '--method' in args and 'PUT' in args:\n"
+            " encoded = next(a.split('=', 1)[1] for a in args if a.startswith('content='))\n"
+            " pathlib.Path(os.environ['FAKE_GH_STORE']).write_bytes(base64.b64decode(encoded))\n"
+            " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
+            "elif args and args[0] == 'api':\n"
+            " if os.environ.get('FAKE_GH_READBACK_MODE') == 'failure':\n"
+            "  print('simulated read-back failure', file=sys.stderr); sys.exit(1)\n"
+            " payload = pathlib.Path(os.environ['FAKE_GH_STORE']).read_bytes()\n"
+            " if os.environ.get('FAKE_GH_READBACK_MODE') == 'mismatch': payload = b'different remote bytes'\n"
+            " print(json.dumps({'encoding': 'base64', 'content': base64.b64encode(payload).decode('ascii')}))\n"
+            "else:\n"
+            " sys.exit(2)\n",
+            encoding="utf-8",
+        )
+        gh.chmod(0o755)
+        env = os.environ.copy()
+        env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
+        env["FAKE_GH_STORE"] = str(store)
+        env["FAKE_GH_READBACK_MODE"] = mode
+        result = self.run_cli("publish", "--report", str(report), "--outbox", str(outbox),
+                              "--confirm-publish", env=env)
+        return result, report, store
+
+    def test_publish_success_requires_matching_remote_readback(self) -> None:
+        result, report, _ = self._run_publish_with_readback("match")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("uploaded:", result.stdout)
+        receipt_path = report.with_suffix(".receipt.json")
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        self.assertEqual(receipt["commit_sha"], "a" * 40)
+        self.assertEqual(receipt["repository"], "mythologyprospector-hub/miracle-depot")
+        import hashlib
+        self.assertEqual(receipt["report_sha256"], hashlib.sha256(report.read_bytes()).hexdigest())
+
+    def test_publish_mismatched_remote_readback_writes_no_receipt(self) -> None:
+        result, report, _ = self._run_publish_with_readback("mismatch")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("does not match", result.stderr)
+        self.assertIn("may already exist", result.stderr)
+        self.assertFalse(report.with_suffix(".receipt.json").exists())
+
+    def test_publish_failed_remote_readback_writes_no_receipt(self) -> None:
+        result, report, _ = self._run_publish_with_readback("failure")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("read-back failed", result.stderr)
+        self.assertIn("may already exist", result.stderr)
+        self.assertFalse(report.with_suffix(".receipt.json").exists())
+
+
+    def make_interactive_journal(self, root: Path, *, output: str, exit_code: int = 0) -> tuple[Path, str]:
+        lane = root / "interactive"
+        lane.mkdir(parents=True)
+        journal = lane / "2026-10-26.jsonl"
+        sid = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        records = [
+            {"schema_version": 3, "session_id": sid, "event_source": "pty_session",
+             "cwd": "/home/tester/projects/world-seed", "shell": "/bin/bash",
+             "event": "session_started", "sequence": 0, "recorded_at": "2026-10-26T11:00:00+00:00"},
+            {"schema_version": 3, "session_id": sid, "event_source": "pty_session",
+             "cwd": "/home/tester/projects/world-seed", "shell": "/bin/bash",
+             "event": "terminal_output", "sequence": 1, "recorded_at": "2026-10-26T11:00:01+00:00",
+             "text": output},
+            {"schema_version": 3, "session_id": sid, "event_source": "pty_session",
+             "cwd": "/home/tester/projects/world-seed", "shell": "/bin/bash",
+             "event": "session_finished", "sequence": 2, "recorded_at": "2026-10-26T11:00:02+00:00",
+             "exit_code": exit_code, "interrupted": False, "error": None},
+        ]
+        journal.write_text("".join(json.dumps(record) + "\n" for record in records), encoding="utf-8")
+        return journal, sid
+
+    def test_prepare_interactive_pty_session_without_upload(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            outbox = root / "outbox"
-            outbox.mkdir()
-            report = outbox / "report.json"
-            report.write_text(json.dumps({
-                "handoff_schema": "world-seed-terminal-output-handoff/v1",
-                "session_id": "test-session",
-            }), encoding="utf-8")
-            fakebin = root / "bin"
-            fakebin.mkdir()
-            gh = fakebin / "gh"
-            gh.write_text(
-                "#!/usr/bin/env python3\n"
-                "import json, sys\n"
-                "if sys.argv[1:3] == ['repo', 'view']:\n"
-                " print('true\\tmain')\n"
-                "elif sys.argv[1] == 'api':\n"
-                " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
-                "else:\n"
-                " sys.exit(2)\n",
-                encoding="utf-8",
+            journal_root = root / "journals"
+            marker = "WORLD_SEED_PTY_HANDOFF_TEST"
+            _, session_id = self.make_interactive_journal(
+                journal_root, output=f"{marker}\r\n"
             )
-            gh.chmod(0o755)
-            env = os.environ.copy()
-            env["PATH"] = str(fakebin) + os.pathsep + env.get("PATH", "")
-            result = self.run_cli("publish", "--report", str(report), "--outbox", str(outbox),
-                                  "--confirm-publish", env=env)
+            outbox = root / "outbox"
+            result = self.run_cli(
+                "prepare", "--session", session_id, "--project", "world-seed",
+                "--journal-root", str(journal_root), "--outbox", str(outbox),
+            )
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json", result.stdout)
-            receipt = json.loads(report.with_suffix(".receipt.json").read_text(encoding="utf-8"))
-            self.assertEqual(receipt["commit_sha"], "a" * 40)
-            self.assertEqual(receipt["repository"], "mythologyprospector-hub/miracle-depot")
+            self.assertIn("NOT uploaded", result.stdout)
+            report_path = next(outbox.glob("*.json"))
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report["session_id"], session_id)
+            self.assertEqual(report["session_kind"], "interactive_pty")
+            self.assertEqual(report["exit_code"], 0)
+            self.assertEqual(report["completion"], "recorded")
+            self.assertIn(marker, report["stdout"])
+            self.assertFalse(report_path.with_suffix(".receipt.json").exists())
+
+    def test_prepare_interactive_pty_preserves_nonzero_exit_code(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            journal_root = root / "journals"
+            _, session_id = self.make_interactive_journal(
+                journal_root, output="synthetic failure marker\r\n", exit_code=7
+            )
+            result = self.run_cli(
+                "prepare", "--session", session_id, "--project", "world-seed",
+                "--journal-root", str(journal_root), "--outbox", str(root / "outbox"),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads(next((root / "outbox").glob("*.json")).read_text(encoding="utf-8"))
+            self.assertEqual(report["exit_code"], 7)
+            self.assertEqual(report["session_kind"], "interactive_pty")
+
 
 if __name__ == "__main__":
     unittest.main()

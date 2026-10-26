@@ -56,10 +56,13 @@ def redact(value: str) -> tuple[str, bool]:
 
 
 def read_session(journal_root: Path, project: str, session_id: str | None) -> tuple[dict[str, Any], list[dict[str, Any]], Path]:
-    project_dir = journal_root.expanduser() / project
-    files = sorted(project_dir.glob("*.jsonl"))
+    root = journal_root.expanduser()
+    project_dir = root / project
+    # Command journals are grouped by project; interactive PTY sessions have
+    # their own lane because the launcher captures a whole shell, not commands.
+    files = sorted(project_dir.glob("*.jsonl")) + sorted((root / "interactive").glob("*.jsonl"))
     if not files:
-        raise ValueError(f"no journal files found for project {project!r} under {project_dir}")
+        raise ValueError(f"no journal files found for project {project!r} or interactive sessions under {root}")
     sessions: dict[str, list[dict[str, Any]]] = {}
     source_by_session: dict[str, Path] = {}
     warnings = 0
@@ -90,19 +93,30 @@ def read_session(journal_root: Path, project: str, session_id: str | None) -> tu
         selected = session_id
     else:
         def sort_key(item: tuple[str, list[dict[str, Any]]]) -> str:
-            starts = [str(r.get("recorded_at", "")) for r in item[1] if r.get("event") == "command_started"]
+            starts = [
+                str(r.get("recorded_at", ""))
+                for r in item[1]
+                if r.get("event") in {"command_started", "session_started"}
+            ]
             return max(starts, default="")
         selected = max(sessions.items(), key=sort_key)[0]
     records = sorted(sessions[selected], key=lambda r: int(r.get("sequence", 0)) if str(r.get("sequence", "0")).isdigit() else 0)
-    starts = [r for r in records if r.get("event") == "command_started"]
-    finishes = [r for r in records if r.get("event") == "command_finished"]
+    starts = [r for r in records if r.get("event") in {"command_started", "session_started"}]
     if not starts:
-        raise ValueError("selected session has no command_started event")
+        raise ValueError("selected session has no command_started or session_started event")
     return starts[0], records, source_by_session[selected]
 
 
 def output_for(records: list[dict[str, Any]], stream_name: str) -> str:
-    return "".join(str(r.get("text", "")) for r in records if r.get("event") == "output" and r.get("stream") == stream_name)
+    chunks = []
+    for record in records:
+        if record.get("event") == "output" and record.get("stream") == stream_name:
+            chunks.append(str(record.get("text", "")))
+        elif record.get("event") == "terminal_output" and stream_name == "stdout":
+            # PTY output is the terminal's combined visible stream, including
+            # shell echo. It is still reviewed and redacted before publication.
+            chunks.append(str(record.get("text", "")))
+    return "".join(chunks)
 
 
 def bounded_text(value: str, limit: int) -> tuple[str, bool]:
@@ -118,13 +132,18 @@ def bounded_text(value: str, limit: int) -> tuple[str, bool]:
 def prepare(args: argparse.Namespace) -> int:
     try:
         started, records, source = read_session(args.journal_root, args.project, args.session)
-        finished = next((r for r in reversed(records) if r.get("event") == "command_finished"), None)
+        finished = next(
+            (r for r in reversed(records) if r.get("event") in {"command_finished", "session_finished"}),
+            None,
+        )
         stdout, redacted_out = redact(output_for(records, "stdout"))
         stderr, redacted_err = redact(output_for(records, "stderr"))
         half = args.max_output_bytes // 2
         stdout, trunc_out = bounded_text(stdout, half)
         stderr, trunc_err = bounded_text(stderr, args.max_output_bytes - half)
-        command = started.get("command", "[command unavailable]")
+        command = started.get("command")
+        if command is None and started.get("event") == "session_started":
+            command = {"interactive_shell": started.get("shell", "[shell unavailable]")}
         command_text = json.dumps(command, ensure_ascii=False) if not isinstance(command, str) else command
         command_text, redacted_command = redact(command_text)
         report = {
@@ -140,6 +159,7 @@ def prepare(args: argparse.Namespace) -> int:
             "finished_at": finished.get("recorded_at") if finished else None,
             "exit_code": finished.get("exit_code") if finished else None,
             "completion": "recorded" if finished else "incomplete_or_unrecorded",
+            "session_kind": "interactive_pty" if started.get("event") == "session_started" else "wrapped_command",
             "stdout": stdout,
             "stderr": stderr,
             "truncated": bool(trunc_out or trunc_err),
@@ -220,7 +240,39 @@ def publish(args: argparse.Namespace) -> int:
         url = response.get("content", {}).get("html_url")
         commit = response.get("commit", {}).get("sha")
         if not url or not commit:
-            raise ValueError("GitHub response lacked a file URL or commit SHA; inspect repository before retrying")
+            raise ValueError(
+                "GitHub upload response lacked a file URL or commit SHA; "
+                "the upload may already exist, so inspect the repository before retrying"
+            )
+        # The PUT response is not proof that the remote bytes match the reviewed
+        # local report. Read the exact path back from the verified branch before
+        # writing any success receipt.
+        readback = subprocess.run(
+            [gh, "api", f"repos/{args.repo}/contents/{remote_path}?ref={branch}"],
+            capture_output=True, text=True, timeout=30, check=False,
+        )
+        if readback.returncode:
+            raise ValueError(
+                "GitHub read-back failed after upload; the remote upload may already exist. "
+                "Inspect the repository before retrying; no success receipt was written."
+            )
+        try:
+            remote = json.loads(readback.stdout)
+            if not isinstance(remote, dict) or remote.get("encoding") != "base64" or not isinstance(remote.get("content"), str):
+                raise ValueError("read-back response did not contain base64 file content")
+            # The Contents API may line-wrap base64 content; whitespace is not data.
+            remote_payload = base64.b64decode("".join(remote["content"].split()), validate=True)
+        except (json.JSONDecodeError, TypeError, KeyError, ValueError) as exc:
+            raise ValueError(
+                "GitHub read-back response was malformed; the upload may already exist. "
+                "Inspect the repository before retrying; no success receipt was written."
+            ) from exc
+        if remote_payload != payload:
+            raise ValueError(
+                "GitHub read-back content does not match the reviewed local report; "
+                "the upload may already exist. Inspect the repository before retrying; "
+                "no success receipt was written."
+            )
         receipt = report_path.with_suffix(".receipt.json")
         receipt_data = {"uploaded_at": utc_now(), "repository": args.repo, "url": url, "commit_sha": commit, "report_sha256": hashlib.sha256(payload).hexdigest()}
         fd = os.open(receipt, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
