@@ -126,7 +126,7 @@ def main() -> int:
         child_pid, master_fd = pty.fork()
         if child_pid == 0:
             os.execv(str(shell), [str(shell), "-i"])
-        tty.setraw(sys.stdin.fileno())
+        tty.setraw(sys.stdin.fileno(), when=termios.TCSANOW)
 
         def copy_terminal_size() -> None:
             try:
@@ -176,17 +176,37 @@ def main() -> int:
         interrupted = True
         termination_signal = exc.signum if isinstance(exc, SessionTerminated) else signal.SIGINT
         if child_pid > 0:
+            # An interactive shell may ignore SIGTERM. Terminate its process
+            # group, wait briefly, then escalate so shutdown cannot hang.
             try:
-                os.kill(child_pid, signal.SIGTERM)
+                os.killpg(child_pid, signal.SIGTERM)
             except ProcessLookupError:
                 pass
-            try:
-                _, wait_status = os.waitpid(child_pid, 0)
-                exit_code = status_code(wait_status)
-            except ChildProcessError:
-                exit_code = 128 + termination_signal
-        else:
-            exit_code = 128 + termination_signal
+
+            deadline = time.monotonic() + 0.5
+            child_reaped = False
+            while time.monotonic() < deadline:
+                try:
+                    waited_pid, _ = os.waitpid(child_pid, os.WNOHANG)
+                except ChildProcessError:
+                    child_reaped = True
+                    break
+                if waited_pid == child_pid:
+                    child_reaped = True
+                    break
+                time.sleep(0.02)
+
+            if not child_reaped:
+                try:
+                    os.killpg(child_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                try:
+                    os.waitpid(child_pid, 0)
+                except ChildProcessError:
+                    pass
+
+        exit_code = 128 + termination_signal
     except OSError as exc:
         failure = f"{type(exc).__name__}: {exc}"
         exit_code = 125
