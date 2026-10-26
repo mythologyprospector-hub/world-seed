@@ -74,7 +74,7 @@ python3 scripts/terminal_session.py
 At the new prompt, type:
 
 ```bash
-printf 'WORLD_SEED_SESSION_SMOKE_TEST\\n'
+printf 'WORLD_SEED_SESSION_SMOKE_TEST\n'
 exit
 ```
 
