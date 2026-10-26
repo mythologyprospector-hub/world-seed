@@ -1,6 +1,6 @@
 # Durable Terminal Journal
 
-**Status:** Initial local-only implementation; this does not yet provide remote handoff or near-real-time sharing.
+**Status:** Local durable capture and explicitly reviewed private handoff are implemented. The publisher maintains a small latest-report index in the private Intake Dock; this is not near-real-time sharing.
 
 ## Purpose
 
@@ -54,8 +54,8 @@ Publish only after review and deliberate confirmation:
 python3 scripts/terminal_handoff.py publish --report /path/to/reviewed-report.json --confirm-publish
 ```
 
-Publishing is restricted to the explicitly allowlisted `mythologyprospector-hub/miracle-depot` repository and verifies that the repository is private at publish time. A private repository is still visible to all authorized collaborators. The raw JSONL journal is never uploaded by this handoff path. Preparation does not upload anything, and publishing requires the explicit confirmation flag.
+Publishing is restricted to the explicitly allowlisted `mythologyprospector-hub/miracle-depot` repository and verifies that the repository is private at publish time. A private repository is still visible to all authorized collaborators. The raw JSONL journal is never uploaded by this handoff path. Preparation does not upload anything, and publishing requires the explicit confirmation flag. After uploading a report, the publisher updates `terminal-handoffs/latest.json` in the private Intake Dock with only report metadata, its URL, commit, and digest—never terminal output. This stable pointer lets an authorized reader discover the newest handoff without needing its unique URL. If the report upload succeeds but the index update fails, the command reports that partial outcome so the report is not mistaken for missing.
 
 ## Acceptance
 
-The local journal is accepted only when tests verify stdout/stderr capture, successful and failing commands, exact exit-code preservation, incremental persistence, append/reopen behavior, project separation, file permissions, interruption handling, and journal-write failure behavior. This local journal alone does not let an assistant remotely inspect the terminal. Remote handoff and near-real-time snapshots are separate, explicitly bounded steps.
+The local journal is accepted only when tests verify stdout/stderr capture, successful and failing commands, exact exit-code preservation, incremental persistence, append/reopen behavior, project separation, file permissions, interruption handling, and journal-write failure behavior. The local journal alone does not let an assistant remotely inspect the terminal. The reviewed handoff provides a bounded, explicit remote path; it is not live streaming. The latest index is discovery metadata, not a substitute for reviewing the report itself.
