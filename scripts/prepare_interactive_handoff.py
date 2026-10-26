@@ -96,11 +96,36 @@ def prepare(args: argparse.Namespace) -> int:
         if not matches or source is None:
             raise ValueError("exact session ID was not found in the interactive journal")
         matches.sort(key=lambda r: int(r.get("sequence", 0)) if str(r.get("sequence", "0")).isdigit() else 0)
-        started = next((r for r in matches if r.get("event") == "session_started"), None)
-        finished = next((r for r in reversed(matches) if r.get("event") == "session_finished"), None)
-        if started is None:
-            raise ValueError("selected session has no session_started event")
-        raw_output = "".join(str(r.get("text", "")) for r in matches if r.get("event") == "terminal_output")
+        starts = [r for r in matches if r.get("event") == "session_started"]
+        finishes = [r for r in matches if r.get("event") == "session_finished"]
+        if len(starts) != 1:
+            raise ValueError("selected session must have exactly one session_started event")
+        if len(finishes) > 1:
+            raise ValueError("selected session has duplicate session_finished events")
+        started = starts[0]
+        finished = finishes[0] if finishes else None
+        raw_output = "".join(
+            str(r.get("text", ""))
+            for r in matches
+            if r.get("event") == "terminal_output"
+        )
+        captured_bytes = raw_output.encode("utf-8")
+        if finished is not None:
+            expected_bytes = finished.get("output_bytes")
+            expected_hash = finished.get("output_sha256")
+            if not isinstance(expected_bytes, int) or isinstance(expected_bytes, bool) or expected_bytes < 0:
+                raise ValueError("finished session has missing or invalid output_bytes integrity evidence")
+            if not isinstance(expected_hash, str) or re.fullmatch(r"[0-9a-fA-F]{64}", expected_hash) is None:
+                raise ValueError("finished session has missing or invalid output_sha256 integrity evidence")
+            if len(captured_bytes) != expected_bytes:
+                raise ValueError(
+                    "captured output byte count does not match session_finished.output_bytes"
+                )
+            actual_hash = hashlib.sha256(captured_bytes).hexdigest()
+            if actual_hash.lower() != expected_hash.lower():
+                raise ValueError(
+                    "captured output SHA-256 does not match session_finished.output_sha256"
+                )
         readable_output = readable_terminal_text(raw_output)
         safe_output, redactions_applied = redact(readable_output)
         safe_output, truncated = bounded_text(safe_output, args.max_output_bytes)
@@ -119,6 +144,24 @@ def prepare(args: argparse.Namespace) -> int:
             "finished_at": finished.get("recorded_at") if finished else None,
             "exit_code": finished.get("exit_code") if finished else None,
             "completion": "recorded" if finished else "incomplete_or_unrecorded",
+            "command_outcome": (
+                "unknown" if finished is None
+                else "interrupted" if finished.get("interrupted") is True
+                else "succeeded" if (
+                    finished.get("exit_code") == 0
+                    and not isinstance(finished.get("exit_code"), bool)
+                    and finished.get("error") is None
+                    and finished.get("interrupted") is False
+                )
+                else "failed" if (
+                    isinstance(finished.get("exit_code"), int)
+                    and not isinstance(finished.get("exit_code"), bool)
+                    and finished.get("exit_code") != 0
+                    and finished.get("interrupted") is False
+                    and finished.get("error") is None
+                )
+                else "unknown"
+            ),
             "stdout": safe_output,
             "stderr": "",
             "truncated": truncated,
@@ -143,7 +186,11 @@ def prepare(args: argparse.Namespace) -> int:
             stream.flush()
             os.fsync(stream.fileno())
         print(f"[interactive-handoff] prepared: {path}")
-        print(f"[interactive-handoff] exit_code: {report['exit_code']}; completion: {report['completion']}; bytes: {len(encoded)}")
+        print(
+            f"[interactive-handoff] exit_code: {report['exit_code']}; "
+            f"completion: {report['completion']}; "
+            f"command_outcome: {report['command_outcome']}; bytes: {len(encoded)}"
+        )
         print(f"[interactive-handoff] redactions: {'applied' if redactions_applied else 'none detected'}; truncated: {truncated}")
         print("[interactive-handoff] NOT uploaded; inspect the report before publishing")
         return 0

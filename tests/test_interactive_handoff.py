@@ -1,4 +1,5 @@
 """Tests for explicit, local-only interactive terminal handoff preparation."""
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -28,7 +29,9 @@ class InteractiveHandoffTests(unittest.TestCase):
              "recorded_at": "2026-10-26T10:00:01+00:00", "text": output},
             {"session_id": SESSION, "event": "session_finished", "sequence": 2,
              "recorded_at": "2026-10-26T10:00:02+00:00", "exit_code": 0,
-             "interrupted": False, "error": None},
+             "interrupted": False, "error": None,
+             "output_bytes": len(output.encode("utf-8")),
+             "output_sha256": hashlib.sha256(output.encode("utf-8")).hexdigest()},
         ]
         path.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
         return path
@@ -51,7 +54,87 @@ class InteractiveHandoffTests(unittest.TestCase):
             self.assertTrue(report["redactions_applied"])
             self.assertEqual(report["exit_code"], 0)
             self.assertEqual(report["completion"], "recorded")
+            self.assertEqual(report["command_outcome"], "succeeded")
             self.assertIsNone(report["repository"])
+
+    def test_reports_failed_interrupted_and_unknown_outcomes(self) -> None:
+        cases = [
+            ("failed", {"exit_code": 1, "interrupted": False, "error": None}, True),
+            ("unknown", {"exit_code": 1, "interrupted": None, "error": None}, True),
+            ("unknown", {"exit_code": 1, "interrupted": False, "error": "session error"}, True),
+            ("interrupted", {"exit_code": 130, "interrupted": True, "error": None}, True),
+            ("unknown", {"exit_code": 0, "interrupted": None, "error": None}, True),
+            ("unknown", {"exit_code": 0, "interrupted": False, "error": "session error"}, True),
+            ("unknown", None, False),
+        ]
+        for expected, finish_updates, has_finish in cases:
+            with self.subTest(expected=expected), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                journal = self.fixture(root, "synthetic output\\n")
+                records = [json.loads(line) for line in journal.read_text().splitlines()]
+                if has_finish:
+                    records[-1].update(finish_updates)
+                else:
+                    records = records[:-1]
+                journal.write_text(
+                    "".join(json.dumps(record) + "\n" for record in records),
+                    encoding="utf-8",
+                )
+                outbox = root / "outbox"
+                result = self.run_cli(
+                    "--session", SESSION, "--journal-root", str(root),
+                    "--outbox", str(outbox),
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                report = json.loads(
+                    (outbox / f"interactive-handoff-{SESSION}.json").read_text()
+                )
+                self.assertEqual(report["command_outcome"], expected)
+                self.assertEqual(
+                    report["completion"],
+                    "recorded" if has_finish else "incomplete_or_unrecorded",
+                )
+
+    def test_rejects_finished_session_with_wrong_output_byte_count(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            journal = self.fixture(root, "synthetic output\\n")
+            records = [json.loads(line) for line in journal.read_text().splitlines()]
+            records[-1]["output_bytes"] += 1
+            journal.write_text("".join(json.dumps(r) + "\n" for r in records))
+            outbox = root / "outbox"
+            result = self.run_cli("--session", SESSION, "--journal-root", str(root),
+                                  "--outbox", str(outbox))
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("byte count", result.stderr)
+            self.assertFalse((outbox / f"interactive-handoff-{SESSION}.json").exists())
+
+    def test_rejects_finished_session_with_wrong_output_hash(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            journal = self.fixture(root, "synthetic output\\n")
+            records = [json.loads(line) for line in journal.read_text().splitlines()]
+            records[-1]["output_sha256"] = "0" * 64
+            journal.write_text("".join(json.dumps(r) + "\n" for r in records))
+            outbox = root / "outbox"
+            result = self.run_cli("--session", SESSION, "--journal-root", str(root),
+                                  "--outbox", str(outbox))
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("SHA-256", result.stderr)
+            self.assertFalse((outbox / f"interactive-handoff-{SESSION}.json").exists())
+
+    def test_rejects_finished_session_without_integrity_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            journal = self.fixture(root, "synthetic output\\n")
+            records = [json.loads(line) for line in journal.read_text().splitlines()]
+            records[-1].pop("output_bytes")
+            records[-1].pop("output_sha256")
+            journal.write_text("".join(json.dumps(r) + "\n" for r in records))
+            result = self.run_cli("--session", SESSION, "--journal-root", str(root),
+                                  "--outbox", str(root / "outbox"))
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("integrity evidence", result.stderr)
 
     def test_requires_exact_existing_session(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
