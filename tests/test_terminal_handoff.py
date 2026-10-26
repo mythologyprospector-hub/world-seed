@@ -214,7 +214,7 @@ class TerminalHandoffTests(unittest.TestCase):
             journal_root = root / "journals"
             marker = "WORLD_SEED_PTY_HANDOFF_TEST"
             _, session_id = self.make_interactive_journal(
-                journal_root, output=f"$ printf '{marker}\\\\n'\\r\\n{marker}\\r\\n"
+                journal_root, output=f"{marker}\r\n"
             )
             outbox = root / "outbox"
             result = self.run_cli(
@@ -237,7 +237,7 @@ class TerminalHandoffTests(unittest.TestCase):
             root = Path(temp)
             journal_root = root / "journals"
             _, session_id = self.make_interactive_journal(
-                journal_root, output="synthetic failure marker\\r\\n", exit_code=7
+                journal_root, output="synthetic failure marker\r\n", exit_code=7
             )
             result = self.run_cli(
                 "prepare", "--session", session_id, "--project", "world-seed",
