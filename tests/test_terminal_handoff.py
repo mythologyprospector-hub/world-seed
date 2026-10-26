@@ -186,5 +186,68 @@ class TerminalHandoffTests(unittest.TestCase):
         self.assertIn("may already exist", result.stderr)
         self.assertFalse(report.with_suffix(".receipt.json").exists())
 
+
+    def make_interactive_journal(self, root: Path, *, output: str, exit_code: int = 0) -> tuple[Path, str]:
+        lane = root / "interactive"
+        lane.mkdir(parents=True)
+        journal = lane / "2026-10-26.jsonl"
+        sid = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+        records = [
+            {"schema_version": 3, "session_id": sid, "event_source": "pty_session",
+             "cwd": "/home/tester/projects/world-seed", "shell": "/bin/bash",
+             "event": "session_started", "sequence": 0, "recorded_at": "2026-10-26T11:00:00+00:00"},
+            {"schema_version": 3, "session_id": sid, "event_source": "pty_session",
+             "cwd": "/home/tester/projects/world-seed", "shell": "/bin/bash",
+             "event": "terminal_output", "sequence": 1, "recorded_at": "2026-10-26T11:00:01+00:00",
+             "text": output},
+            {"schema_version": 3, "session_id": sid, "event_source": "pty_session",
+             "cwd": "/home/tester/projects/world-seed", "shell": "/bin/bash",
+             "event": "session_finished", "sequence": 2, "recorded_at": "2026-10-26T11:00:02+00:00",
+             "exit_code": exit_code, "interrupted": False, "error": None},
+        ]
+        journal.write_text("".join(json.dumps(record) + "\\n" for record in records), encoding="utf-8")
+        return journal, sid
+
+    def test_prepare_interactive_pty_session_without_upload(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            journal_root = root / "journals"
+            marker = "WORLD_SEED_PTY_HANDOFF_TEST"
+            _, session_id = self.make_interactive_journal(
+                journal_root, output=f"$ printf '{marker}\\\\n'\\r\\n{marker}\\r\\n"
+            )
+            outbox = root / "outbox"
+            result = self.run_cli(
+                "prepare", "--session", session_id, "--project", "world-seed",
+                "--journal-root", str(journal_root), "--outbox", str(outbox),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("NOT uploaded", result.stdout)
+            report_path = next(outbox.glob("*.json"))
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report["session_id"], session_id)
+            self.assertEqual(report["session_kind"], "interactive_pty")
+            self.assertEqual(report["exit_code"], 0)
+            self.assertEqual(report["completion"], "recorded")
+            self.assertIn(marker, report["stdout"])
+            self.assertFalse(report_path.with_suffix(".receipt.json").exists())
+
+    def test_prepare_interactive_pty_preserves_nonzero_exit_code(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            journal_root = root / "journals"
+            _, session_id = self.make_interactive_journal(
+                journal_root, output="synthetic failure marker\\r\\n", exit_code=7
+            )
+            result = self.run_cli(
+                "prepare", "--session", session_id, "--project", "world-seed",
+                "--journal-root", str(journal_root), "--outbox", str(root / "outbox"),
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            report = json.loads(next((root / "outbox").glob("*.json")).read_text(encoding="utf-8"))
+            self.assertEqual(report["exit_code"], 7)
+            self.assertEqual(report["session_kind"], "interactive_pty")
+
+
 if __name__ == "__main__":
     unittest.main()
