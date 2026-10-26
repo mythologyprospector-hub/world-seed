@@ -12,6 +12,7 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 from typing import Any
 
@@ -25,6 +26,52 @@ from terminal_handoff import (
     redact,
     utc_now,
 )
+
+# Readline highlights pasted input in reverse video before submitting it. The
+# PTY then echoes the accepted command normally, so retaining both creates
+# duplicate commands in the handoff. Drop those highlighted paste previews.
+_PASTED_INPUT_ECHO_RE = re.compile(r"\x1B\[7m.*?\x1B\[27m", re.DOTALL)
+
+# Remove terminal display controls, while retaining printable text and line breaks.
+# This is a readable transcript, not a perfect reconstruction of the terminal screen.
+_ANSI_CONTROL_RE = re.compile(
+    r"\x1B(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1B\\)|[@-_])"
+)
+
+
+def readable_terminal_text(value: str) -> str:
+    value = _PASTED_INPUT_ECHO_RE.sub("", value)
+    value = _ANSI_CONTROL_RE.sub("", value)
+    value = value.replace("\r\n", "\n").replace("\r", "\n")
+    return "".join(ch for ch in value if ch in "\n\t" or ord(ch) >= 32 and ord(ch) != 127)
+
+
+def git_context(cwd: str) -> tuple[str | None, str | None, bool | None]:
+    """Return repository name, branch, and tracked-tree dirty state for cwd."""
+    if not cwd or not Path(cwd).is_dir():
+        return None, None, None
+    try:
+        root = subprocess.run(
+            ["git", "-C", cwd, "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        if root.returncode:
+            return None, None, None
+        repository_root = Path(root.stdout.strip())
+        branch_result = subprocess.run(
+            ["git", "-C", cwd, "branch", "--show-current"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        status = subprocess.run(
+            ["git", "-C", cwd, "status", "--porcelain", "--untracked-files=no"],
+            capture_output=True, text=True, timeout=3, check=False,
+        )
+        branch = branch_result.stdout.strip() if branch_result.returncode == 0 else ""
+        dirty = status.stdout.strip() != "" if status.returncode == 0 else None
+        return repository_root.name, branch or None, dirty
+    except (OSError, subprocess.TimeoutExpired):
+        return None, None, None
+
 
 def prepare(args: argparse.Namespace) -> int:
     root = args.journal_root.expanduser() / "interactive"
@@ -40,7 +87,8 @@ def prepare(args: argparse.Namespace) -> int:
                         record = json.loads(line)
                     except json.JSONDecodeError as exc:
                         raise ValueError(
-                            f"malformed JSONL record in {path.name}; refusing to prepare a potentially incomplete handoff"
+                            f"malformed JSONL record in {path}; "
+                            "refusing to prepare a potentially incomplete handoff"
                         ) from exc
                     if isinstance(record, dict) and record.get("session_id") == args.session:
                         matches.append(record)
@@ -53,17 +101,19 @@ def prepare(args: argparse.Namespace) -> int:
         if started is None:
             raise ValueError("selected session has no session_started event")
         raw_output = "".join(str(r.get("text", "")) for r in matches if r.get("event") == "terminal_output")
-        safe_output, redactions_applied = redact(raw_output)
+        readable_output = readable_terminal_text(raw_output)
+        safe_output, redactions_applied = redact(readable_output)
         safe_output, truncated = bounded_text(safe_output, args.max_output_bytes)
         cwd = str(started.get("cwd") or "")
+        repository, branch, dirty = git_context(cwd)
         report = {
             "handoff_schema": "world-seed-terminal-output-handoff/v1",
             "created_at": utc_now(),
-            "project": "interactive-terminal",
+            "project": repository or "interactive-terminal",
             "session_id": args.session,
-            "repository": Path(cwd).name or None,
-            "branch": None,
-            "working_tree_dirty_at_start": None,
+            "repository": repository,
+            "branch": branch,
+            "working_tree_dirty_at_start": dirty,
             "command": "interactive shell session (PTY)",
             "started_at": started.get("recorded_at"),
             "finished_at": finished.get("recorded_at") if finished else None,

@@ -51,7 +51,7 @@ class InteractiveHandoffTests(unittest.TestCase):
             self.assertTrue(report["redactions_applied"])
             self.assertEqual(report["exit_code"], 0)
             self.assertEqual(report["completion"], "recorded")
-            self.assertEqual(report["repository"], "project")
+            self.assertIsNone(report["repository"])
 
     def test_requires_exact_existing_session(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -74,18 +74,22 @@ class InteractiveHandoffTests(unittest.TestCase):
             self.assertTrue(report["truncated"])
             self.assertLessEqual(len(report["stdout"].encode()), 1024)
 
+
     def test_rejects_malformed_journal_instead_of_claiming_zero_warnings(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             journal = self.fixture(root, "synthetic output\\n")
             with journal.open("a", encoding="utf-8") as stream:
-                stream.write("{malformed json\\n")
+                stream.write("{malformed JSON\\n")
             outbox = root / "outbox"
-            result = self.run_cli("--session", SESSION, "--journal-root", str(root),
-                                  "--outbox", str(outbox))
+            result = self.run_cli(
+                "--session", SESSION,
+                "--journal-root", str(root),
+                "--outbox", str(outbox),
+            )
             self.assertEqual(result.returncode, 2)
             self.assertIn("malformed JSONL record", result.stderr)
-            self.assertFalse(outbox.exists() and list(outbox.glob("*.json")))
+            self.assertFalse((outbox / f"interactive-handoff-{SESSION}.json").exists())
 
 if __name__ == "__main__":
     unittest.main()

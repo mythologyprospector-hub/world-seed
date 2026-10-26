@@ -86,6 +86,19 @@ This gate applies to all terminal tasks, tests, builds, Git operations, setup st
 - Explain in ordinary prose outside the block where to paste it and what success should look like.
 - Follow this rule across terminal tasks, tests, builds, Git commands, and the `world-seed-see` terminal visibility wrapper.
 
+## Python environment and test execution
+
+For the local `world-seed` checkout at `~/projects/world-seed`, reuse the existing project-local `.venv` managed with `uv`. The verified environment uses Python 3.13 and has the development dependencies, including `pytest` and `jsonschema`, installed.
+
+- Begin repository work with `cd ~/projects/world-seed && git pull --ff-only`.
+- Run tests with `uv run --active --python .venv/bin/python pytest -q`.
+- Do **not** run `python3 -m pytest` for this project: it may select the system Python and fail to see dependencies already installed in `.venv`.
+- Do not recreate the environment or reinstall dependencies merely because the Git branch changed. First inspect the existing `.venv` and use it.
+- If a dependency is genuinely missing, reconcile the environment with the repository's declared development requirements using `uv`; do not silently create a second environment.
+- After tests, inspect `git status -sb`. Python may create untracked `__pycache__` directories; recognize these as generated caches rather than source changes.
+
+Most recently verified baseline (2026-10-26): `231 passed, 1 warning, 47 subtests passed` in 8.47 seconds. The warning came from a test intentionally creating a duplicate ZIP entry. Treat this as historical evidence, not a guarantee that future runs will have the same results.
+
 ## Truth standard
 
 Keep these distinct: proposed, implemented, tested, verified, and demonstrated. A plan is not an implementation. A passing test is not proof of a broader claim. Documentation is not capability. Report failures and limitations plainly.

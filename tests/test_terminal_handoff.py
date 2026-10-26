@@ -136,8 +136,11 @@ class TerminalHandoffTests(unittest.TestCase):
                 "import json, sys\n"
                 "if sys.argv[1:3] == ['repo', 'view']:\n"
                 " print('true\\tmain')\n"
+                "elif sys.argv[1] == 'api' and '--method' in sys.argv and sys.argv[sys.argv.index('--method') + 1] == 'PUT':\n"
+                " url = 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/latest.json' if 'latest.json' in ' '.join(sys.argv) else 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'\n"
+                " print(json.dumps({'content': {'html_url': url}, 'commit': {'sha': 'a' * 40}}))\n"
                 "elif sys.argv[1] == 'api':\n"
-                " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
+                " print('Not Found (HTTP 404)', file=sys.stderr); sys.exit(1)\n"
                 "else:\n"
                 " sys.exit(2)\n",
                 encoding="utf-8",
@@ -152,6 +155,8 @@ class TerminalHandoffTests(unittest.TestCase):
             receipt = json.loads(report.with_suffix(".receipt.json").read_text(encoding="utf-8"))
             self.assertEqual(receipt["commit_sha"], "a" * 40)
             self.assertEqual(receipt["repository"], "mythologyprospector-hub/miracle-depot")
+            self.assertIn("latest index:", result.stdout)
+            self.assertIn("terminal-handoffs/latest.json", result.stdout)
 
 if __name__ == "__main__":
     unittest.main()
