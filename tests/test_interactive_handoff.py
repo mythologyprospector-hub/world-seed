@@ -51,7 +51,7 @@ class InteractiveHandoffTests(unittest.TestCase):
             self.assertTrue(report["redactions_applied"])
             self.assertEqual(report["exit_code"], 0)
             self.assertEqual(report["completion"], "recorded")
-            self.assertEqual(report["repository"], "project")
+            self.assertIsNone(report["repository"])
 
     def test_requires_exact_existing_session(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
