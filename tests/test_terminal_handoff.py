@@ -138,10 +138,15 @@ class TerminalHandoffTests(unittest.TestCase):
             "args = sys.argv[1:]\n"
             "if args[:2] == ['repo', 'view']:\n"
             " print('true\\tmain')\n"
+            "elif args and args[0] == 'api' and '--jq' in args:\n"
+            " print('null')\n"
             "elif args and args[0] == 'api' and '--method' in args and 'PUT' in args:\n"
-            " encoded = next(a.split('=', 1)[1] for a in args if a.startswith('content='))\n"
-            " pathlib.Path(os.environ['FAKE_GH_STORE']).write_bytes(base64.b64decode(encoded))\n"
-            " print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
+            " if 'terminal-handoffs/latest.json' in args[1]:\n"
+            "  print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/latest.json'}, 'commit': {'sha': 'b' * 40}}))\n"
+            " else:\n"
+            "  encoded = next(a.split('=', 1)[1] for a in args if a.startswith('content='))\n"
+            "  pathlib.Path(os.environ['FAKE_GH_STORE']).write_bytes(base64.b64decode(encoded))\n"
+            "  print(json.dumps({'content': {'html_url': 'https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-handoffs/report.json'}, 'commit': {'sha': 'a' * 40}}))\n"
             "elif args and args[0] == 'api':\n"
             " if os.environ.get('FAKE_GH_READBACK_MODE') == 'failure':\n"
             "  print('simulated read-back failure', file=sys.stderr); sys.exit(1)\n"
@@ -165,6 +170,8 @@ class TerminalHandoffTests(unittest.TestCase):
         result, report, _ = self._run_publish_with_readback("match")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("uploaded:", result.stdout)
+        self.assertIn("latest index:", result.stdout)
+        self.assertIn("terminal-handoffs/latest.json", result.stdout)
         receipt_path = report.with_suffix(".receipt.json")
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
         self.assertEqual(receipt["commit_sha"], "a" * 40)

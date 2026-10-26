@@ -271,7 +271,6 @@ def publish(args: argparse.Namespace) -> int:
         url = response.get("content", {}).get("html_url")
         commit = response.get("commit", {}).get("sha")
         if not url or not commit:
-        if not url or not commit:
             raise ValueError("GitHub response lacked a file URL or commit SHA; inspect repository before retrying")
         report_sha256 = hashlib.sha256(payload).hexdigest()
         # Verify the uploaded bytes independently before recording success.
