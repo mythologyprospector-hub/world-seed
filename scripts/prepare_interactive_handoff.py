@@ -27,6 +27,11 @@ from terminal_handoff import (
     utc_now,
 )
 
+# Readline highlights pasted input in reverse video before submitting it. The
+# PTY then echoes the accepted command normally, so retaining both creates
+# duplicate commands in the handoff. Drop those highlighted paste previews.
+_PASTED_INPUT_ECHO_RE = re.compile(r"\x1B\[7m.*?\x1B\[27m", re.DOTALL)
+
 # Remove terminal display controls, while retaining printable text and line breaks.
 # This is a readable transcript, not a perfect reconstruction of the terminal screen.
 _ANSI_CONTROL_RE = re.compile(
@@ -35,6 +40,7 @@ _ANSI_CONTROL_RE = re.compile(
 
 
 def readable_terminal_text(value: str) -> str:
+    value = _PASTED_INPUT_ECHO_RE.sub("", value)
     value = _ANSI_CONTROL_RE.sub("", value)
     value = value.replace("\r\n", "\n").replace("\r", "\n")
     return "".join(ch for ch in value if ch in "\n\t" or ord(ch) >= 32 and ord(ch) != 127)
