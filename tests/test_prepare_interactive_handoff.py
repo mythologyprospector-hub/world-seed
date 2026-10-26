@@ -13,6 +13,17 @@ def test_readable_terminal_text_removes_ansi_and_normalizes_newlines() -> None:
     assert readable_terminal_text(raw) == "green\nnext\nline"
 
 
+def test_readable_terminal_text_drops_highlighted_paste_preview() -> None:
+    raw = (
+        "\x1b[7mprintf 'CHECK\\n'\x1b[27m\r\n\r"
+        "\x1b[7mpwd\x1b[27m\r\n\r"
+        "printf 'CHECK\\n'\r\nCHECK\r\n"
+    )
+    text = readable_terminal_text(raw)
+    assert text.count("printf 'CHECK") == 1
+    assert text.rstrip().endswith("CHECK")
+
+
 def test_readable_terminal_text_removes_nonprinting_controls() -> None:
     assert readable_terminal_text("hello\x00world\x7f!") == "helloworld!"
 
