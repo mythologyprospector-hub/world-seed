@@ -63,6 +63,24 @@ This verifies that the selected GNOME Terminal profile launched the journaled sh
 - This is a shell session, not a replacement for terminal emulator features. Test terminal-specific workflows before relying on it for long-running work.
 - End-to-end native integration is not complete until an ordinary enrolled World Seed terminal session, intermediate evidence, handoff/readback, and failure recovery are verified together.
 
+## Reviewed handoff from an interactive session
+
+The interactive PTY journal has a different event format from command journals. To prepare a report from a specific interactive session, use the exact session UUID from its local JSONL records:
+
+```bash
+python3 scripts/prepare_interactive_handoff.py --session SESSION-UUID
+```
+
+This reads only the `interactive/*.jsonl` lane, selects only the specified session, bounds and heuristically redacts its captured terminal output, and creates a mode-`0600` report in the private outbox. It never uploads. Inspect the report manually; heuristic redaction can miss sensitive material.
+
+Only after review, publication remains a separate explicit action through the existing handoff command:
+
+```bash
+python3 scripts/terminal_handoff.py publish --report /absolute/path/to/reviewed-report.json --confirm-publish
+```
+
+Use the actual report path printed by the prepare command. Publishing verifies the approved destination is private and writes a receipt. After publication, retrieve the exact report from Miracle Depot and verify its contents before treating remote visibility as accepted. Never publish raw journals.
+
 ## Safe smoke test
 
 Use a disposable terminal and synthetic text only:
