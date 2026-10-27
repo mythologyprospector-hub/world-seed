@@ -130,6 +130,54 @@ class WorldSeedSeeTests(unittest.TestCase):
         self.assertIn("Git working tree:", final_report)
         self.assertIn("SYNTHETIC_OK", out.buffer.getvalue().decode())
 
+    def test_upload_sends_json_body_via_stdin_without_payload_in_arguments(self):
+            body = "private synthetic report body"
+            response = subprocess.CompletedProcess([], 0, json.dumps({"content": {"sha": "blob-sha"}}), "")
+            with patch.object(MODULE, "gh", return_value=response) as gh:
+                result = MODULE.upload("terminal-live/report.txt", body, "old-sha", "main")
+
+            self.assertEqual(result, "blob-sha")
+            args = gh.call_args.args[0]
+            self.assertEqual(args, [
+                "api", "--method", "PUT",
+                f"repos/{MODULE.REPO}/contents/terminal-live/report.txt",
+                "--input", "-",
+            ])
+            self.assertNotIn(body, " ".join(args))
+            self.assertNotIn("content=", " ".join(args))
+            request = json.loads(gh.call_args.kwargs["input_text"])
+            self.assertEqual(request, {
+                "message": "Refresh live terminal snapshot",
+                "content": MODULE.base64.b64encode(body.encode()).decode("ascii"),
+                "branch": "main",
+                "sha": "old-sha",
+            })
+
+    def test_gh_forwards_input_text_to_process_stdin(self):
+            request_body = '{"content":"synthetic"}'
+            with patch.object(MODULE.subprocess, "run") as run:
+                MODULE.gh(["api", "--input", "-"], input_text=request_body)
+            run.assert_called_once_with(
+                ["gh", "api", "--input", "-"],
+                input=request_body,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+
+    def test_upload_diagnostic_does_not_echo_payload_or_credentials(self):
+            sensitive_text = "report-body-secret ghp_abcdefghijklmnopqrstuvwxyz123456"
+            error = subprocess.CalledProcessError(
+                1, ["gh", "api", "--input", "-"], stderr=sensitive_text,
+            )
+            diagnostic = MODULE.safe_diagnostic(error, "Snapshot upload")
+            self.assertIn("exit status 1", diagnostic)
+            self.assertNotIn("report-body-secret", diagnostic)
+            self.assertNotIn("ghp_", diagnostic)
+            self.assertNotIn(sensitive_text, diagnostic)
+            launch_error = OSError(f"failed with {sensitive_text}")
+            self.assertNotIn(sensitive_text, MODULE.safe_diagnostic(launch_error, "GitHub CLI access check"))
+
 
 if __name__ == "__main__":
     unittest.main()
