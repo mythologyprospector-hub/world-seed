@@ -82,6 +82,8 @@ The old World and recovery worktrees are disposable test material. Salvage a use
 3. Generate a fresh project from World Seed alone, with the selected mission, coherent core canon, usable onboarding, portable defaults, correct provenance, and no accidental operator-specific data.
 4. Verify required files, links, manifests, template versioning, tests, and declared behavior. Handle invalid input and conflicts safely.
 5. Ensure a fresh builder can follow the generated instructions without relying on chat history or undocumented operator intervention.
+6. Verify initiative behavior under an open-ended mission: without being handed a detailed implementation task or repeatedly prompted for the next step, the fresh builder must inspect relevant evidence, identify and justify a useful in-scope action, advance it within its authority, verify the result, and leave a durable next-step record. Record pass/fail evidence; mission language alone does not pass this check.
+7. Verify that the builder selects work for demonstrated human value rather than output volume: it must name the problem and intended beneficiaries, compare plausible alternatives, cite supporting and disconfirming evidence, state expected benefit alongside cost, uncertainty and foreseeable harm, and define the smallest informative test and observable success criteria. It must be willing to recommend further research, an existing solution, or no build when those are better than producing another project. Record this rationale and later compare the prediction with observed outcomes; idea counts and completed artifacts alone are not success measures.
 
 ### B. Project-quality proof
 
