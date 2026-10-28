@@ -120,6 +120,19 @@ The trial is worth advancing only if it produces all of the following:
 
 **Stop rule:** If the county and providers already maintain accurate, timely operational status and the remaining problem is primarily transport, staffing, funding, or facility capacity, do not build a directory or adapter. Redirect the analysis toward the demonstrated constraint. If no one can maintain accurate status, do not create a false promise of real-time certainty.
 
+## Human agency, privacy, and dignity constraints
+
+The goal is to help people make their own informed choices and help willing local responders improve access—not to monitor, classify, or direct residents.
+
+- Use public facility-level facts and aggregate, non-identifying evidence wherever possible. Do not collect names, individual locations, health status, immigration status, disability details, or other person-level data for this audit.
+- Do not create a registry of people presumed vulnerable, track who visits a cooling site, or publish maps that expose identifiable individuals or households. A facility inventory is not a license to track its users.
+- Do not treat a map, score, eligibility label, or automated recommendation as an authority over a person's choices. Any eventual public information should clearly state its source, verification time, limits, and alternatives so people can decide for themselves.
+- Participation by providers or community members should be voluntary and purpose-transparent. Ask only for information needed to resolve the operational question; do not imply that a person or organization must participate.
+- Keep unknowns visible rather than inventing certainty. Incorrectly declaring a site open, accessible, or available can put people at risk; publish operational claims only with appropriate confirmation and a clear update owner.
+- If the actual constraint is transport, staffing, affordability, or capacity, do not compensate by collecting more data about people. Investigate the service constraint and preserve residents' choice and dignity.
+
+These safeguards apply even if later analysis uses maps or other technical tools. Any proposal that requires intrusive tracking, coercive routing, or restricting ordinary freedom fails the trial's human-flourishing boundary and must be replaced or rejected.
+
 ## What would justify a bridge?
 
 A small bridge becomes reasonable only if the audit shows that authoritative status exists in a usable source but is stranded in a format or workflow that prevents a valuable action. Then compare, in order:
