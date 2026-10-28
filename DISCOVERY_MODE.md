@@ -65,3 +65,9 @@ A report or plan alone does not prove a real-world solution. A successful first 
 ## Implementation rule
 
 Start as an inspectable operating workflow using existing tools and durable project records. Do not implement a persistent service before the workflow has demonstrated that it can find and validate a worthwhile opportunity. If the trial reveals a repeatable failure, make that specific failure testable and propose the smallest fix. The project-quality gate remains important; Door Two must not become an excuse to add unrelated machinery or claim the factory is proven.
+
+## First bounded trial and reusable record
+
+- Use [the gap-closure record template](discovery/GAP_CLOSURE_RECORD_TEMPLATE.md) to preserve the problem, evidence, causal hypothesis, alternatives, smallest informative test, decision, and learning. The template is deliberately medium-neutral: the output may be code, a manual, an experiment, a coordination change, a bridge, or no new artifact.
+- [Door Two Trial: Cooling Access Is More Than a Map](discovery/trials/2026-10-cooling-access-gap.md) is the first worked example. It is a preliminary evidence review, not a claim that a local service gap has been confirmed. Its next step is human verification of operational facts; no outreach has been performed and no software is proposed yet.
+- Keep the record format simple until repeated cases show which fields and checks genuinely improve decisions. A machine-readable schema, scoring engine, or automated runner is a later hypothesis, not a prerequisite.
