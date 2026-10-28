@@ -25,6 +25,7 @@ It is deliberately **mission-portable and operator-aware**:
 - [WORLD_SEED_SEE.md](WORLD_SEED_SEE.md) and [scripts/world_seed_see.py](scripts/world_seed_see.py) — explicitly share bounded, heuristically redacted terminal snapshots to the private Intake Dock about every 10 seconds; not a live chat connection.
 
 - [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
+- [DISCOVERY_MODE.md](DISCOVERY_MODE.md) — approved design for user-directed Builder Mode and mission-led, cross-domain Discovery Mode; strategic direction only, not an implemented capability.
 - [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
 - [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
 - [CONSTITUTION.md](CONSTITUTION.md) — governance, leadership, Rule #1, Rule #2, authority, and safeguards.
