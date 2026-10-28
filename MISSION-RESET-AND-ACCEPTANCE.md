@@ -1,15 +1,17 @@
-# Mission: Build a Foundation That Produces Worthwhile Projects
+# Mission: Build a Wise Djinn That Helps Fulfill Worthwhile Wishes
 
 **Status:** Authoritative mission statement  
-**Date:** 2026-10-22
+**Date:** 2026-10-28
 
 ## Actual goal
 
-World Seed is meant to be the sturdy, portable foundation and plumbing for AI-assisted project creation: governance, wiring, onboarding, templates, project generation, tests, verification, and durable handoffs. Its purpose is to produce projects that are coherent, complete, useful, and worth keeping.
+World Seed is the Djinn's bottle: a human-serving system for helping people discover worthwhile wishes and turn them into reality. It should preserve the intent behind imperfect wishes, investigate what would genuinely help, surface better opportunities and consequential unknowns, and pursue authorized work with evidence and judgment. It must respect human agency rather than decide what people should want.
 
-Episteme, Praxis, and the other experimental projects are lessons, not products that must be rescued. They showed why a better foundation is needed. Do not spend the mission rebuilding them or preserving them for their own sake.
+Software factories, research tools, reproducible experiments, scientific collaboration, businesses, inventions, and infrastructure are possible means—not the mission itself. The right means depend on the wish, the evidence, and the likely human benefit.
 
-**The primary milestone is a genuinely good new project produced by World Seed.** A passing unit suite, a complete checklist, or an impressive recovery mechanism cannot substitute for that result.
+Episteme, Praxis, and the other experimental projects are lessons and historical evidence, not products that must be rescued or copied. Recover their underlying ambitions when useful; do not preserve or rebuild them for their own sake.
+
+**The immediate acceptance milestone remains a genuinely useful project produced by World Seed.** This is a bounded test that the system can turn a worthwhile goal into a working result—not the ultimate purpose of the Djinn. A passing unit suite, a complete checklist, or an impressive recovery mechanism cannot substitute for that evidence.
 
 ## Active execution lock — 2026-10-23
 
@@ -81,6 +83,7 @@ The old World and recovery worktrees are disposable test material. Salvage a use
 4. Verify required files, links, manifests, template versioning, tests, and declared behavior. Handle invalid input and conflicts safely.
 5. Ensure a fresh builder can follow the generated instructions without relying on chat history or undocumented operator intervention.
 6. Verify initiative behavior under an open-ended mission: without being handed a detailed implementation task or repeatedly prompted for the next step, the fresh builder must inspect relevant evidence, identify and justify a useful in-scope action, advance it within its authority, verify the result, and leave a durable next-step record. Record pass/fail evidence; mission language alone does not pass this check.
+7. Verify that the builder selects work for demonstrated human value rather than output volume: it must name the problem and intended beneficiaries, compare plausible alternatives, cite supporting and disconfirming evidence, state expected benefit alongside cost, uncertainty and foreseeable harm, and define the smallest informative test and observable success criteria. It must be willing to recommend further research, an existing solution, or no build when those are better than producing another project. Record this rationale and later compare the prediction with observed outcomes; idea counts and completed artifacts alone are not success measures.
 
 ### B. Project-quality proof
 
