@@ -38,7 +38,7 @@ This is a suggested verification order, not a claim that any organization has ag
 
 ## Existing referral and transportation pathway to verify
 
-Ohio 211 states that its network serves all 88 counties, provides free and confidential 24/7 navigation, and can connect callers to community services, including transportation and utility assistance. Its network page identifies United Way of Greater Cleveland as the regional center serving Lawrence County. That provider's public resource-search page is branded as a Cuyahoga County directory; public pages do not establish whether Lawrence County cooling records are already fully represented in that search. This matters because the Greater Cleveland provider's statewide-expansion announcement describes Lawrence County service as a recent expansion. Verify the local coverage and data-maintenance arrangement rather than assuming either a gap or completeness. Ohio public-health guidance specifically points people seeking cooling-center help to 2-1-1. [2][4][6]
+Ohio 211 says its 13 regional centers use a statewide database of public and private health and human-service agencies. Its public network and expansion pages confirm statewide coverage and identify United Way of Greater Cleveland as the provider extending service to Lawrence County. The provider's public resource-search page is branded for Cuyahoga County, but that branding alone does not show whether Lawrence County records are absent; the statewide system may be accessed through a separate navigator workflow. The real question is narrower: are the local cooling resources present, accurate, and operationally useful after the recent expansion? Ohio public-health guidance specifically points people seeking cooling-center help to 2-1-1. [2][4][6][7]
 
 This is a process question for the provider, not a reason to create a competing directory. No 211 call or transport inquiry has been made.
 
@@ -46,8 +46,8 @@ The Community Action Organization's public transportation page describes Lawrenc
 
 Questions for the authorized 211/local referral role:
 
-- Which regional center currently handles Lawrence County, and what county-specific resource database or workflow does it use?
-- Are Lawrence County cooling sites and emergency-management contacts represented in the public directory, the navigator-only system, both, or neither?
+- Following the recent expansion, are Lawrence County cooling sites and emergency-management contacts present and current in the statewide resource database used by navigators?
+- What process adds or updates Lawrence County resources, and who can submit corrections?
 - For a Lawrence County cooling-related request, what current source do navigators consult?
 - Can the referral distinguish a facility's normal public hours from heat-event activation and confirmed availability?
 - If a site cannot be reached, what alternatives are actually offered?
@@ -128,6 +128,7 @@ Status meanings:
 2. Ohio Department of Health, [Extreme Heat guidance](https://odh.ohio.gov/about-us/offices-bureaus-and-departments/bhp/resources/extreme-heat).
 3. Ironton-Lawrence County Community Action Organization, [Summer Crisis Program 2026](https://ilcao.org/stay-cool-this-summer-with-help-from-heap-2026-2/). Published dates were July 1–September 30, 2026; check for future official announcements.
 4. Ohio 211, [How to Find Help](https://ohio211.org/how-to-find-help/). Network coverage and general capabilities are described publicly; Lawrence County cooling-specific referral behavior has not been verified.
-5. Ohio 211, [Our 211 Network](https://ohio211.org/our-211-network/). Identifies United Way of Greater Cleveland as the regional center serving Lawrence County; local cooling-specific database coverage has not been verified.
-6. United Way of Greater Cleveland, [211 statewide expansion announcement](https://www.unitedwaycleveland.org/211-is-expanding-to-reach-every-ohioan-with-100-statewide-coverage/) and [public resource search](https://211online.uwgcimpact.org/). The expansion announcement describes service expansion to Lawrence County; the public search page is branded for Cuyahoga County. This is a question to verify, not proof that Lawrence County records are missing.
-7. Ironton-Lawrence County Community Action Organization, [Transportation](https://ilcao.org/portfolio-items/transportation/). Public description is a lead only; current availability and terms need confirmation.
+5. Ohio 211, [About Ohio 211](https://ohio211.org/about-ohio-211/). Describes 13 regional centers using a statewide database; this does not verify the presence or freshness of particular Lawrence County cooling records.
+6. Ohio 211, [Our 211 Network](https://ohio211.org/our-211-network/) and [State Expansion](https://ohio211.org/state-expansion/). Identify the regional network and Lawrence County among expansion counties.
+7. United Way of Greater Cleveland, [211 statewide expansion announcement](https://www.unitedwaycleveland.org/211-is-expanding-to-reach-every-ohioan-with-100-statewide-coverage/) and [public resource search](https://211online.uwgcimpact.org/). The announcement describes service expansion to Lawrence County; the public search page is branded for Cuyahoga County. That branding alone is not evidence that Lawrence County records are missing.
+8. Ironton-Lawrence County Community Action Organization, [Transportation](https://ilcao.org/portfolio-items/transportation/). Public description is a lead only; current availability and terms need confirmation.
