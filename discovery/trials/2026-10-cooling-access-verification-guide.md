@@ -36,6 +36,22 @@ Use public organizational contact channels and ask permission before treating an
 
 This is a suggested verification order, not a claim that any organization has agreed to participate.
 
+## Existing referral and transportation pathway to verify
+
+Ohio 211 states that its network serves all 88 counties, provides free and confidential 24/7 navigation, and can connect callers to community services, including transportation and utility assistance. Ohio public-health guidance specifically points people seeking cooling-center help to 2-1-1. This is an existing pathway to test, not evidence that any particular Lawrence County cooling site is currently open or reachable. [4]
+
+The Community Action Organization's public transportation page describes Lawrence County Transit options, but the page may be stale. Do not promise a ride, quote a current fare, or assume a vehicle can be dispatched for a heat emergency without direct confirmation. [5]
+
+Questions for the authorized 211/local referral role:
+
+- For a Lawrence County cooling-related request, what current source do navigators consult?
+- Can the referral distinguish a facility's normal public hours from heat-event activation and confirmed availability?
+- If a site cannot be reached, what alternatives are actually offered?
+- Can the caller be referred to a transport provider, and what current eligibility, cost, booking lead time, operating hours, and service area apply?
+- Is there an established handoff from immediate cooling refuge to household utility or air-conditioning assistance?
+
+Do not make a real person's situation the test case without their consent. A general process question is sufficient for this discovery stage. No 211 call or transport inquiry has been made.
+
 ## Opening script
 
 “Hello. I'm checking the accuracy and coordination of publicly available heat-relief information for Lawrence County. I'm not asking you to disclose personal or client information. I want to make sure the public is directed to an authoritative, current source. Are you the right person to answer a few questions about how cooling resources are verified and updated?”
@@ -107,3 +123,5 @@ Status meanings:
 1. Ohio Emergency Management Agency, [County EMA Director List](https://webeoctraining.dps.ohio.gov/ohiocountyEMADirectorList/countyemalist_web.aspx).
 2. Ohio Department of Health, [Extreme Heat guidance](https://odh.ohio.gov/about-us/offices-bureaus-and-departments/bhp/resources/extreme-heat).
 3. Ironton-Lawrence County Community Action Organization, [Summer Crisis Program 2026](https://ilcao.org/stay-cool-this-summer-with-help-from-heap-2026-2/). Published dates were July 1–September 30, 2026; check for future official announcements.
+4. Ohio 211, [How to Find Help](https://ohio211.org/how-to-find-help/). Network coverage and general capabilities are described publicly; Lawrence County cooling-specific referral behavior has not been verified.
+5. Ironton-Lawrence County Community Action Organization, [Transportation](https://ilcao.org/portfolio-items/transportation/). Public description is a lead only; current availability and terms need confirmation.
