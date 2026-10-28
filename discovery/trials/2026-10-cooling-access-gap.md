@@ -62,7 +62,7 @@ A failure in one part does not prove the others.
 
 ## Smallest informative test
 
-Run a **bounded, human-led audit** before deciding to build anything. Begin with a source-and-ownership check before collecting route or vulnerability data.
+Run a **bounded, human-led audit** before deciding to build anything. Begin with a source-and-ownership check before collecting route or vulnerability data. The companion [verification guide](2026-10-cooling-access-verification-guide.md) provides a contact order, neutral questions, evidence log, and stop rules; it is prepared but has not been executed.
 
 ### Step 1 — Establish the authoritative baseline
 
