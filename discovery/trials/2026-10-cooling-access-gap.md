@@ -1,0 +1,129 @@
+# Door Two Trial: Cooling Access Is More Than a Map
+
+**Status:** Preliminary discovery brief; evidence review only  
+**Prepared:** 2026-10-28  
+**Decision sought:** Is a small, operational cooling-access audit worth testing before the 2027 warm season?  
+**Scope:** Lawrence County, Ohio as a concrete, locally grounded case; lessons may generalize, but this brief does not claim national coverage.
+
+## Executive finding
+
+The likely gap is not the absence of cooling-center lists or maps. It is the difference between **a listed cooling resource** and **a resource a person can actually use at the time they need it**.
+
+Lawrence County's official cooling-center page lists libraries with differing branch schedules and an overnight mission that is described as open daily only from 8 p.m. to 8 a.m., staffed only during those hours. That information is useful, but a published directory cannot by itself establish whether a site is currently operating as a cooling center, whether heat-event activation changes its hours, whether it accepts a particular person, or whether the person can reach it safely. The page was published in 2024 and was recently indexed, but its current accuracy has not been independently confirmed with each provider. [1]
+
+This is a **candidate operational gap, not a proven service failure**. The first useful deliverable should be a verified, time-aware access audit—not a new app, always-on feed, or custom adapter.
+
+## Why this matters
+
+Extreme heat is a real public-health risk, and the people most exposed may not be able to use the resources that exist.
+
+- A 2025 geospatial study of five US cities found that only 32.2–50.7% of cooling centers were within walking distance of the most vulnerable populations; access for populations with high energy burden also varied substantially. [2]
+- A study of 81 US cities found wide differences in population access and noted that proximity-based analysis did not account for public transit, potentially underestimating access barriers. [3]
+- A CDC assessment in Maricopa County included 944 cooling-center visitors and 1,260 public respondents. Lack of transportation was reported by 31% of cooling-center visitors; awareness, location information, operating hours, and pet policies were also barriers. The county responded with changes including longer hours at some centers, street signage, and a heat-relief call center. [4]
+- Ohio's public guidance tells residents to contact local emergency management for cooling-center information and points to 2-1-1 for assistance/referrals. This reinforces that directories alone are not always the whole service. [5][6]
+
+The research already establishes that cooling-center placement and access barriers have been studied. **Novelty is not claimed.** The possible leverage point is a low-cost way to check whether the local information people receive translates into usable access at a particular time.
+
+## The causal hypothesis
+
+If a local heat-relief directory combines authoritative location data with verified operating/activation status, public-access rules, usable hours, and realistic travel options, then residents and responders may make better decisions than they can from a static location list alone.
+
+The hypothesis has three parts that must be tested separately:
+
+1. **Information gap:** The public-facing list omits or obscures a fact needed to decide whether a site is usable now.
+2. **Reachability gap:** Some people cannot reach a nominally available site in a tolerable time or by an available mode.
+3. **Action gap:** Better information would change a real decision (for example, where to direct someone, whether to extend hours, provide a ride, or improve outreach).
+
+A failure in one part does not prove the others.
+
+## Existing work and alternatives
+
+| Option | What it already offers | Why it may be sufficient | What remains to check |
+|---|---|---|---|
+| County's published cooling-center page [1] | Locations, phone numbers, branch hours, basic heat guidance | May answer routine questions when current and when a site is open | Freshness, activation status, accessibility, transport, and public-entry conditions |
+| Ohio emergency-management and health guidance [5][6] | General safety advice and direction to local resources | May already route residents to a current local source | Whether the handoff yields a timely, usable answer for rural residents |
+| Existing spatial studies and mapping methods [2][3] | Vulnerability and proximity/access analysis | Could provide a sound baseline without new software | Whether current local data can support operational, time-specific decisions |
+| A manually maintained status sheet or phone workflow | Could add verification timestamps and clear unknowns with little technical cost | Cheapest way to test the information hypothesis | Who owns updates and whether anyone uses the result |
+| Custom application or data integration | Could eventually combine sources and routes | Only worthwhile if manual verification reveals a repeatable bottleneck | Data access, update ownership, accuracy, privacy, maintenance, and actual user demand |
+
+## Smallest informative test
+
+Run a **bounded, human-led audit** before deciding to build anything.
+
+### Step 1 — Establish the authoritative baseline
+
+Use the county page as a starting inventory, not as ground truth. For each listed site, record the source URL and when the information was checked. Do not silently treat a published schedule as confirmation of current heat-event operation.
+
+### Step 2 — Verify operational facts with responsible providers
+
+Using publicly listed contact channels, ask providers or the responsible county office to confirm:
+
+- Is this facility currently designated or willing to serve as a cooling location during a heat event?
+- What conditions trigger activation, and who decides?
+- What are the actual public hours during an event, including weekends and holidays?
+- Are there entry restrictions, age or membership limits, accessibility constraints, or other material conditions?
+- Is transport available or coordinated? If not, is there an authoritative referral?
+- Who can correct the public listing, and how quickly can changes be reflected?
+
+No calls or outreach have been made as part of this research.
+
+### Step 3 — Create a simple verified status table
+
+Use an ordinary document or spreadsheet. Minimum fields:
+
+- Facility and address
+- Responsible source/contact (public information only)
+- Source URL
+- Last verified timestamp and verifier
+- Normal hours versus heat-event hours
+- Activation rule and current status, if authoritatively supplied
+- Public-entry and accessibility conditions
+- Transport/referral information
+- Confidence: **verified**, **reported but not independently confirmed**, **unknown**, or **conflicting**
+- Next review date
+
+Never infer that a facility is open just because it appears on a list. An unknown is an explicit result, not permission to guess.
+
+### Step 4 — Test whether the added information changes a decision
+
+Compare what a resident or responder could conclude from the existing page with what the verified table supports. Ask a small set of local emergency-management, public-health, library, community-action, or outreach stakeholders—if they choose to participate—whether the missing fields would change their actions. This is a proposed test, not completed outreach.
+
+If useful and appropriate public data are available, a later phase could compare travel time and heat vulnerability for selected areas. Do not start geospatial modelling until the operational data are reliable enough to justify it.
+
+## Acceptance criteria
+
+The trial is worth advancing only if it produces all of the following:
+
+1. At least one material discrepancy, ambiguity, or decision-relevant unknown is confirmed against an authoritative source—or evidence that the existing information is already adequate.
+2. A clear explanation of which people or decisions are affected, without inventing a count of beneficiaries.
+3. A plausible action that a responsible local actor could take.
+4. A maintenance owner or realistic update path for any proposed status information.
+5. Evidence that a manual table, existing state/county system, or phone workflow is inadequate before any custom integration is proposed.
+
+**Stop rule:** If the county and providers already maintain accurate, timely operational status and the remaining problem is primarily transport, staffing, funding, or facility capacity, do not build a directory or adapter. Redirect the analysis toward the demonstrated constraint. If no one can maintain accurate status, do not create a false promise of real-time certainty.
+
+## What would justify a bridge?
+
+A small bridge becomes reasonable only if the audit shows that authoritative status exists in a usable source but is stranded in a format or workflow that prevents a valuable action. Then compare, in order:
+
+1. Change or clarify the existing page/process.
+2. Use a shared spreadsheet or simple export.
+3. Use an existing standard, API, or service.
+4. Build a narrow adapter only if the prior options demonstrably fail.
+
+The bridge's acceptance test would be concrete: **a real user can make a better-supported cooling-access decision, with fewer stale or ambiguous facts, and the information can be maintained at an acceptable cost.**
+
+## Current decision
+
+**Proceed only to the bounded verification step; do not build software yet.**
+
+The public evidence supports the importance of the general problem and the local county page provides a concrete starting point. It does not yet prove that Lawrence County's current directory is wrong, that a new tool is needed, or that better status data alone would materially improve health outcomes. Those are the questions the audit must answer.
+
+## Sources
+
+1. Lawrence County, Ohio, [County Cooling Centers](https://lawrencecounty.org/county-cooling-centers/). The page lists facilities, addresses, phone numbers, and schedules; individual provider status was not independently confirmed for this brief.
+2. Kar, Perez, Meade & Carvalhaes (2025), [Where to cool off: a geospatial framework for placement of cooling centers](https://www.ornl.gov/publication/where-cool-geospatial-framework-placement-cooling-centers), *GIScience & Remote Sensing*.
+3. [Examining the Optimal Placement of Cooling Centers to Serve Populations at High Risk of Extreme Heat Exposure in 81 US Cities](https://pmc.ncbi.nlm.nih.gov/articles/PMC10576472/), peer-reviewed study.
+4. CDC MMWR (2025), [Assessment of Awareness, Use, and Access Barriers to Cooling Centers in Maricopa County, Arizona](https://www.cdc.gov/mmwr/volumes/74/wr/mm7414a4.htm).
+5. Ohio Emergency Management Agency, [Extreme Heat preparedness guidance](https://ema.ohio.gov/prepare-respond/preparedness-resources/extreme-heat).
+6. Ohio Department of Health, [Extreme Heat guidance](https://odh.ohio.gov/about-us/offices-bureaus-and-departments/bhp/resources/extreme-heat).
