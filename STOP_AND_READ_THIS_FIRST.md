@@ -1,10 +1,12 @@
 # 🛑 STOP. READ THIS BEFORE TOUCHING THE ACCOUNT. 🛑
 
-## THE FACTORY IS THE PRODUCT. PROJECTS ARE DOWNSTREAM.
+## THE DJINN IS THE PURPOSE. THE FACTORY IS ONE MEANS.
 
-This repository is portable operating machinery for an AI-assisted GitHub ecosystem. During a factory-first rebuild, the objective is to finish and prove the machinery that can discover, govern, verify, preserve, recover, and bootstrap projects—not to preserve every existing project or prematurely choose future products.
+World Seed's enduring purpose is to help people discover worthwhile wishes and turn them into reality wisely, honestly, and with respect for human agency. Software factories, research, experiments, and other forms of production are means chosen to serve that purpose—not ends in themselves.
 
-**Do not choose, design, or populate the factory's eventual products before the factory itself is finished and its capabilities are demonstrated.** A disposable project may be used strictly as a factory acceptance test; it is not a decision about the future product portfolio.
+The current rebuild still has a narrow factory acceptance gate: prove that World Seed can produce one genuinely useful, working project. This is a bounded capability test, not a declaration that factory-building is the ultimate mission.
+
+**Do not begin unrelated product builds or expand implementation scope before the current acceptance gate passes.** Identifying worthwhile wishes, investigating opportunities, and clarifying the long-term mission are allowed; they do not by themselves authorize implementation beyond the active scope. A disposable project is an acceptance fixture, not a decision about the future product portfolio.
 
 This public seed is not the authority for any one operator's private account inventory, personal circumstances, or exact reset scope. Before account-specific action, the steward must load the authorized private operator configuration and recovery manifest. If those are unavailable, record the limitation and do not guess, ask the operator to repeat context only after checking the available durable sources, and never infer private repository identifiers from this public document.
 
@@ -23,7 +25,7 @@ For this World Seed rebuild, [MISSION-RESET-AND-ACCEPTANCE.md](MISSION-RESET-AND
 
 ## REQUIRED ORDER OF OPERATIONS
 
-### 1. Finish the factory
+### 1. Close the current foundation gate
 
 - Establish a coherent, privacy-safe foundation on the actual default branch.
 - Resolve the pull-request stack deliberately; do not merge stacked drafts blindly.
