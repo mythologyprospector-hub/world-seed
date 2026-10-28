@@ -1,8 +1,8 @@
 # world-seed
 
-**Portable genesis for AI-led project ecosystems, with a shared mission-driven operating method and explicit privacy boundaries for operator profiles.**
+**A wise Djinn's bottle: portable operating machinery for discovering worthwhile wishes and helping turn them into reality.**
 
-world-seed preserves the reusable operating system for starting and governing a whole GitHub account: the constitution, AI leadership mandate, human approval boundaries, repository architecture, onboarding, automation standards, machine profile, and recovery procedure.
+World Seed provides the governance, AI leadership mandate, human approval boundaries, repository architecture, onboarding, automation, project-generation and verification tools, and durable handoffs that help an AI steward pursue a human-serving mission. These mechanisms are means; the mission is the worthwhile outcome they help people achieve.
 
 It is deliberately **mission-portable and operator-aware**:
 - The core works with any GitHub account, mission, repository set, and capable AI builder.
