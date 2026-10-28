@@ -12,6 +12,17 @@
 - Record what the source actually confirmed, the date/time, and any limits. A voicemail, unanswered call, old web page, or unverified third-party listing is **not** confirmation.
 - No outreach has been made as part of preparing this guide.
 
+## Human agency and privacy safeguards
+
+These rules apply to every contact, note, and possible public-facing result:
+
+- Keep the audit at the **facility, public-information, and process level**. Do not collect resident names, individual journeys, visit histories, health or disability status, household addresses, or lists of people presumed vulnerable.
+- Participation is voluntary. State the purpose honestly, ask only role-appropriate questions, and accept “no” or “I don't know” without pressure.
+- Do not record a staff member's personal details when an organizational role or public office contact is sufficient. Do not publish private correspondence or attribute comments by name without permission.
+- Do not publish an address correction, operating status, eligibility condition, or “open now” claim until it is confirmed by a source authorized to speak to that fact. Show verification time and scope; leave unresolved conflicts visibly unresolved.
+- Any resulting information should help people assess their options, not rank, track, compel, or automatically route them. Preserve alternatives and people's ability to decide for themselves.
+- If the investigation begins to require sensitive personal data, individual-level tracking, or coercive control to make its proposed intervention work, stop and redesign the approach. Do not treat “public safety” as a blanket exemption.
+
 ## Suggested order of verification
 
 Use public organizational contact channels and ask permission before treating any information as authoritative.
