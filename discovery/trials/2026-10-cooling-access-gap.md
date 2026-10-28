@@ -38,6 +38,16 @@ These are **source discrepancies and coordination questions, not verified operat
 
 This narrows the next test. Instead of immediately mapping all facilities, first ask whether the responsible county/emergency-management and provider contacts have one authoritative, maintained record for heat-event operations, and how residents are routed between immediate refuge, transportation/referrals, and preventive assistance. The Ohio EMA director list gives a public contact for Lawrence County Emergency Management; the brief has not contacted that office. [11]
 
+## Additional finding — existing referral and transport infrastructure
+
+A further source pass found that Ohio 211 states it serves all 88 Ohio counties as of July 1, 2026, with free, confidential, 24/7 navigator assistance. Its public overview includes community-resource referrals, transportation, utility-bill assistance, and disaster services. Ohio public-health guidance already directs people seeking cooling-center help to 2-1-1. [12][13]
+
+The Ironton-Lawrence County Community Action Organization also has a public transportation page describing Lawrence County Transit options, per-mile charges for some non-medical trips, and wheelchair-accessible vehicles. The page is old, so its current services, fares, availability, and suitability for heat-event trips are **unverified leads**, not promises of a ride. [14]
+
+This creates a potentially important cross-domain connection: **acute heat refuge, a statewide human referral network, local transport, and preventive household-cooling assistance may form one service pathway—or may remain separate.** That is a better first question than whether World Seed should build a directory. A trusted 211 navigator or an existing local process may already connect these pieces. Conversely, a referral to a resource is not proof that the resource is open, reachable, affordable, or suitable at the time needed.
+
+The next test should ask 211 and the responsible local organizations how a cooling-related request is handled in Lawrence County, what source they consult, and what happens when transport or home-cooling assistance is the actual barrier. Do not submit a test request on behalf of a real person, collect caller data, or assume the public directory reflects live availability. No contact or test call has been made.
+
 ## The causal hypothesis
 
 If a local heat-relief directory combines authoritative location data with verified operating/activation status, public-access rules, usable hours, and realistic travel options, then residents and responders may make better decisions than they can from a static location list alone.
@@ -56,6 +66,7 @@ A failure in one part does not prove the others.
 |---|---|---|---|
 | County's published cooling-center page [1] | Locations, phone numbers, branch hours, basic heat guidance | May answer routine questions when current and when a site is open | Freshness, activation status, accessibility, transport, and public-entry conditions |
 | Ohio emergency-management and health guidance [5][6] | General safety advice and direction to local resources | May already route residents to a current local source | Whether the handoff yields a timely, usable answer for rural residents |
+| Ohio 211 and local transit/referral services [12][14] | 24/7 statewide human navigation; listed transportation and utility-assistance categories; a local transit service is publicly described | Existing human help may already connect people to appropriate services without a new system | Whether cooling requests reach a verified operational source, and whether transportation is currently available, affordable, and appropriate |
 | Existing spatial studies and mapping methods [2][3] | Vulnerability and proximity/access analysis | Could provide a sound baseline without new software | Whether current local data can support operational, time-specific decisions |
 | A manually maintained status sheet or phone workflow | Could add verification timestamps and clear unknowns with little technical cost | Cheapest way to test the information hypothesis | Who owns updates and whether anyone uses the result |
 | Custom application or data integration | Could eventually combine sources and routes | Only worthwhile if manual verification reveals a repeatable bottleneck | Data access, update ownership, accuracy, privacy, maintenance, and actual user demand |
@@ -163,3 +174,6 @@ The public evidence supports the importance of the general problem and the local
 9. Briggs Lawrence County Public Library, [Ironton Branch](https://www.briggslibrary.org/ironton). Normal library hours are not proof of heat-event designation or activation.
 10. Ironton-Lawrence County Community Action Organization, [Summer Crisis Program 2026](https://ilcao.org/stay-cool-this-summer-with-help-from-heap-2026-2/). The published program window ended September 30, 2026; verify next-season dates before advising anyone to apply.
 11. Ohio EMA, [County EMA Director List](https://webeoctraining.dps.ohio.gov/ohiocountyEMADirectorList/countyemalist_web.aspx). Public directory lists Lawrence County Emergency Management contact information; no contact was made for this brief.
+12. Ohio 211, [How to Find Help](https://ohio211.org/how-to-find-help/). The page says Ohio 211 serves all 88 counties as of July 1, 2026 and offers free, confidential 24/7 navigator assistance; local cooling-specific routing and resource freshness have not been tested.
+13. Ohio Department of Health, [Extreme Heat guidance](https://odh.ohio.gov/about-us/offices-bureaus-and-departments/bhp/resources/extreme-heat). Recommends contacting local 2-1-1 for cooling-center assistance and referrals.
+14. Ironton-Lawrence County Community Action Organization, [Transportation](https://ilcao.org/portfolio-items/transportation/). Public page describes Lawrence County Transit and some non-medical trips; its age means current availability, fare, and heat-event suitability require confirmation.
