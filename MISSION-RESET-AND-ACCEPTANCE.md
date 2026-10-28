@@ -32,7 +32,7 @@ Episteme, Praxis, and the other experimental projects are lessons and historical
 - New subsystems, adapter collections, always-on services, optional features, architecture redesigns, unrelated cleanup, and revival or preservation of experimental projects. The bounded Door Two behavior trial above is an explicit exception and must use existing capabilities.
 - Any GitHub reset or destructive repository action before the quality gate and a separate exact inventory/authorization gate.
 
-Existing work is not automatically in scope just because a pull request or issue exists. Review the terminal stack in dependency order and verify each layer; do not merge untested drafts blindly. Other open work is deferred unless evidence shows that it blocks one of the three allowed work items above.
+Existing work is not automatically in scope just because a pull request or issue exists. Review the terminal stack in dependency order and verify each layer; do not merge untested drafts blindly. Other open work is deferred unless evidence shows that it blocks one of the allowed work items above.
 
 ### The finish line
 
