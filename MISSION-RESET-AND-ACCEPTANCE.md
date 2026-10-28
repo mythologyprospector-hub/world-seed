@@ -1,15 +1,17 @@
-# Mission: Build a Foundation That Produces Worthwhile Projects
+# Mission: Build a Wise Djinn That Helps Fulfill Worthwhile Wishes
 
 **Status:** Authoritative mission statement  
-**Date:** 2026-10-22
+**Date:** 2026-10-28
 
 ## Actual goal
 
-World Seed is meant to be the sturdy, portable foundation and plumbing for AI-assisted project creation: governance, wiring, onboarding, templates, project generation, tests, verification, and durable handoffs. Its purpose is to produce projects that are coherent, complete, useful, and worth keeping.
+World Seed is the Djinn's bottle: a human-serving system for helping people discover worthwhile wishes and turn them into reality. It should preserve the intent behind imperfect wishes, investigate what would genuinely help, surface better opportunities and consequential unknowns, and pursue authorized work with evidence and judgment. It must respect human agency rather than decide what people should want.
 
-Episteme, Praxis, and the other experimental projects are lessons, not products that must be rescued. They showed why a better foundation is needed. Do not spend the mission rebuilding them or preserving them for their own sake.
+Software factories, research tools, reproducible experiments, scientific collaboration, businesses, inventions, and infrastructure are possible means—not the mission itself. The right means depend on the wish, the evidence, and the likely human benefit.
 
-**The primary milestone is a genuinely good new project produced by World Seed.** A passing unit suite, a complete checklist, or an impressive recovery mechanism cannot substitute for that result.
+Episteme, Praxis, and the other experimental projects are lessons and historical evidence, not products that must be rescued or copied. Recover their underlying ambitions when useful; do not preserve or rebuild them for their own sake.
+
+**The immediate acceptance milestone remains a genuinely useful project produced by World Seed.** This is a bounded test that the system can turn a worthwhile goal into a working result—not the ultimate purpose of the Djinn. A passing unit suite, a complete checklist, or an impressive recovery mechanism cannot substitute for that evidence.
 
 ## Active execution lock — 2026-10-23
 
