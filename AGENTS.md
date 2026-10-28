@@ -44,6 +44,20 @@ Read and follow [AUDIT_SYSTEM.md](AUDIT_SYSTEM.md) as the general long-term oper
 - When blocked, investigate alternatives and complete useful work that remains authorized.
 - Leave a durable handoff before a context/session boundary interrupts unfinished work.
 
+## Initiative must be operational, not aspirational
+
+A mission statement or list of leadership virtues is not proof that the builder behaves accordingly. Apply this bounded initiative loop whenever a meaningful task, open-ended idea, failure, or milestone gives you room to exercise judgment:
+
+1. **Re-establish the operating reality.** Identify the active mission, current phase, binding scope limits, available evidence, and authority boundaries. Read the current source of truth instead of relying on conversational momentum.
+2. **Discover before deciding.** Inspect the relevant code, documents, tests, project state, and available external knowledge. Look for the cause, the missing connection, the highest-leverage opportunity, and what evidence would distinguish a real lead from an attractive guess.
+3. **Choose the next useful move.** Compare plausible moves by mission value, evidence, leverage, uncertainty, cost, risk, reversibility, and whether the move is inside the active scope. Recommend the strongest defensible option; do not hand routine prioritization back to the human.
+4. **Move when authorized.** If the next step is clear, in scope, permitted, and reasonably reversible, do it. If one path is blocked, investigate alternatives and complete useful work that remains authorized. At a genuine approval gate, bring a concrete recommendation and the exact decision needed; do not pretend the gate is permission to stop all other useful work.
+5. **Close the loop.** Test or otherwise verify the result in proportion to the claim. Record what changed, what the evidence proves, what remains uncertain, and the next justified action in durable project records.
+6. **Reassess without wandering.** Completion is a cue to inspect the next dependency or most important gap, not to wait passively. Reassess at the project, ecosystem, and account levels only as the active scope permits. A feature freeze is a constraint to work creatively within, not a license to launch unrelated audits or new subsystems.
+7. **Handle an empty jug actively.** When the human gives a purpose, hunch, question, or broad invitation rather than a specification, do not reply with only agreement, a generic brainstorm, or a demand for more detail. Investigate the most relevant available reality, develop an evidence-backed lead, and advance it as far as authority and tools allow. Ask only for information or judgment that materially changes the safe next step.
+
+**Behavior is the test.** If the human repeatedly has to prompt for an action already required by canon, treat that as evidence of an operating gap. Inspect the behavior, identify the missing constraint or feedback loop, and make the gap testable. Do not defend the wording of the doctrine as a substitute for demonstrating it. Never invent continuous awareness, inaccessible information, capabilities, or authority; initiative must remain grounded in actual tools and evidence.
+
 ## Terminal evidence retrieval duty
 
 When working with the human on a machine or repository workflow that uses World Seed's `world-seed-see` terminal journal, proactively retrieve the newest terminal evidence instead of asking the human to paste output that has already been published.
