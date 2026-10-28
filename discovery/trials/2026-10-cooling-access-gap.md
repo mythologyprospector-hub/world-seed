@@ -24,6 +24,20 @@ Extreme heat is a real public-health risk, and the people most exposed may not b
 
 The research already establishes that cooling-center placement and access barriers have been studied. **Novelty is not claimed.** The possible leverage point is a low-cost way to check whether the local information people receive translates into usable access at a particular time.
 
+## Additional finding from a second source pass — 2026-10-28
+
+The first review was too focused on the cooling-center page alone. Cross-checking other local public information exposed a more concrete issue to investigate: local heat-response information is distributed across pages with different purposes and apparently different details.
+
+- The county cooling-center page lists Ironton City Mission at **710 N 5th Street** and says it is open and staffed only 8 p.m.–8 a.m. for sheltering/warming/cooling. [1]
+- Ohio Means Jobs Lawrence County's separate warming-center directory lists Ironton City Mission at **701 North 5th Street** and labels several Briggs library branches **“On standby.”** It is a warming-center page, so its labels must not be assumed to describe summer cooling operations. Its freshness and intended use need confirmation. [7]
+- The county's separate emergency page contains old, dated warming-center notices and instructions for faith-based sites that require advance contact; it also says those facilities do not provide transportation. That page is evidence of a prior coordination pattern, not evidence that the listed arrangements are current. [8]
+- The Briggs library's own current Ironton branch page confirms its normal public hours, but ordinary library hours alone do not establish that the branch is designated, staffed, or prepared as a cooling center during a heat event. [9]
+- The Ironton-Lawrence County Community Action Organization publicized the Ohio Summer Crisis Program for July 1–September 30, 2026, including eligible household help with electricity bills, air conditioners/fans, or central-air repairs. Ohio's Department of Health separately recommends contacting local 2-1-1 for cooling-center assistance and referrals. These are distinct response pathways—acute cooling refuge and preventive household cooling support—that may or may not currently coordinate with one another. [5][10]
+
+These are **source discrepancies and coordination questions, not verified operational failures**. Addresses may reflect different entrances, the warming directory may be stale, and “on standby” may have a specific operational meaning. Do not publish a correction or characterize a facility's status without checking with the responsible source.
+
+This narrows the next test. Instead of immediately mapping all facilities, first ask whether the responsible county/emergency-management and provider contacts have one authoritative, maintained record for heat-event operations, and how residents are routed between immediate refuge, transportation/referrals, and preventive assistance. The Ohio EMA director list gives a public contact for Lawrence County Emergency Management; the brief has not contacted that office. [11]
+
 ## The causal hypothesis
 
 If a local heat-relief directory combines authoritative location data with verified operating/activation status, public-access rules, usable hours, and realistic travel options, then residents and responders may make better decisions than they can from a static location list alone.
@@ -48,13 +62,17 @@ A failure in one part does not prove the others.
 
 ## Smallest informative test
 
-Run a **bounded, human-led audit** before deciding to build anything.
+Run a **bounded, human-led audit** before deciding to build anything. Begin with a source-and-ownership check before collecting route or vulnerability data.
 
 ### Step 1 — Establish the authoritative baseline
 
 Use the county page as a starting inventory, not as ground truth. For each listed site, record the source URL and when the information was checked. Do not silently treat a published schedule as confirmation of current heat-event operation.
 
-### Step 2 — Verify operational facts with responsible providers
+### Step 2 — Establish one authoritative source and verify operational facts
+
+Start with the county's emergency-management office and the organizations responsible for the listed sites. Ask which page or system is authoritative during an active heat event; who maintains it; and how corrections are propagated to county, workforce, library, and 2-1-1 referral channels. Specifically reconcile the two published Ironton City Mission addresses and the meaning/freshness of “on standby” labels before treating either as an error.
+
+Then verify operational facts with responsible providers
 
 Using publicly listed contact channels, ask providers or the responsible county office to confirm:
 
@@ -127,3 +145,8 @@ The public evidence supports the importance of the general problem and the local
 4. CDC MMWR (2025), [Assessment of Awareness, Use, and Access Barriers to Cooling Centers in Maricopa County, Arizona](https://www.cdc.gov/mmwr/volumes/74/wr/mm7414a4.htm).
 5. Ohio Emergency Management Agency, [Extreme Heat preparedness guidance](https://ema.ohio.gov/prepare-respond/preparedness-resources/extreme-heat).
 6. Ohio Department of Health, [Extreme Heat guidance](https://odh.ohio.gov/about-us/offices-bureaus-and-departments/bhp/resources/extreme-heat).
+7. Ohio Means Jobs Lawrence County, [Warming Centers](https://omjlawrencecounty.org/getwarm/). This is a warming-center directory, not proof of current summer cooling-center operations.
+8. Lawrence County, Ohio, [Emergency information page](https://lawrencecounty.org/emergency/). It contains dated warming-center notices; do not treat those notices as current operating instructions without confirmation.
+9. Briggs Lawrence County Public Library, [Ironton Branch](https://www.briggslibrary.org/ironton). Normal library hours are not proof of heat-event designation or activation.
+10. Ironton-Lawrence County Community Action Organization, [Summer Crisis Program 2026](https://ilcao.org/stay-cool-this-summer-with-help-from-heap-2026-2/). The published program window ended September 30, 2026; verify next-season dates before advising anyone to apply.
+11. Ohio EMA, [County EMA Director List](https://webeoctraining.dps.ohio.gov/ohiocountyEMADirectorList/countyemalist_web.aspx). Public directory lists Lawrence County Emergency Management contact information; no contact was made for this brief.
