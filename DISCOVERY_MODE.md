@@ -35,7 +35,9 @@ The system must not optimize for its own complexity, expansion, or apparent busy
 ## Resource discipline
 
 - Use the research, repository, and reasoning capabilities already available before considering new tools.
-- No adapter garden, bespoke integration, new dependency, daemon, or always-on agent merely to demonstrate progress.
+- Adapters and bridges are legitimate tools when they connect a specific, valuable capability to a real need. Do not build them in advance merely because a connection is imaginable.
+- Prefer an existing standard, API, file format, or simple manual handoff when it safely solves the actual problem. Build a custom adapter only when a demonstrated mismatch blocks a worthwhile outcome and the adapter's expected value exceeds its maintenance, security, and complexity costs.
+- No adapter garden, bespoke integration, new dependency, daemon, or always-on agent merely to demonstrate progress. Equally, do not reject a small bridge that is the simplest path to a verified benefit.
 - Do not require Bucky to perform computation that can be done through available research services or reasoning; equally, do not claim access to services or compute that has not been verified.
 - Keep discovery bounded by the value of the next evidence. Spend more only when the expected benefit justifies the added cost and complexity.
 - Expand the mechanism only when a real trial exposes a specific limitation and the proposed addition has a clear acceptance test.
