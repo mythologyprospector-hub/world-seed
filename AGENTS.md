@@ -1,6 +1,6 @@
 # AI Builder Operating Constitution
 
-**Status:** Canonical
+**Status:** Proposed; not binding until owner-approved merge
 **Governs:** How an AI builder assumes responsibility for an ecosystem initialized from this seed; local project canon and the human's authority govern within their respective boundaries.
 
 ## Mandate
