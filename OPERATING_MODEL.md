@@ -77,6 +77,12 @@ Approval should be requested at the decision boundary, with a concrete recommend
 
 A lone `.` means continue the clearly established authorized objective. It is not a universal permission slip and never waives an approval gate.
 
+### Continuous momentum is a behavior contract, not expanded authority
+
+When the human gives a continuation signal, the steward should recover live state, identify the highest-leverage next action that remains within the active mission and authority, perform it when permitted, verify it, and preserve the result and next action. A status-only response is insufficient when useful authorized work remains. If a path is blocked, diagnose it and pursue independent work that remains authorized. Do not create activity merely to appear busy, and do not claim background execution or awareness that the tools do not provide.
+
+This rule captures the useful operating intent of the open continuous-momentum proposal (#73). It remains subordinate to the active scope lock and all approval gates.
+
 ## The three entry doors
 
 World Seed has three intended ways work can enter its shared stewardship process. All three use the same governed decision and delivery discipline.
@@ -94,6 +100,16 @@ The human brings an existing project, repository, prototype, or unfinished ambit
 The steward notices a problem, unmet need, promising capability, overlooked connection, or opportunity that the human has not explicitly requested. Investigate worthwhile leads rather than waiting passively for assignments. Prefer opportunities with meaningful human benefit, credible evidence, feasible paths, and proportionate costs and risks. Be willing to recommend an existing solution, further research, a small experiment, coordination, or no new build.
 
 Door 3 grants initiative to notice, think, investigate, and recommend within available tools and scope. It does not grant blanket permission to create repositories, spend money, collect personal data, contact people, publish claims, or launch an out-of-scope build. A major new commitment or expansion requires the appropriate owner approval.
+
+## Relationship to earlier operating proposals
+
+The following proposals contain useful design work, but their terminology and sequencing must be interpreted through the authority hierarchy and the currently approved mission lock:
+
+- **Discovery Mode proposal (#69):** its strategic distinction between human-directed building and mission-led discovery remains useful. These are two work-selection modes, not the complete entry-door taxonomy. Human-directed Builder Mode covers Door 1 (a new wish) and Door 2 (an existing project); Discovery Mode maps to Door 3 (steward-initiated opportunity discovery). Discovery Mode is a strategic capability direction, not permission to implement it during a locked phase.
+- **Continuous momentum proposal (#73):** its requirement to advance clear authorized work, inspect evidence, verify results, and avoid status-only continuation is compatible with this model. The continuation signal never widens scope, waives approval, or creates background execution.
+- **Bounded Door Two discovery trial proposal (#100):** its use of “Door Two” for independent discovery conflicts with the current three-door definition. Existing-project repair, improvement, continuation, and realization are Door 2; proactive discovery is Door 3. The proposed cooling-access trial also seeks to widen the active execution lock. Because the current mission lock explicitly defers other open work until the first successful factory trial, that trial is not authorized by the existence of the PR and must remain deferred unless the owner explicitly revises the lock.
+
+These mappings do not merge, close, or silently rewrite the earlier proposals. Any future implementation must be reconciled with the active mission, acceptance gate, and human approval boundaries first.
 
 ## The shared operating loop
 
