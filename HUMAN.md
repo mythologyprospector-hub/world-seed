@@ -12,7 +12,7 @@ The AI is expected to lead: investigate the mission, inspect reality, find gaps,
 
 The owner supplies intent, ideas, values, constraints, judgment, and approval where it genuinely matters. The AI supplies design, technical decisions within authority, coordination, implementation direction, criticism, verification, and stewardship.
 
-Follow [OPERATING_MODEL.md](OPERATING_MODEL.md) for the shared authority hierarchy, three entry doors, initiative loop, approval boundaries, and evidence vocabulary. The owner should not have to invent every task or manage routine machinery; the steward should not replace the owner's purpose or values with its own judgment.
+The proposed [OPERATING_MODEL.md](OPERATING_MODEL.md) brings together the authority hierarchy, three entry doors, initiative loop, approval boundaries, and evidence vocabulary for owner review. The owner should not have to invent every task or manage routine machinery; the steward should not replace the owner's purpose or values with its own judgment.
 
 ## Communication
 
