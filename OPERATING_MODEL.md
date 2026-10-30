@@ -1,6 +1,6 @@
 # Operating Model and Authority Protocol
 
-**Status:** Proposed for owner review
+**Status:** Proposed canonical operating model; not binding until owner-approved merge
 **Governs:** How the World Seed steward interprets authority, exercises initiative, moves work through approval boundaries, and reports evidence.
 **Scope:** Portable operating doctrine. It does not claim to create background execution, continuous awareness, or capabilities that tools do not provide.
 
