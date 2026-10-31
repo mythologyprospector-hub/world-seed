@@ -65,30 +65,39 @@ def status_code(status: int) -> int:
 
 
 def terminate_child_process(child_pid: int, grace_seconds: float = 0.5) -> None:
-    """Terminate a PTY child process group, escalating if it ignores SIGTERM."""
+    """Terminate a PTY process group, escalating if any member remains."""
     try:
         os.killpg(child_pid, signal.SIGTERM)
     except ProcessLookupError:
         pass
 
     deadline = time.monotonic() + grace_seconds
+    child_reaped = False
     while time.monotonic() < deadline:
+        if not child_reaped:
+            try:
+                waited_pid, _ = os.waitpid(child_pid, os.WNOHANG)
+                child_reaped = waited_pid == child_pid
+            except ChildProcessError:
+                child_reaped = True
         try:
-            waited_pid, _ = os.waitpid(child_pid, os.WNOHANG)
-        except ChildProcessError:
-            return
-        if waited_pid == child_pid:
-            return
+            os.killpg(child_pid, 0)
+        except ProcessLookupError:
+            if child_reaped:
+                return
+        except PermissionError:
+            pass
         time.sleep(0.02)
 
     try:
         os.killpg(child_pid, signal.SIGKILL)
     except ProcessLookupError:
         pass
-    try:
-        os.waitpid(child_pid, 0)
-    except ChildProcessError:
-        pass
+    if not child_reaped:
+        try:
+            os.waitpid(child_pid, 0)
+        except ChildProcessError:
+            pass
 
 
 def main() -> int:
