@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -190,3 +191,48 @@ def test_interactive_pty_session_cleans_up_on_sigterm(tmp_path: Path) -> None:
     assert records[-1]["event"] == "session_finished"
     assert records[-1]["interrupted"] is True
     assert records[-1]["exit_code"] == 143
+
+
+
+def test_terminate_child_process_escalates_when_sigterm_is_ignored() -> None:
+    spec = importlib.util.spec_from_file_location("terminal_session", SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    ready_read, ready_write = os.pipe()
+    child_pid = os.fork()
+    if child_pid == 0:
+        os.close(ready_read)
+        os.setsid()
+        import signal
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        os.write(ready_write, b"1")
+        os.close(ready_write)
+        while True:
+            time.sleep(1)
+
+    os.close(ready_write)
+    try:
+        assert os.read(ready_read, 1) == b"1"
+        started = time.monotonic()
+        module.terminate_child_process(child_pid)
+        elapsed = time.monotonic() - started
+        assert elapsed >= 0.45
+        assert elapsed < 2.0
+        try:
+            os.waitpid(child_pid, os.WNOHANG)
+        except ChildProcessError:
+            pass
+        else:
+            raise AssertionError("terminated child was not reaped")
+    finally:
+        os.close(ready_read)
+        try:
+            os.killpg(child_pid, 9)
+        except ProcessLookupError:
+            pass
+        try:
+            os.waitpid(child_pid, 0)
+        except ChildProcessError:
+            pass
