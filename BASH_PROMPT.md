@@ -7,19 +7,40 @@
 
 The shell prompt is a local situational-awareness aid for the human and AI builder. Depending on the environment, it may expose the current machine, directory, Git branch, uncommitted changes, and the last command's exit status. It is not a security boundary, approval mechanism, test result, or substitute for checking repository state.
 
-## Possible prompt signals
+## Dashboard signals
 
 A prompt configuration may include:
 
 - A timestamp and user/host/directory display.
+- A terminal-mode label, such as **NORMAL** or **JOURNAL**.
 - The current Git branch or an abbreviated commit when detached HEAD.
-- A marker when Git reports changes.
+- A marker when Git reports changes and ahead/behind counts when available.
 - A marker for a preceding command that exited unsuccessfully.
 - A command-history hook or timestamp formatting.
-- A helper that reports the current branch, short Git status, and latest commit.
 - Machine-specific environment setup, aliases, or helper commands.
 
-These are examples of possible signals, not claims about the target operator's environment. Verify the actual configuration when authorized local-machine access is available. Do not copy one operator's prompt configuration or machine-specific details into the distributable seed.
+These are possible signals, not claims that every operator has them. Verify the actual configuration when authorized local-machine access is available.
+
+### NORMAL and JOURNAL labels
+
+An operator may use a small prompt label to distinguish an ordinary shell from one launched by an interactive terminal-journaling wrapper. In an operator configuration that uses this convention, the label is driven by the `WORLD_SEED_TERMINAL_MODE` environment variable:
+
+- `WORLD_SEED_TERMINAL_MODE=journal` displays **JOURNAL**.
+- When the variable is unset or has another value, the prompt displays **NORMAL**.
+
+The label is a launcher-origin indicator, not an independent detector of the terminal application's profile. Child shells inherit environment variables, so a shell started inside a journaled session may continue to display JOURNAL. Color is presentation only; a text fallback should remain understandable when terminal colors are unavailable.
+
+A local integration may set the marker in the child environment immediately before executing the interactive shell. This is an operator-side integration detail, not a guarantee that every distributed launcher version sets it. The marker itself does not capture, store, or transmit anything. The journaling launcher is responsible for recording the session. Its raw journal is local by default; any remote handoff or publication is a separate, explicit workflow. See [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md).
+
+### Three distinct terminal mechanisms
+
+Do not conflate these tools:
+
+1. **Bash prompt/dashboard** — displays local context. It does not capture terminal output, publish reports, fetch Git state, or connect to ChatGPT.
+2. **Interactive PTY journal** — when deliberately launched, records the interactive session's terminal output to the local durable journal. The raw journal remains local by default. A reviewed handoff is a separate operation. See [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md) and [scripts/terminal_session.py](scripts/terminal_session.py).
+3. **World Seed See** — an explicitly invoked command wrapper that shares bounded, heuristically redacted snapshots to the private Intake Dock about every 10 seconds. It is not the interactive PTY journal and is not a live chat connection. See [WORLD_SEED_SEE.md](WORLD_SEED_SEE.md).
+
+The dashboard's Git indicators are local observations. They do not fetch from a remote or prove that a branch is current. World Seed See's remote report publication is not caused by the prompt.
 
 ## Required builder behavior
 
@@ -38,6 +59,6 @@ A prompt helper is useful for a quick check, but it does not establish whether t
 
 ## Portability and maintenance
 
-World Seed may provide an optional, documented prompt enhancement or diagnostics helper, but must not overwrite a shell startup file, replace an operator's prompt, or silently change aliases, environment variables, history settings, or shell startup behavior. Preserve existing configuration and propose changes as a reviewable diff. Shell configuration may contain private paths or operational details; do not copy it wholesale into a public repository.
+World Seed may provide an optional, documented prompt enhancement or diagnostics helper, but must not overwrite a shell startup file, replace an operator's prompt, or silently change aliases, environment variables, history settings, or shell startup behavior. Preserve existing configuration and propose changes as a reviewable diff. Shell configuration may contain private paths or operational details; do not copy it wholesale into the distributable seed.
 
 A prompt can improve visibility. Governance remains in the constitution, GitHub policy, review workflow, tests, and verified evidence.
