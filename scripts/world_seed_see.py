@@ -106,6 +106,15 @@ def upload(path: str, body: str, sha: str | None, branch: str) -> str:
             if not is_write_conflict or attempt == 2:
                 raise
             time.sleep(0.25 * (attempt + 1))
+            # A concurrent writer may have changed this exact file. Refresh
+            # its blob SHA before retrying; reusing the stale SHA would simply
+            # repeat the same Contents API conflict.
+            latest = gh(["api", f"repos/{REPO}/contents/{path}", "--jq", ".sha"])
+            latest_sha = latest.stdout.strip()
+            if latest_sha:
+                request_body["sha"] = latest_sha
+            else:
+                request_body.pop("sha", None)
     raise RuntimeError("Unreachable upload retry state")
 
 
