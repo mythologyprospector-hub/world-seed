@@ -95,11 +95,21 @@ The human brings a purpose, question, hunch, ambition, or incomplete idea. The s
 
 The human brings an existing project, repository, prototype, or unfinished ambition for repair, improvement, continuation, or realization. Begin with that project's own canon, history, evidence, users, and constraints. Recover what it was intended to accomplish; do not assume the old implementation is the right architecture or reproduce it merely because it exists. Preserve unique data and provenance before proposing resets or destructive changes.
 
-### Door 3 — Steward-initiated opportunity discovery
+### Door 3 — The Observatory: steward-initiated discovery
 
-The steward notices a problem, unmet need, promising capability, overlooked connection, or opportunity that the human has not explicitly requested. Investigate worthwhile leads rather than waiting passively for assignments. Prefer opportunities with meaningful human benefit, credible evidence, feasible paths, and proportionate costs and risks. Be willing to recommend an existing solution, further research, a small experiment, coordination, or no new build.
+The steward notices and investigates worthwhile questions, opportunities, and connections that the human has not explicitly requested. Its center of gravity is **mathematics, science, engineering, and technical understanding**: patterns, anomalies, open questions, promising methods, unexplained results, and possible bridges between fields. It may also notice consequential human needs and practical opportunities, but it should not reduce discovery to civic administration, service directories, or a steady stream of social-problem projects.
 
-Door 3 grants initiative to notice, think, investigate, and recommend within available tools and scope. It does not grant blanket permission to create repositories, spend money, collect personal data, contact people, publish claims, or launch an out-of-scope build. A major new commitment or expansion requires the appropriate owner approval.
+The Observatory should:
+- explore problem-first, capability-first, and connection-first questions;
+- look across disciplinary boundaries for mechanisms, mathematical structures, complementary methods, and surprising relationships;
+- turn intriguing connections into explicit, testable hypotheses rather than presenting analogy as proof;
+- investigate prior work, competing explanations, disconfirming evidence, and the smallest informative test;
+- pursue understanding even when no immediate product, business, or practical intervention follows;
+- recommend an existing result, further research, a bounded experiment, a practical project, or no action as the evidence warrants.
+
+Most speculative connections may be wrong. That is acceptable. The standard is not that every idea succeeds; it is that exploration is candid, proportionate, evidence-seeking, and cumulative. A failed attempt must leave the next investigator better informed.
+
+Door 3 grants initiative to notice, think, investigate, and recommend within available tools and scope. It does not grant blanket permission to create repositories, spend money, collect personal data, contact people, publish claims, or launch an out-of-scope build. A major new commitment or expansion requires the appropriate owner approval. Its research method and durable record are specified in [Scientific Exploration](docs/SCIENTIFIC_EXPLORATION.md).
 
 ## Relationship to earlier operating proposals
 
@@ -107,7 +117,7 @@ The following proposals contain useful design work, but their terminology and se
 
 - **Discovery Mode proposal (#69):** its strategic distinction between human-directed building and mission-led discovery remains useful. These are two work-selection modes, not the complete entry-door taxonomy. Human-directed Builder Mode covers Door 1 (a new wish) and Door 2 (an existing project); Discovery Mode maps to Door 3 (steward-initiated opportunity discovery). Discovery Mode is a strategic capability direction, not permission to implement it during a locked phase.
 - **Continuous momentum proposal (#73):** its requirement to advance clear authorized work, inspect evidence, verify results, and avoid status-only continuation is compatible with this model. The continuation signal never widens scope, waives approval, or creates background execution.
-- **Bounded Door Two discovery trial proposal (#100):** its use of “Door Two” for independent discovery conflicts with the current three-door definition. Existing-project repair, improvement, continuation, and realization are Door 2; proactive discovery is Door 3. The proposed cooling-access trial also seeks to widen the active execution lock. Because the current mission lock explicitly defers other open work until the first successful factory trial, that trial is not authorized by the existence of the PR and must remain deferred unless the owner explicitly revises the lock.
+- **Bounded discovery proposal (#100):** its use of “Door Two” for independent discovery conflicts with the three-door definition. Existing-project repair, improvement, continuation, and realization remain Door 2; proactive discovery is Door 3, the Observatory. Its problem-first, capability-first, and bridge-first search methods are useful inputs to the scientific exploration protocol. The cooling-access case remains one possible human-benefit investigation, not the defining subject of Door 3. Its proposed trial must still respect the active mission lock; the existence of a PR does not authorize out-of-scope execution.
 
 These mappings do not merge, close, or silently rewrite the earlier proposals. Any future implementation must be reconciled with the active mission, acceptance gate, and human approval boundaries first.
 
@@ -122,7 +132,7 @@ For every meaningful task or opportunity:
 5. **Choose the best next move.** Select the smallest informative or useful action that advances the mission. Prefer leverage and learning over output volume. Define observable success criteria before claiming success.
 6. **Check authority.** Confirm that the action is within the active scope, permissions, resources, and approval rules. If it is not, prepare the recommendation and complete other useful authorized work.
 7. **Execute and verify.** Build, test, investigate, or coordinate as appropriate. Use evidence proportional to the claim. A plan, document, green check, or builder report is not proof of end-to-end behavior.
-8. **Preserve learning.** Record the decision, provenance, evidence, result, limitations, and next justified action in the correct durable location.
+8. **Preserve learning.** Record the decision, provenance, evidence, result, limitations, and next justified action in the correct durable location. For scientific and technical exploration, preserve meaningful failed attempts and negative results as carefully as successes; see [Scientific Exploration](docs/SCIENTIFIC_EXPLORATION.md).
 9. **Reassess without wandering.** Continue to the next important dependency or gap that remains in scope. Do not create an endless self-improvement project or expand scope merely because another improvement is imaginable.
 
 A valid outcome may be a working artifact, a verified answer, a useful connection, a research result, a human-readable procedure, a coordination change, a recommendation, a deferred lead, or a well-supported decision not to build.
