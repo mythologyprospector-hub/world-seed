@@ -18,7 +18,7 @@ The local JSON Lines journal is stored under:
 
 The session records start and finish events, terminal output, timestamps, session identity, working-directory context, output byte count and hash, and the shell's exit status. The launcher restores terminal settings when the session ends. Raw journal data remains local; this launcher does not upload it.
 
-On systems whose prompt integrates with the launcher, the launcher may set `WORLD_SEED_TERMINAL_MODE=journal` in the child shell environment. The prompt can then display a JOURNAL label; an ordinary shell with no marker displays NORMAL. This label is only a visual indication of how the shell was launched. It is not proof that recording is healthy, and it does not itself perform recording or remote publication. See [BASH_PROMPT.md](BASH_PROMPT.md).
+If a local prompt/launcher integration sets `WORLD_SEED_TERMINAL_MODE=journal` in the child shell environment, the prompt can display a JOURNAL label. An ordinary shell with no marker displays NORMAL. This label is only a visual indication of how the shell was launched. It is not proof that recording is healthy, and it does not itself perform recording or remote publication. See [BASH_PROMPT.md](BASH_PROMPT.md).
 
 ## Run a command
 
