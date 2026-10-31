@@ -23,7 +23,7 @@ These are possible signals, not claims that every operator has them. Verify the 
 
 ### NORMAL and JOURNAL labels
 
-An operator may use a small prompt label to distinguish an ordinary shell from one launched by an interactive terminal-journaling wrapper. In the Bucky configuration, the label is driven by the `WORLD_SEED_TERMINAL_MODE` environment variable:
+An operator may use a small prompt label to distinguish an ordinary shell from one launched by an interactive terminal-journaling wrapper. In an operator configuration that uses this convention, the label is driven by the `WORLD_SEED_TERMINAL_MODE` environment variable:
 
 - `WORLD_SEED_TERMINAL_MODE=journal` displays **JOURNAL**.
 - When the variable is unset or has another value, the prompt displays **NORMAL**.
