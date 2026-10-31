@@ -18,10 +18,12 @@ SPEC.loader.exec_module(MODULE)
 class WorldSeedSeeTests(unittest.TestCase):
     def test_hidden_curiosity_mode_is_local_and_does_not_start_a_command(self):
         out = io.StringIO()
-        with patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--moo"]), \\
-             patch.object(MODULE, "gh") as gh, \\
-             patch.object(MODULE.subprocess, "Popen") as popen, \\
-             patch("sys.stdout", out):
+        with (
+            patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--moo"]),
+            patch.object(MODULE, "gh") as gh,
+            patch.object(MODULE.subprocess, "Popen") as popen,
+            patch("sys.stdout", out),
+        ):
             result = MODULE.main()
         self.assertEqual(result, 0)
         self.assertIn("FIELD CURIOSITY SOCIETY", out.getvalue())
@@ -31,8 +33,11 @@ class WorldSeedSeeTests(unittest.TestCase):
 
     def test_hidden_curiosity_mode_rejects_a_wrapped_command(self):
         err = io.StringIO()
-        with patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--moo", "--", "echo", "unsafe"]), \\
-             patch("sys.stderr", err), self.assertRaises(SystemExit) as raised:
+        with (
+            patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--moo", "--", "echo", "unsafe"]),
+            patch("sys.stderr", err),
+            self.assertRaises(SystemExit) as raised,
+        ):
             MODULE.main()
         self.assertEqual(raised.exception.code, 2)
         self.assertIn("cannot be combined", err.getvalue())
