@@ -30,7 +30,7 @@ An operator may use a small prompt label to distinguish an ordinary shell from o
 
 The label is a launcher-origin indicator, not an independent detector of the terminal application's profile. Child shells inherit environment variables, so a shell started inside a journaled session may continue to display JOURNAL. Color is presentation only; a text fallback should remain understandable when terminal colors are unavailable.
 
-The interactive PTY launcher can set the marker in the child environment immediately before executing the interactive shell. The marker itself does not capture, store, or transmit anything. The journaling launcher is responsible for recording the session. Its raw journal is local by default; any remote handoff or publication is a separate, explicit workflow. See [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md).
+A local integration may set the marker in the child environment immediately before executing the interactive shell. This is an operator-side integration detail, not a guarantee that every distributed launcher version sets it. The marker itself does not capture, store, or transmit anything. The journaling launcher is responsible for recording the session. Its raw journal is local by default; any remote handoff or publication is a separate, explicit workflow. See [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md).
 
 ### Three distinct terminal mechanisms
 
