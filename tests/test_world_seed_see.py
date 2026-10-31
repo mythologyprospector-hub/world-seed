@@ -16,6 +16,27 @@ SPEC.loader.exec_module(MODULE)
 
 
 class WorldSeedSeeTests(unittest.TestCase):
+    def test_hidden_curiosity_mode_is_local_and_does_not_start_a_command(self):
+        out = io.StringIO()
+        with patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--moo"]), \\
+             patch.object(MODULE, "gh") as gh, \\
+             patch.object(MODULE.subprocess, "Popen") as popen, \\
+             patch("sys.stdout", out):
+            result = MODULE.main()
+        self.assertEqual(result, 0)
+        self.assertIn("FIELD CURIOSITY SOCIETY", out.getvalue())
+        self.assertIn("specimen no. 0001", out.getvalue())
+        gh.assert_not_called()
+        popen.assert_not_called()
+
+    def test_hidden_curiosity_mode_rejects_a_wrapped_command(self):
+        err = io.StringIO()
+        with patch.object(MODULE.sys, "argv", ["world_seed_see.py", "--moo", "--", "echo", "unsafe"]), \\
+             patch("sys.stderr", err), self.assertRaises(SystemExit) as raised:
+            MODULE.main()
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("cannot be combined", err.getvalue())
+
     def test_redacts_common_password_bearer_and_flag_shapes(self):
         value = "password=dummy-value Authorization: Bearer abcdefghijklmno --token command-secret"
         result = MODULE.redact(value)
