@@ -34,7 +34,7 @@ Each report includes a prompt-like context snapshot: local time, user and host, 
 
 ## Acceptance evidence (2026-10-23 and 2026-10-31)
 
-- Both required GitHub Actions workflows passed on the 2026-10-31 pointer/concurrency repair commit.
+- Both required GitHub Actions workflows passed on the 2026-10-31 pointer-separation and initial bounded-retry commit.
 - A fresh harmless synthetic command ran locally and printed `World Seed See prompt-context smoke test passed`.
 - The private `terminal-live/LATEST-SEE.txt` pointer is the dedicated World Seed See discovery pointer; `LATEST.txt` is kept separate for the general terminal-report stream.
 - No sensitive command output was used.
