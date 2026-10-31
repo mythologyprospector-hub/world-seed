@@ -24,6 +24,32 @@ import uuid
 REPO = "mythologyprospector-hub/miracle-depot"
 MAX_BYTES = 24 * 1024
 SNAPSHOT_SECONDS = 10
+
+# A small, entirely local curiosity. Keep this out of normal help and execution.
+EASTER_EGG = r'''
+                         .-=========-.
+                      .-'  .-"""-.    '-.
+                    .'    /  .-.         '.
+                   /     |  (   )  |        \
+                  ;       \  '-'  /          ;
+                  |     .--'-----'--.        |
+                  |    /  .--------. \       |
+                  ;   |  /  .----.  \ |      ;
+                   \  | |  ( moo ) | | |    /
+                    '.|  \  '----'  / |   .'
+                      '-. '--------' .-'
+                         '---.  .---'
+                             \/
+
+             THE WORLD-SEED FIELD CURIOSITY SOCIETY
+                       specimen no. 0001
+
+       Observed: one (1) unusually well-dressed bovine.
+       Method:   patient observation; absolutely no milking.
+       Result:   the universe remains delightfully unexplained.
+
+                    Keep looking. Keep wondering.
+'''
 PATTERNS = [
     (re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]{8,}"), r"\1[REDACTED]"),
     (re.compile(r"(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b"), "[REDACTED_GITHUB_TOKEN]"),
@@ -130,10 +156,16 @@ def main() -> int:
     )
     parser.add_argument("--limit-bytes", type=int, default=MAX_BYTES,
                         help="maximum retained output bytes (default: 24576)")
+    parser.add_argument("--moo", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("command", nargs=argparse.REMAINDER,
                         help="command to run; place -- before it")
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
+    if args.moo:
+        if command or args.limit_bytes != MAX_BYTES:
+            parser.error("--moo cannot be combined with command or snapshot options")
+        print(EASTER_EGG)
+        return 0
     if not command:
         parser.error("provide a command after --, e.g. -- python -m unittest")
     if not 1024 <= args.limit_bytes <= 1024 * 1024:
