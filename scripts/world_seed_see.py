@@ -93,13 +93,24 @@ def upload(path: str, body: str, sha: str | None, branch: str) -> str:
     if sha:
         request_body["sha"] = sha
     args = ["api", "--method", "PUT", f"repos/{REPO}/contents/{path}", "--input", "-"]
-    result = gh(args, input_text=json.dumps(request_body))
-    return str(json.loads(result.stdout)["content"]["sha"])
+    for attempt in range(3):
+        try:
+            result = gh(args, input_text=json.dumps(request_body))
+            return str(json.loads(result.stdout)["content"]["sha"])
+        except subprocess.CalledProcessError as exc:
+            diagnostic = f"{exc.stderr or ''} {exc.stdout or ''}".lower()
+            is_write_conflict = any(
+                marker in diagnostic
+                for marker in ("http 409", "409 conflict", "update is not a fast forward")
+            )
+            if not is_write_conflict or attempt == 2:
+                raise
+            time.sleep(0.25 * (attempt + 1))
+    raise RuntimeError("Unreachable upload retry state")
 
 
-def publish_latest(report_path: str, report_url: str, branch: str) -> None:
+def publish_latest(report_path: str, report_url: str, branch: str, pointer_path: str = "terminal-live/LATEST.txt") -> None:
     """Point a stable private-repo path at the current run's report."""
-    pointer_path = "terminal-live/LATEST.txt"
     try:
         existing = gh(["api", f"repos/{REPO}/contents/{pointer_path}", "--jq", ".sha"])
         pointer_sha = existing.stdout.strip() or None
@@ -229,7 +240,7 @@ def main() -> int:
         return 125
     last_upload = time.monotonic()
     try:
-        publish_latest(path, url, branch)
+        publish_latest(path, url, branch, pointer_path="terminal-live/LATEST-SEE.txt")
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
         print(f"[world-seed-see] {safe_diagnostic(exc, 'Latest-report pointer refresh')}; use the printed report URL.", file=sys.stderr, flush=True)
     print(f"[world-seed-see] Live report: {url}", flush=True)
