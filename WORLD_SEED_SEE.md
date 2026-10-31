@@ -1,6 +1,6 @@
 # World Seed See: Near-Real-Time Terminal Snapshots
 
-**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, prompt-like shell context, and concurrent-write recovery. On 2026-10-31, the full local suite passed (269 tests and 54 subtests), and both required GitHub Actions workflows passed for the pointer/concurrency repair. This is verified near-real-time snapshot reporting, not a live terminal connection.
+**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, prompt-like shell context, and concurrent-write recovery. On 2026-10-31, the full local suite passed (269 tests and 54 subtests), and both required GitHub Actions workflows passed for the pointer-separation and initial bounded-retry change. The follow-up that refreshes the remote SHA before retrying is under review and must pass its own CI and live-publication checks. This is near-real-time snapshot reporting, not a live terminal connection.
 
 ## Run
 
@@ -32,11 +32,11 @@ Each report includes a prompt-like context snapshot: local time, user and host, 
 
 ## Acceptance gate
 
-## Acceptance evidence (2026-10-23)
+## Acceptance evidence (2026-10-23 and 2026-10-31)
 
 - Both required GitHub Actions workflows passed on the 2026-10-31 pointer/concurrency repair commit.
 - A fresh harmless synthetic command ran locally and printed `World Seed See prompt-context smoke test passed`.
 - The private `terminal-live/LATEST-SEE.txt` pointer is the dedicated World Seed See discovery pointer; `LATEST.txt` is kept separate for the general terminal-report stream.
 - No sensitive command output was used.
 
-The 2026-10-23 live smoke test remains historical evidence for the original snapshot path. The 2026-10-31 CI result verifies the later retry/pointer code, but a fresh live publication test after that change remains a separate acceptance check. Any later code changes must be verified again against their resulting commit.
+The 2026-10-23 live smoke test remains historical evidence for the original snapshot path. The 2026-10-31 CI result verifies pointer separation and the initial bounded-retry implementation. The refreshed-SHA retry follow-up requires its own successful CI run and a fresh live publication test. Any later code changes must be verified again against their resulting commit.
