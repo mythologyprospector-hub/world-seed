@@ -21,6 +21,8 @@ A prompt configuration may include:
 
 These are possible signals, not claims that every operator has them. Verify the actual configuration when authorized local-machine access is available.
 
+The current Bucky operator dashboard uses these signals together: timestamp, user/host, working directory, terminal mode, Git branch, and a compact working-tree/ahead-behind indicator where Git can provide it. In that local configuration, **green means accepted/working** and **red means a failing command or failure state**. These color meanings are operator-specific conventions, not portable guarantees. Always confirm a consequential state with the command's exit status and Git or service evidence; color alone is not proof.
+
 ### NORMAL and JOURNAL labels
 
 An operator may use a small prompt label to distinguish an ordinary shell from one launched by an interactive terminal-journaling wrapper. In an operator configuration that uses this convention, the label is driven by the `WORLD_SEED_TERMINAL_MODE` environment variable:
@@ -30,7 +32,7 @@ An operator may use a small prompt label to distinguish an ordinary shell from o
 
 The label is a launcher-origin indicator, not an independent detector of the terminal application's profile. Child shells inherit environment variables, so a shell started inside a journaled session may continue to display JOURNAL. Color is presentation only; a text fallback should remain understandable when terminal colors are unavailable.
 
-A local integration may set the marker in the child environment immediately before executing the interactive shell. This is an operator-side integration detail, not a guarantee that every distributed launcher version sets it. The marker itself does not capture, store, or transmit anything. The journaling launcher is responsible for recording the session. Its raw journal is local by default; any remote handoff or publication is a separate, explicit workflow. See [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md).
+The current `scripts/terminal_session.py` launcher sets this marker in the child shell it starts. This is an implementation fact for the current launcher, not a guarantee that every older or independently configured launcher does so. The marker itself does not capture, store, or transmit anything. The journaling launcher is responsible for recording the session. Its raw journal is local by default; any remote handoff or publication is a separate, explicit workflow. See [TERMINAL_JOURNAL.md](TERMINAL_JOURNAL.md).
 
 ### Three distinct terminal mechanisms
 
