@@ -81,20 +81,27 @@ class WorldSeedSeeTests(unittest.TestCase):
         upload.assert_called_once()
         popen.assert_not_called()
 
-    def test_upload_retries_github_write_conflict(self):
+    def test_upload_refreshes_remote_sha_before_retrying_write_conflict(self):
         conflict = subprocess.CalledProcessError(
             1, ["gh"], stderr="gh: HTTP 409: Conflict"
         )
+        current_sha = subprocess.CompletedProcess(["gh"], 0, "fresh-blob-sha\n", "")
         success = subprocess.CompletedProcess(
             ["gh"], 0, json.dumps({"content": {"sha": "new-blob-sha"}}), ""
         )
         with (
-            patch.object(MODULE, "gh", side_effect=[conflict, success]) as gh,
+            patch.object(MODULE, "gh", side_effect=[conflict, current_sha, success]) as gh,
             patch.object(MODULE.time, "sleep") as sleep,
         ):
-            result = MODULE.upload("terminal-live/run.txt", "report", None, "main")
+            result = MODULE.upload("terminal-live/run.txt", "report", "stale-blob-sha", "main")
         self.assertEqual(result, "new-blob-sha")
-        self.assertEqual(gh.call_count, 2)
+        self.assertEqual(gh.call_count, 3)
+        self.assertEqual(
+            gh.call_args_list[1].args[0],
+            ["api", f"repos/{MODULE.REPO}/contents/terminal-live/run.txt", "--jq", ".sha"],
+        )
+        retry_request = json.loads(gh.call_args_list[2].kwargs["input_text"])
+        self.assertEqual(retry_request["sha"], "fresh-blob-sha")
         sleep.assert_called_once_with(0.25)
 
     def test_upload_does_not_retry_non_conflict_failure(self):
