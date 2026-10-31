@@ -81,6 +81,35 @@ class WorldSeedSeeTests(unittest.TestCase):
         upload.assert_called_once()
         popen.assert_not_called()
 
+    def test_upload_retries_github_write_conflict(self):
+        conflict = subprocess.CalledProcessError(
+            1, ["gh"], stderr="gh: HTTP 409: Conflict"
+        )
+        success = subprocess.CompletedProcess(
+            ["gh"], 0, json.dumps({"content": {"sha": "new-blob-sha"}}), ""
+        )
+        with (
+            patch.object(MODULE, "gh", side_effect=[conflict, success]) as gh,
+            patch.object(MODULE.time, "sleep") as sleep,
+        ):
+            result = MODULE.upload("terminal-live/run.txt", "report", None, "main")
+        self.assertEqual(result, "new-blob-sha")
+        self.assertEqual(gh.call_count, 2)
+        sleep.assert_called_once_with(0.25)
+
+    def test_upload_does_not_retry_non_conflict_failure(self):
+        failure = subprocess.CalledProcessError(
+            1, ["gh"], stderr="gh: HTTP 403: Forbidden"
+        )
+        with (
+            patch.object(MODULE, "gh", side_effect=failure) as gh,
+            patch.object(MODULE.time, "sleep") as sleep,
+        ):
+            with self.assertRaises(subprocess.CalledProcessError):
+                MODULE.upload("terminal-live/run.txt", "report", None, "main")
+        gh.assert_called_once()
+        sleep.assert_not_called()
+
     def test_publish_latest_updates_stable_pointer(self):
         response = subprocess.CompletedProcess([], 0, "old-blob-sha\n", "")
         with patch.object(MODULE, "gh", return_value=response) as gh, patch.object(MODULE, "upload", return_value="new-sha") as upload:
@@ -92,6 +121,13 @@ class WorldSeedSeeTests(unittest.TestCase):
         self.assertIn("https://example.invalid/run.txt", args[1])
         self.assertEqual(args[2], "old-blob-sha")
         self.assertEqual(args[3], "main")
+
+    def test_publish_latest_uses_requested_pointer_path(self):
+        response = subprocess.CompletedProcess([], 0, "old-blob-sha\n", "")
+        with patch.object(MODULE, "gh", return_value=response) as gh, patch.object(MODULE, "upload", return_value="new-sha") as upload:
+            MODULE.publish_latest("terminal-live/run.txt", "https://example.invalid/run.txt", "main", pointer_path="terminal-live/LATEST-SEE.txt")
+        gh.assert_called_once_with(["api", f"repos/{MODULE.REPO}/contents/terminal-live/LATEST-SEE.txt", "--jq", ".sha"])
+        self.assertEqual(upload.call_args.args[0], "terminal-live/LATEST-SEE.txt")
 
     def test_collect_shell_context_includes_prompt_dashboard_fields(self):
         context = MODULE.collect_shell_context()

@@ -346,6 +346,7 @@ def main() -> int:
 
         child_pid, master_fd = pty.fork()
         if child_pid == 0:
+            os.environ["WORLD_SEED_TERMINAL_MODE"] = "journal"
             os.execv(str(shell), [str(shell), "-i"])
         tty.setraw(sys.stdin.fileno(), when=termios.TCSANOW)
 
