@@ -66,11 +66,17 @@ Professional quality means appropriate architecture, maintainability, security a
 
 ## NEXT BUILDER
 
-1. Read this sign, `MISSION.md`, `CONSTITUTION.md`, `AGENTS.md`, `RECOVERY.md`, `AUDIT_SYSTEM.md`, and `PROFILE_PACKAGES.md`.
-2. Load the authorized private operator configuration and recovery target before making account-specific decisions.
-3. Reconcile live GitHub state, local state, pull requests, checks, and preservation artifacts; treat old checkpoints as historical.
-4. Report what is proven, incomplete, blocked, and the next highest-leverage action.
-5. Drive routine work forward without needless questions, but do not merge, delete, or claim full recovery without evidence and required authorization.
+Follow the single canonical arrival sequence in [OPERATING_MODEL.md](OPERATING_MODEL.md):
+1. Read this document for the instance's active scope and immediate cautions.
+2. Read OPERATING_MODEL.md for authority, decision rights, initiative, and evidence language.
+3. Read MISSION.md, CONSTITUTION.md, and HUMAN.md.
+4. Read the active mission/acceptance lock.
+5. Follow AGENTS.md and consult only the supporting procedures relevant to the task.
+6. Load the authorized private operator configuration and recovery target before account-specific decisions.
+7. Reconcile live GitHub state, local state, pull requests, checks, and preservation artifacts; treat old checkpoints as historical.
+8. Report what is proven, incomplete, blocked, and the next highest-leverage authorized action.
+
+Drive routine work forward without needless questions, but do not merge, delete, or claim full recovery without evidence and required authorization.
 
 **The finish line is a factory that can be bootstrapped, used to produce work that stands up to professional scrutiny, and recovered well enough to do it again within its explicitly documented limits.**
 

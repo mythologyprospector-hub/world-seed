@@ -29,6 +29,10 @@ It is deliberately **mission-portable and operator-aware**:
 - [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
 - [CONSTITUTION.md](CONSTITUTION.md) — governance, leadership, Rule #1, Rule #2, authority, and safeguards.
 - [HUMAN.md](HUMAN.md) — the intended working relationship and communication style.
+- [OPERATING_MODEL.md](OPERATING_MODEL.md) — shared authority, entry doors, initiative, and evidence protocol.
+- [docs/SCIENTIFIC_EXPLORATION.md](docs/SCIENTIFIC_EXPLORATION.md) — Door 3 Observatory: cross-disciplinary scientific inquiry, falsifiable hypotheses, evidence standards, and cumulative learning from successes and failures.
+- [docs/CONSEQUENTIAL_SERENDIPITY.md](docs/CONSEQUENTIAL_SERENDIPITY.md) — Door 3's central mandate: discover worthwhile questions, useful unexpected connections, and consequential possibilities beyond the user's initial wish.
+- [templates/EXPLORATION_RECORD.md](templates/EXPLORATION_RECORD.md) — reusable human-readable record for substantive investigations, including negative results and boundary conditions.
 - [BOOTSTRAP.md](BOOTSTRAP.md) — account-level discovery and genesis sequence.
 - [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md) — ecosystem vs project responsibilities and the factory boundary.
 - [PROJECT_SEED_ABSORPTION.md](PROJECT_SEED_ABSORPTION.md) — audited migration map and acceptance gates for absorbing Project Seed capabilities into the World Seed factory.
