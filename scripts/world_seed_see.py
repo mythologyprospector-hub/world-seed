@@ -74,16 +74,26 @@ def gh(args: list[str], *, input_text: str | None = None) -> subprocess.Complete
     return subprocess.run(["gh", *args], input=input_text, text=True, capture_output=True, check=True)
 
 
+def safe_diagnostic(exc: BaseException, operation: str) -> str:
+    """Describe a failure without echoing command arguments, stderr, or payloads."""
+    if isinstance(exc, subprocess.CalledProcessError):
+        return f"{operation} failed (exit status {exc.returncode})"
+    if isinstance(exc, subprocess.TimeoutExpired):
+        return f"{operation} timed out"
+    return f"{operation} failed ({type(exc).__name__})"
+
+
 def upload(path: str, body: str, sha: str | None, branch: str) -> str:
     payload = base64.b64encode(body.encode("utf-8", errors="replace")).decode("ascii")
-    args = [
-        "api", "--method", "PUT", f"repos/{REPO}/contents/{path}",
-        "-f", "message=Refresh live terminal snapshot",
-        "-f", f"content={payload}", "-f", f"branch={branch}",
-    ]
+    request_body = {
+        "message": "Refresh live terminal snapshot",
+        "content": payload,
+        "branch": branch,
+    }
     if sha:
-        args.extend(["-f", f"sha={sha}"])
-    result = gh(args)
+        request_body["sha"] = sha
+    args = ["api", "--method", "PUT", f"repos/{REPO}/contents/{path}", "--input", "-"]
+    result = gh(args, input_text=json.dumps(request_body))
     return str(json.loads(result.stdout)["content"]["sha"])
 
 
@@ -174,7 +184,7 @@ def main() -> int:
     try:
         check = gh(["repo", "view", REPO, "--json", "isPrivate,defaultBranchRef", "--jq", "."])
     except (OSError, subprocess.CalledProcessError) as exc:
-        print(f"[world-seed-see] Cannot verify GitHub CLI access to {REPO}: {exc}", file=sys.stderr)
+        print(f"[world-seed-see] {safe_diagnostic(exc, 'GitHub CLI access check')} for {REPO}.", file=sys.stderr)
         return 125
     try:
         repo_info = json.loads(check.stdout)
@@ -215,13 +225,13 @@ def main() -> int:
     try:
         sha = upload(path, initial_report, None, branch)
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
-        print(f"[world-seed-see] Could not create the private live report; command not started: {exc}", file=sys.stderr)
+        print(f"[world-seed-see] {safe_diagnostic(exc, 'Private live-report creation')}; command not started.", file=sys.stderr)
         return 125
     last_upload = time.monotonic()
     try:
         publish_latest(path, url, branch)
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
-        print(f"[world-seed-see] Could not refresh latest-report pointer; use the printed report URL: {exc}", file=sys.stderr, flush=True)
+        print(f"[world-seed-see] {safe_diagnostic(exc, 'Latest-report pointer refresh')}; use the printed report URL.", file=sys.stderr, flush=True)
     print(f"[world-seed-see] Live report: {url}", flush=True)
     print("[world-seed-see] Explicitly wrapped output is shared to the private repo about every 10 seconds.", flush=True)
     print("[world-seed-see] Redaction is heuristic; never run commands whose output contains secrets.", flush=True)
@@ -230,7 +240,7 @@ def main() -> int:
     try:
         proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
     except OSError as exc:
-        print(f"[world-seed-see] Could not start command: {exc}", file=sys.stderr)
+        print(f"[world-seed-see] {safe_diagnostic(exc, 'Command launch')}.", file=sys.stderr)
         return 127
     assert proc.stdout is not None
     selector.register(proc.stdout, selectors.EVENT_READ)
@@ -274,7 +284,7 @@ def main() -> int:
                         print(f"\n[world-seed-see] Snapshot refreshed: {url}", flush=True)
                 except (OSError, subprocess.CalledProcessError, ValueError, KeyError) as exc:
                     upload_failed = True
-                    print(f"\n[world-seed-see] Snapshot upload failed; command continues: {exc}", file=sys.stderr, flush=True)
+                    print(f"\n[world-seed-see] {safe_diagnostic(exc, 'Snapshot upload')}; command continues.", file=sys.stderr, flush=True)
                     # Avoid spamming the GitHub API on persistent failure.
                     last_upload = now_mono
             if finished:
