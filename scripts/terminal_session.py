@@ -64,6 +64,33 @@ def status_code(status: int) -> int:
     return 1
 
 
+def terminate_child_process(child_pid: int, grace_seconds: float = 0.5) -> None:
+    """Terminate a PTY child process group, escalating if it ignores SIGTERM."""
+    try:
+        os.killpg(child_pid, signal.SIGTERM)
+    except ProcessLookupError:
+        pass
+
+    deadline = time.monotonic() + grace_seconds
+    while time.monotonic() < deadline:
+        try:
+            waited_pid, _ = os.waitpid(child_pid, os.WNOHANG)
+        except ChildProcessError:
+            return
+        if waited_pid == child_pid:
+            return
+        time.sleep(0.02)
+
+    try:
+        os.killpg(child_pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    try:
+        os.waitpid(child_pid, 0)
+    except ChildProcessError:
+        pass
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Launch an interactive PTY shell and durably journal terminal output locally."
@@ -165,46 +192,22 @@ def main() -> int:
                     seq += 1
                 except OSError as exc:
                     failure = f"journal write failed: {type(exc).__name__}: {exc}"
-                    os.kill(child_pid, signal.SIGTERM)
+                    terminate_child_process(child_pid)
+                    child_pid = -1
+                    exit_code = 125
                     break
                 output_hash.update(chunk)
                 output_bytes += len(chunk)
                 os.write(sys.stdout.fileno(), chunk)
-        _, wait_status = os.waitpid(child_pid, 0)
-        exit_code = status_code(wait_status)
+        if child_pid > 0:
+            _, wait_status = os.waitpid(child_pid, 0)
+            exit_code = status_code(wait_status)
     except (KeyboardInterrupt, SessionTerminated) as exc:
         interrupted = True
         termination_signal = exc.signum if isinstance(exc, SessionTerminated) else signal.SIGINT
         if child_pid > 0:
-            # An interactive shell may ignore SIGTERM. Terminate its process
-            # group, wait briefly, then escalate so shutdown cannot hang.
-            try:
-                os.killpg(child_pid, signal.SIGTERM)
-            except ProcessLookupError:
-                pass
-
-            deadline = time.monotonic() + 0.5
-            child_reaped = False
-            while time.monotonic() < deadline:
-                try:
-                    waited_pid, _ = os.waitpid(child_pid, os.WNOHANG)
-                except ChildProcessError:
-                    child_reaped = True
-                    break
-                if waited_pid == child_pid:
-                    child_reaped = True
-                    break
-                time.sleep(0.02)
-
-            if not child_reaped:
-                try:
-                    os.killpg(child_pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-                try:
-                    os.waitpid(child_pid, 0)
-                except ChildProcessError:
-                    pass
+            terminate_child_process(child_pid)
+            child_pid = -1
 
         exit_code = 128 + termination_signal
     except OSError as exc:
