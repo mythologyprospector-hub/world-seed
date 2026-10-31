@@ -1,6 +1,6 @@
 # World Seed See: Near-Real-Time Terminal Snapshots
 
-**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, and prompt-like shell context. Verification passed on 2026-10-23: both required GitHub Actions workflows passed, and a fresh harmless live smoke test confirmed local output, the uploaded report, all expected prompt-like context fields, and exit code 0. This is verified near-real-time snapshot reporting, not a live terminal connection.
+**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, prompt-like shell context, and concurrent-write recovery. On 2026-10-31, the full local suite passed (269 tests and 54 subtests), and both required GitHub Actions workflows passed for the pointer/concurrency repair. This is verified near-real-time snapshot reporting, not a live terminal connection.
 
 ## Run
 
@@ -18,7 +18,7 @@ python3 scripts/world_seed_see.py -- git status --short --branch
 
 The wrapper streams combined stdout/stderr to the local terminal and creates a report in the private `mythologyprospector-hub/miracle-depot` repository. It verifies that the repository is private and reads its actual default branch before starting the command. If either check or the initial upload fails, the command does not start.
 
-Each report includes a prompt-like context snapshot: local time, user and host, current working directory, Git branch, and whether the working tree is clean or dirty. The report refreshes this context along with command output about every 10 seconds and at completion. This reconstructs useful dashboard fields; it does not literally capture Bash's rendered prompt or shell history. At the start of each run, the wrapper also updates the stable private-repository pointer [terminal-live/LATEST.txt](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/LATEST.txt), which identifies the newest report path and URL. The report URL is printed as before. Output is bounded (24 KiB by default; 1 KiB to 1 MiB allowed), and the command's exit code is returned. This makes the newest report discoverable without copying its unique URL, but it is still **near-real-time snapshots, not a live terminal connection**; it does not push a notification into ChatGPT or wake this conversation.
+Each report includes a prompt-like context snapshot: local time, user and host, current working directory, Git branch, and whether the working tree is clean or dirty. The report refreshes this context along with command output about every 10 seconds and at completion. This reconstructs useful dashboard fields; it does not literally capture Bash's rendered prompt or shell history. At the start of each run, the wrapper also updates the stable private-repository pointer [terminal-live/LATEST-SEE.txt](https://github.com/mythologyprospector-hub/miracle-depot/blob/main/terminal-live/LATEST-SEE.txt), which identifies the newest World Seed See report path and URL. This is intentionally separate from `terminal-live/LATEST.txt`, which remains available to the general terminal-report stream. The report URL is printed as before. Output is bounded (24 KiB by default; 1 KiB to 1 MiB allowed), and the command's exit code is returned. If a GitHub Contents API write reports HTTP 409, the uploader waits briefly, fetches the current remote blob SHA for that path, and retries with the refreshed SHA (up to three total write attempts). Non-conflict errors are not retried. This reduces same-file concurrent-write failures; it cannot guarantee publication during persistent API, authentication, network, or repository failures. The command's local execution continues if a later snapshot upload fails, and the final terminal output warns that the report may be stale. The report is still **near-real-time snapshots, not a live terminal connection**; it does not push a notification into ChatGPT or wake this conversation.
 
 ## Privacy and limitations
 
@@ -34,9 +34,9 @@ Each report includes a prompt-like context snapshot: local time, user and host, 
 
 ## Acceptance evidence (2026-10-23)
 
-- Both required GitHub Actions workflows passed on the PR commit before this documentation update.
+- Both required GitHub Actions workflows passed on the 2026-10-31 pointer/concurrency repair commit.
 - A fresh harmless synthetic command ran locally and printed `World Seed See prompt-context smoke test passed`.
-- The private `terminal-live/LATEST.txt` pointer advanced to the new report, which contained the expected user/host, working directory, branch, clean/dirty state, output, final process state, and exit code `0`.
+- The private `terminal-live/LATEST-SEE.txt` pointer is the dedicated World Seed See discovery pointer; `LATEST.txt` is kept separate for the general terminal-report stream.
 - No sensitive command output was used.
 
-The enhancement's CI and live smoke-test acceptance checks are satisfied. Any later code changes must be verified again against their resulting commit.
+The 2026-10-23 live smoke test remains historical evidence for the original snapshot path. The 2026-10-31 CI result verifies the later retry/pointer code, but a fresh live publication test after that change remains a separate acceptance check. Any later code changes must be verified again against their resulting commit.
