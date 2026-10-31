@@ -26,7 +26,7 @@ MAX_BYTES = 24 * 1024
 SNAPSHOT_SECONDS = 10
 
 # A small, entirely local curiosity. Keep this out of normal help and execution.
-EASTER_EGG = r"""
+EASTER_EGG = r'''
                          .-=========-.
                       .-'  .-"""-.    '-.
                     .'    /  .-.         '.
@@ -49,7 +49,7 @@ EASTER_EGG = r"""
        Result:   the universe remains delightfully unexplained.
 
                     Keep looking. Keep wondering.
-"""
+'''
 PATTERNS = [
     (re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]{8,}"), r"\1[REDACTED]"),
     (re.compile(r"(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b"), "[REDACTED_GITHUB_TOKEN]"),
