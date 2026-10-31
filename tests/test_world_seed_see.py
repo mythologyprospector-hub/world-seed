@@ -85,7 +85,7 @@ class WorldSeedSeeTests(unittest.TestCase):
         conflict = subprocess.CalledProcessError(
             1, ["gh"], stderr="gh: HTTP 409: Conflict"
         )
-        current_sha = subprocess.CompletedProcess(["gh"], 0, "fresh-blob-sha\\n", "")
+        current_sha = subprocess.CompletedProcess(["gh"], 0, "fresh-blob-sha\n", "")
         success = subprocess.CompletedProcess(
             ["gh"], 0, json.dumps({"content": {"sha": "new-blob-sha"}}), ""
         )
