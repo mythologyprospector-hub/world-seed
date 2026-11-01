@@ -1,6 +1,6 @@
 # World Seed See: Near-Real-Time Terminal Snapshots
 
-**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, prompt-like shell context, and concurrent-write recovery. On 2026-10-31, the full local suite passed (269 tests and 54 subtests), and both required GitHub Actions workflows passed for the pointer-separation and initial bounded-retry change. The follow-up that refreshes the remote SHA before retrying is under review and must pass its own CI and live-publication checks. This is near-real-time snapshot reporting, not a live terminal connection.
+**Status:** Explicit opt-in wrapper. GitHub Actions unit tests cover redaction, privacy refusal, initial-upload failure, bounded output, exit-code preservation, prompt-like shell context, and concurrent-write recovery. On 2026-10-31, the full local suite passed (269 tests and 54 subtests); both required GitHub Actions workflows passed for the pointer-separation and refreshed-SHA retry changes; and a fresh Bucky live-publication test confirmed output capture, final report upload, `LATEST-SEE.txt` advancement, and exit-code preservation. The refreshed-SHA retry fix is merged in PR #110 (`0e934bd7deda5cbdea752c8c56a0276521383f79`). This is near-real-time snapshot reporting, not a live terminal connection.
 
 ## Run
 
@@ -34,9 +34,10 @@ Each report includes a prompt-like context snapshot: local time, user and host, 
 
 ## Acceptance evidence (2026-10-23 and 2026-10-31)
 
-- Both required GitHub Actions workflows passed on the 2026-10-31 pointer-separation and initial bounded-retry commit.
-- A fresh harmless synthetic command ran locally and printed `World Seed See prompt-context smoke test passed`.
-- The private `terminal-live/LATEST-SEE.txt` pointer is the dedicated World Seed See discovery pointer; `LATEST.txt` is kept separate for the general terminal-report stream.
-- No sensitive command output was used.
+- Both required GitHub Actions workflows passed for the pointer-separation and refreshed-SHA retry implementation; the retry fix is merged in PR #110 (`0e934bd7deda5cbdea752c8c56a0276521383f79`).
+- The full local suite passed on 2026-10-31 (269 tests and 54 subtests).
+- A fresh Bucky live-publication test ran a harmless command, captured its expected output, uploaded the final report, advanced `terminal-live/LATEST-SEE.txt`, and preserved exit code 0.
+- The private `terminal-live/LATEST-SEE.txt` pointer is the dedicated World Seed See discovery pointer; `LATEST.txt` remains separate for the general terminal-report stream.
+- No sensitive command output was used in the live acceptance test.
 
-The 2026-10-23 live smoke test remains historical evidence for the original snapshot path. The 2026-10-31 CI result verifies pointer separation and the initial bounded-retry implementation. The refreshed-SHA retry follow-up requires its own successful CI run and a fresh live publication test. Any later code changes must be verified again against their resulting commit.
+The 2026-10-23 live smoke test remains historical evidence for the original snapshot path. The 2026-10-31 evidence verifies the merged pointer/retry implementation and a fresh end-to-end publication. Any later code changes must be verified again against their resulting commit.

@@ -77,3 +77,12 @@ Publishing is restricted to the explicitly allowlisted `mythologyprospector-hub/
 ## Acceptance
 
 The command-scoped local journal is accepted only when tests verify stdout/stderr capture, successful and failing commands, exact exit-code preservation, incremental persistence, append/reopen behavior, project separation, file permissions, interruption handling, and journal-write failure behavior. The interactive PTY launcher has its own lifecycle and terminal-restoration behavior and must be verified independently. Neither local journal mode alone lets an assistant remotely inspect the terminal. A reviewed handoff provides a bounded, explicit remote path; it is not live streaming. The latest index is discovery metadata, not a substitute for reviewing the report itself.
+
+### Live acceptance evidence (2026-10-31)
+
+- A synthetic command-scoped journal run captured its expected marker, recorded exit code 0, and produced a bounded local report with no journal warnings.
+- That reviewed report was explicitly published; the publisher independently read it back and verified the remote bytes before writing its success receipt.
+- A separate interactive PTY session was launched directly from the JOURNAL terminal, captured the expected `WORLD SEED INTERACTIVE PTY ACCEPTANCE PASSED` marker, recorded completion with exit code 0, and produced a local report with 1,118 output bytes, no truncation, no interruption, and zero journal warnings.
+- The reviewed PTY report was explicitly published to the private handoff repository. The remote report and `terminal-handoffs/latest.json` index were independently fetched and inspected; the index points to the expected session report and records exit code 0 and completion `recorded`.
+
+These results verify the tested Bucky path as of 2026-10-31. They do not turn the journal into a system-wide hook or a live chat connection, and later launcher changes require fresh verification.
