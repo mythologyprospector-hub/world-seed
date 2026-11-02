@@ -93,3 +93,21 @@ def test_extract_command_history_reports_unavailable_without_markers() -> None:
     assert recent == []
     assert available is False
     assert redacted is False
+
+
+def test_extract_command_history_redacts_quoted_flag_values() -> None:
+    import base64
+
+    command = "curl --token 'quoted secret value'"
+    encoded = base64.b64encode(command.encode()).decode()
+    raw = (
+        "prompt$ curl request\r\nresponse\r\n"
+        f"\x1b]777;world-seed-command;0;1793600000.123456;{encoded}\x07"
+    )
+    transcript, recent, available, redacted = extract_command_history(raw)
+
+    assert available is True
+    assert redacted is True
+    assert "quoted secret value" not in transcript
+    assert "quoted secret value" not in recent[0]["command"]
+    assert "[REDACTED]" in recent[0]["command"]
