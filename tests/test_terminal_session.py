@@ -356,7 +356,7 @@ def test_interactive_bash_session_records_command_boundaries_and_preserves_bashr
     os.close(slave)
     captured = bytearray()
     try:
-        os.write(master, b"printf 'COMMAND_CAPTURE_SENTINEL\\\\n'\\n")
+        os.write(master, b"printf 'COMMAND_CAPTURE_SENTINEL\\n'\n")
         deadline = time.monotonic() + 8
         while time.monotonic() < deadline:
             ready, _, _ = select.select([master], [], [], 0.1)
@@ -374,7 +374,7 @@ def test_interactive_bash_session_records_command_boundaries_and_preserves_bashr
         assert process.poll() is None, "journaled Bash session exited unexpectedly"
         assert b"COMMAND_CAPTURE_SENTINEL" in captured
         assert b"world-seed-command;" in captured
-        os.write(master, b"exit 0\\n")
+        os.write(master, b"exit 0\n")
         deadline = time.monotonic() + 5
         while time.monotonic() < deadline and process.poll() is None:
             ready, _, _ = select.select([master], [], [], 0.1)
