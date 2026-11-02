@@ -377,7 +377,16 @@ def main() -> int:
     seq += 1
 
     reporter = _make_reporter(args.live_report)
-    bash_rcfile = _write_bash_rcfile(root, session_id) if shell.name == "bash" else None
+    bash_rcfile = None
+    if shell.name == "bash":
+        try:
+            bash_rcfile = _write_bash_rcfile(root, session_id)
+        except OSError as exc:
+            print(
+                "[world-seed-session] Bash command-boundary capture unavailable; "
+                f"local session journaling continues ({type(exc).__name__}).",
+                file=sys.stderr,
+            )
 
     child_pid = -1
     master_fd = -1
