@@ -24,9 +24,9 @@ For interactive Bash sessions, the launcher creates a temporary owner-only rc wr
 
 The launcher prints the session UUID. To prepare a bounded handoff containing the **last 10 completed Bash commands** and their corresponding terminal output, run:
 
-\`\`\`bash
+```bash
 python3 scripts/prepare_interactive_handoff.py --session SESSION_UUID
-\`\`\`
+```
 
 Replace SESSION_UUID with the identifier printed when the journaled session started. Preparation writes a private local JSON report to the handoff outbox; it does not upload. Inspect the command list and output, including the redaction notice, before publishing that exact report with the existing explicit terminal_handoff.py publish --confirm-publish operation.
 
