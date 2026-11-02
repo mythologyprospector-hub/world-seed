@@ -7,6 +7,8 @@ explicitly confirmed operation through terminal_handoff.py.
 from __future__ import annotations
 
 import argparse
+import base64
+import datetime as dt
 import hashlib
 import json
 import os
@@ -44,6 +46,90 @@ def readable_terminal_text(value: str) -> str:
     value = _ANSI_CONTROL_RE.sub("", value)
     value = value.replace("\r\n", "\n").replace("\r", "\n")
     return "".join(ch for ch in value if ch in "\n\t" or ord(ch) >= 32 and ord(ch) != 127)
+
+
+
+_COMMAND_MARKER_RE = re.compile(
+    r"\x1b\]777;world-seed-command;(?P<exit_code>\d+);"
+    r"(?P<timestamp>[^;]*);(?P<command>[A-Za-z0-9+/=]*)\x07"
+)
+
+
+def bounded_tail_text(value: str, limit: int) -> tuple[str, bool]:
+    """Keep the newest part of a transcript when its byte budget is exceeded."""
+    encoded = value.encode("utf-8", errors="replace")
+    if len(encoded) <= limit:
+        return value, False
+    marker = "\n[EARLIER COMMAND OUTPUT OMITTED BY HANDOFF LIMIT]\n"
+    available = max(0, limit - len(marker.encode("utf-8")))
+    tail = encoded[-available:] if available else b""
+    return marker + tail.decode("utf-8", errors="ignore"), True
+
+
+def extract_command_history(raw_output: str, limit: int = 10) -> tuple[str, list[dict[str, Any]], bool, bool]:
+    """Extract the newest completed Bash commands and their bounded-readable output."""
+    if not isinstance(limit, int) or isinstance(limit, bool) or limit < 1:
+        raise ValueError("command history limit must be a positive integer")
+    parsed: list[tuple[dict[str, Any], str]] = []
+    previous = 0
+    redactions_applied = False
+    for match in _COMMAND_MARKER_RE.finditer(raw_output):
+        try:
+            command = base64.b64decode(match.group("command"), validate=True).decode(
+                "utf-8", errors="replace"
+            ).strip()
+            exit_code = int(match.group("exit_code"))
+        except (ValueError, TypeError):
+            previous = match.end()
+            continue
+        if not command:
+            previous = match.end()
+            continue
+        safe_command, command_redacted = redact(command)
+        output = readable_terminal_text(raw_output[previous:match.start()]).strip()
+        safe_output, output_redacted = redact(output)
+        redactions_applied = redactions_applied or command_redacted or output_redacted
+        timestamp = None
+        try:
+            timestamp = dt.datetime.fromtimestamp(
+                float(match.group("timestamp")), tz=dt.timezone.utc
+            ).isoformat(timespec="milliseconds")
+        except (ValueError, OverflowError, OSError):
+            pass
+        parsed.append((
+            {
+                "command": safe_command[:4096],
+                "exit_code": exit_code,
+                "completed_at_utc": timestamp,
+            },
+            safe_output,
+        ))
+        previous = match.end()
+
+    if not parsed:
+        return "", [], False, False
+
+    recent = parsed[-limit:]
+    metadata = [item[0] for item in recent]
+    sections: list[str] = []
+    first_number = len(parsed) - len(recent) + 1
+    for number, (item, output) in enumerate(recent, start=first_number):
+        sections.append(
+            f"--- Command {number} ---\n"
+            f"$ {item['command']}\n"
+            f"Exit code: {item['exit_code']}\n"
+            "Output:\n"
+            f"{output if output else '[no captured output]'}\n"
+        )
+    tail = readable_terminal_text(raw_output[previous:]).strip()
+    if tail:
+        safe_tail, tail_redacted = redact(tail)
+        redactions_applied = redactions_applied or tail_redacted
+        sections.append(
+            "--- Unattributed terminal tail (may include an unfinished command) ---\n"
+            f"{safe_tail}\n"
+        )
+    return "\n".join(sections), metadata, True, redactions_applied
 
 
 def git_context(cwd: str) -> tuple[str | None, str | None, bool | None]:
@@ -126,9 +212,16 @@ def prepare(args: argparse.Namespace) -> int:
                 raise ValueError(
                     "captured output SHA-256 does not match session_finished.output_sha256"
                 )
-        readable_output = readable_terminal_text(raw_output)
-        safe_output, redactions_applied = redact(readable_output)
-        safe_output, truncated = bounded_text(safe_output, args.max_output_bytes)
+        command_transcript, recent_commands, command_capture_available, command_redacted = (
+            extract_command_history(raw_output, limit=10)
+        )
+        if command_capture_available:
+            safe_output, truncated = bounded_tail_text(command_transcript, args.max_output_bytes)
+            redactions_applied = command_redacted
+        else:
+            readable_output = readable_terminal_text(raw_output)
+            safe_output, redactions_applied = redact(readable_output)
+            safe_output, truncated = bounded_text(safe_output, args.max_output_bytes)
         cwd = str(started.get("cwd") or "")
         repository, branch, dirty = git_context(cwd)
         report = {
@@ -164,6 +257,18 @@ def prepare(args: argparse.Namespace) -> int:
             ),
             "stdout": safe_output,
             "stderr": "",
+            "command_capture": {
+                "status": "available" if command_capture_available else "unavailable",
+                "method": "bash_prompt_marker" if command_capture_available else None,
+                "window_size": 10,
+                "captured_commands": len(recent_commands),
+                "note": (
+                    "The last 10 completed interactive Bash commands are grouped with their output."
+                    if command_capture_available
+                    else "Command boundaries were not available; stdout is a session transcript."
+                ),
+            },
+            "recent_commands": recent_commands,
             "truncated": truncated,
             "redactions_applied": redactions_applied,
             "redaction_notice": "Heuristic redaction is not guaranteed to find every secret. Review this file before publishing.",
