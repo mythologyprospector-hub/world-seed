@@ -375,6 +375,7 @@ def main() -> int:
               file=sys.stderr)
         return 125
     seq += 1
+    print(f"[world-seed-session] session ID: {session_id}", file=sys.stderr, flush=True)
 
     reporter = _make_reporter(args.live_report)
     bash_rcfile = None
