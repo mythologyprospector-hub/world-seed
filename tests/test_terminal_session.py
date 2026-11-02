@@ -333,3 +333,73 @@ def test_terminate_child_process_escalates_when_sigterm_is_ignored() -> None:
             os.waitpid(child_pid, 0)
         except ChildProcessError:
             pass
+
+
+
+def test_interactive_bash_session_records_command_boundaries_and_preserves_bashrc(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    home.mkdir()
+    hook_log = home / "prompt-hook.log"
+    (home / ".bashrc").write_text(
+        f"PROMPT_COMMAND='printf user-hook >> {hook_log}'\n",
+        encoding="utf-8",
+    )
+    master, slave = pty.openpty()
+    env = os.environ.copy()
+    env["HOME"] = str(home)
+    env["SHELL"] = "/bin/bash"
+    journal_root = tmp_path / "journal"
+    process = subprocess.Popen(
+        [sys.executable, str(SCRIPT), "--no-live-report", "--log-dir", str(journal_root)],
+        stdin=slave, stdout=slave, stderr=slave, env=env, close_fds=True,
+    )
+    os.close(slave)
+    captured = bytearray()
+    try:
+        os.write(master, b"printf 'COMMAND_CAPTURE_SENTINEL\\\\n'\\n")
+        deadline = time.monotonic() + 8
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    chunk = os.read(master, 4096)
+                except OSError:
+                    chunk = b""
+                if chunk:
+                    captured.extend(chunk)
+            if b"COMMAND_CAPTURE_SENTINEL" in captured and b"world-seed-command;" in captured:
+                break
+            if process.poll() is not None:
+                break
+        assert process.poll() is None, "journaled Bash session exited unexpectedly"
+        assert b"COMMAND_CAPTURE_SENTINEL" in captured
+        assert b"world-seed-command;" in captured
+        os.write(master, b"exit 0\\n")
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline and process.poll() is None:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    captured.extend(os.read(master, 4096))
+                except OSError:
+                    break
+        assert process.poll() is not None, "journaled Bash session did not exit"
+        assert process.returncode == 0
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+        os.close(master)
+
+    journal_files = list((journal_root / "interactive").glob("*.jsonl"))
+    assert len(journal_files) == 1
+    records = [json.loads(line) for line in journal_files[0].read_text().splitlines()]
+    output = "".join(
+        record.get("text", "")
+        for record in records
+        if record.get("event") == "terminal_output"
+    )
+    assert "world-seed-command;" in output
+    assert "COMMAND_CAPTURE_SENTINEL" in output
+    assert hook_log.read_text(encoding="utf-8").count("user-hook") >= 1
+    assert not list((journal_root / "interactive").glob(".*.bashrc"))
