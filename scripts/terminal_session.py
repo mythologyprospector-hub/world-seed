@@ -57,6 +57,22 @@ def append_record(path: Path, record: dict[str, object]) -> None:
     finally:
         os.close(fd)
 
+def journal_path_for_timestamp(root: Path, timestamp: str) -> Path:
+    """Choose the UTC daily journal file for an individual session record."""
+    moment = dt.datetime.fromisoformat(timestamp)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=dt.timezone.utc)
+    day = moment.astimezone(dt.timezone.utc).strftime("%Y-%m-%d")
+    return root / "interactive" / f"{day}.jsonl"
+
+
+def append_session_record(root: Path, record: dict[str, object]) -> None:
+    """Append a session record to the daily file matching its UTC timestamp."""
+    timestamp = record.get("recorded_at")
+    if not isinstance(timestamp, str):
+        raise ValueError("session record requires a recorded_at timestamp")
+    append_record(journal_path_for_timestamp(root, timestamp), record)
+
 
 def status_code(status: int) -> int:
     if os.WIFEXITED(status):
@@ -212,12 +228,12 @@ def _report_safely(reporter: LiveReporter | None, method: str, *args: object,
         _warn_report_failure(reporter, exc)
 
 
-def _write_final_state(log_path: Path, final: dict[str, object],
+def _write_final_state(log_root: Path, final: dict[str, object],
                        reporter: LiveReporter | None, exit_code: int) -> bool:
     """Attempt both durable local completion and best-effort final reporting."""
     journal_failed = False
     try:
-        append_record(log_path, final)
+        append_session_record(log_root, final)
     except OSError as exc:
         journal_failed = True
         print(f"\n[world-seed-session] completion record failed: {exc}", file=sys.stderr)
@@ -355,8 +371,6 @@ def main() -> int:
     started_at = utc_now()
     started_mono = time.monotonic()
     root = args.log_dir.expanduser()
-    day = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
-    log_path = root / "interactive" / f"{day}.jsonl"
     base: dict[str, object] = {
         "schema_version": 3,
         "session_id": session_id,
@@ -368,8 +382,8 @@ def main() -> int:
     output_hash = hashlib.sha256()
     output_bytes = 0
     try:
-        append_record(log_path, {**base, "event": "session_started",
-                                 "sequence": seq, "recorded_at": started_at})
+        append_session_record(root, {**base, "event": "session_started",
+                                         "sequence": seq, "recorded_at": started_at})
     except OSError as exc:
         print(f"[world-seed-session] cannot persist session start; shell not launched: {exc}",
               file=sys.stderr)
@@ -449,7 +463,7 @@ def main() -> int:
                 record = {**base, "event": "terminal_output", "sequence": seq,
                           "recorded_at": utc_now(), "text": chunk.decode("utf-8", errors="replace")}
                 try:
-                    append_record(log_path, record)
+                    append_session_record(root, record)
                     seq += 1
                 except OSError as exc:
                     failure = f"journal write failed: {type(exc).__name__}: {exc}"
@@ -497,9 +511,9 @@ def main() -> int:
                  "exit_code": exit_code, "interrupted": interrupted,
                  "output_bytes": output_bytes, "output_sha256": output_hash.hexdigest(),
                  "error": failure}
-        if _write_final_state(log_path, final, reporter, exit_code):
+        if _write_final_state(root, final, reporter, exit_code):
             return 125
-    print(f"\n[world-seed-session] local journal: {log_path}", file=sys.stderr)
+    print(f"\n[world-seed-session] local journal day: {ended_at[:10]}", file=sys.stderr)
     if failure:
         print(f"[world-seed-session] ERROR: {failure}", file=sys.stderr)
         return 125
