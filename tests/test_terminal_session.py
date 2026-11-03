@@ -67,6 +67,33 @@ def test_latest_pointer_warning_does_not_echo_sensitive_exception(capsys) -> Non
     assert "synthetic-report-secret" not in warning
 
 
+def test_session_records_roll_over_at_utc_midnight(tmp_path: Path) -> None:
+    root = tmp_path / "journal"
+    session = {"session_id": "rollover-test", "sequence": 0}
+    terminal_session.append_session_record(root, {
+        **session, "event": "session_started",
+        "recorded_at": "2026-10-31T23:59:59.000+00:00",
+    })
+    terminal_session.append_session_record(root, {
+        **session, "sequence": 1, "event": "terminal_output",
+        "recorded_at": "2026-11-01T01:00:01.000+01:00", "text": "after midnight",
+    })
+    terminal_session.append_session_record(root, {
+        **session, "sequence": 2, "event": "session_finished",
+        "recorded_at": "2026-11-01T00:00:02.000+00:00",
+    })
+
+    previous_day = root / "interactive" / "2026-10-31.jsonl"
+    current_day = root / "interactive" / "2026-11-01.jsonl"
+    assert previous_day.exists()
+    assert current_day.exists()
+    previous_records = [json.loads(line) for line in previous_day.read_text().splitlines()]
+    current_records = [json.loads(line) for line in current_day.read_text().splitlines()]
+    assert [record["event"] for record in previous_records] == ["session_started"]
+    assert [record["event"] for record in current_records] == ["terminal_output", "session_finished"]
+    assert [record["sequence"] for record in previous_records + current_records] == [0, 1, 2]
+
+
 def test_final_report_is_attempted_when_completion_record_fails(tmp_path: Path) -> None:
     class FakeReporter:
         enabled = True
@@ -77,7 +104,7 @@ def test_final_report_is_attempted_when_completion_record_fails(tmp_path: Path) 
             self.calls.append((state, exit_code, force))
 
     reporter = FakeReporter()
-    final = {"event": "session_finished", "exit_code": 7}
+    final = {"event": "session_finished", "recorded_at": "2026-11-03T12:00:00+00:00", "exit_code": 7}
     with patch.object(terminal_session, "append_record", side_effect=OSError("disk full")):
         failed = terminal_session._write_final_state(
             tmp_path / "journal.jsonl", final, reporter, 7
