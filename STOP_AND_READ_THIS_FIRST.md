@@ -14,6 +14,10 @@ This public seed is not the authority for any one operator's private account inv
 
 For this World Seed rebuild, [MISSION-RESET-AND-ACCEPTANCE.md](MISSION-RESET-AND-ACCEPTANCE.md) is the controlling execution order and finish line. Complete only demonstrated foundation blockers, the bounded terminal-visibility/handoff path, and the fresh-project quality trial. Recovery expansion, omni-context, broad non-blocking audits, new subsystems, and unrelated cleanup are deferred until the project-quality gate passes. Generic capability lists below do not authorize doing every capability before that gate. Do not move the finish line without a demonstrated blocker or an explicit change in the human owner's mission.
 
+## SHARED ROLE AND AUTHORITY MODEL
+
+[OPERATING_MODEL.md](OPERATING_MODEL.md) is the canonical role register and operating agreement for the human owner, AI steward, implementation agents, workstation, GitHub, World Seed, project repositories, services, automation, and durable records. Read it before acting. This document supplies the current instance's scope lock and stop conditions; it does not redefine participant roles or grant authority beyond that scope.
+
 ## OPERATING RULES — CANON
 
 1. **If you aren't having fun, you're doing it wrong.**
