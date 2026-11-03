@@ -10,7 +10,8 @@ Establish an AI-led operating ecosystem for the target account and its mission, 
 
 ## Phase 0 — Establish authority and target
 
-1. Read [MISSION.md](MISSION.md) to understand the open-ended discovery method and this seed's own purpose.
+1. Read [OPERATING_MODEL.md](OPERATING_MODEL.md) to understand the canonical roles, responsibilities, authority hierarchy, approval gates, and handoffs. Read [HUMAN.md](HUMAN.md) as the human-facing companion; do not expect the owner to manage routine machinery or remember undocumented state.
+2. Read [MISSION.md](MISSION.md) to understand the open-ended discovery method and this seed's own purpose.
 2. Identify the target GitHub account/organization and the human owner.
 3. Confirm which connected identity and tools can actually access it.
 4. Discover the target's own mission, constraints, and risk boundaries from its canonical records. Do not transplant world-seed's mission sentence into another account or project. If the target mission is absent, ask the smallest necessary mission-level question; do not invent one.
