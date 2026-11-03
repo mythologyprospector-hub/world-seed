@@ -26,9 +26,10 @@ It is deliberately **mission-portable and operator-aware**:
 
 - [MISSION.md](MISSION.md) — this seed's mission and shared discovery method.
 - [templates/MISSION.md](templates/MISSION.md) — reusable mission document; change only the opening mission sentence for another project.
-- [AGENTS.md](AGENTS.md) — entry-point instructions for any AI builder.
-- [CONSTITUTION.md](CONSTITUTION.md) — governance, leadership, Rule #1, Rule #2, authority, and safeguards.
-- [HUMAN.md](HUMAN.md) — the intended working relationship and communication style.
+- [OPERATING_MODEL.md](OPERATING_MODEL.md) — canonical role register, reciprocal responsibilities, authority, approval gates, handoffs, operating loop, and evidence vocabulary.
+- [AGENTS.md](AGENTS.md) — AI-builder execution instructions; defers shared role and authority definitions to the operating model.
+- [CONSTITUTION.md](CONSTITUTION.md) — shared values, Rule #1, Rule #2, and humane safeguards; defers operational role definitions to the operating model.
+- [HUMAN.md](HUMAN.md) — human owner's responsibilities, rights, practical participation, and the steward's reciprocal obligations.
 - [BOOTSTRAP.md](BOOTSTRAP.md) — account-level discovery and genesis sequence.
 - [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md) — ecosystem vs project responsibilities and the factory boundary.
 - [PROJECT_SEED_ABSORPTION.md](PROJECT_SEED_ABSORPTION.md) — audited migration map and acceptance gates for absorbing Project Seed capabilities into the World Seed factory.
