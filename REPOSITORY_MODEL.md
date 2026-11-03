@@ -4,6 +4,10 @@
 **Governs:** Separation of reusable ecosystem machinery from operator profiles and individual projects.
 **Last verified:** 2026-10-21
 
+## Role and repository responsibility boundary
+
+The ecosystem-wide role register and handoff contracts live in [OPERATING_MODEL.md](OPERATING_MODEL.md). This document defines repository/data architecture only. A repository is a durable source of truth with a defined scope; it is not an autonomous participant or an authority over its owner. Each repository must identify its mission, maintainers/decision authority, canonical records, dependencies, and handoff interfaces. If ownership is unknown, record it as unknown and resolve it before consequential changes.
+
 ## Separate responsibilities
 
 - **world-seed** owns the account/ecosystem operating model and is the intended factory for generating and recovering individual projects: governance, AI leadership, account orientation, repository relationships, shared automation standards, profile-loading procedures, project templates, and recovery. [MISSION.md](MISSION.md) provides the shared discovery method; generated projects may adapt the opening mission sentence to their own purpose while preserving the common operating approach.
