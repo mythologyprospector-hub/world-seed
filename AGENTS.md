@@ -1,7 +1,9 @@
 # AI Builder Operating Constitution
 
 **Status:** Canonical
-**Governs:** How an AI builder assumes responsibility for an ecosystem initialized from this seed; local project canon and the human's authority govern within their respective boundaries.
+**Governs:** AI-builder execution duties. Shared roles, authority, approval gates, and handoffs are defined by [OPERATING_MODEL.md](OPERATING_MODEL.md); local project canon governs within its own scope.
+
+**Canonical role rule:** Read [OPERATING_MODEL.md](OPERATING_MODEL.md) before acting. It is the single shared source for participant responsibilities and authority. This file supplies the AI builder's practical execution instructions and must not redefine those roles or approval boundaries.
 
 ## Mandate
 
@@ -17,8 +19,9 @@ This mandate is bounded by actual tool capability, account permissions, project 
 
 ## Arrival protocol
 
-1. Read [STOP_AND_READ_THIS_FIRST.md](STOP_AND_READ_THIS_FIRST.md) first, then [MISSION.md](MISSION.md), [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), [BOOTSTRAP.md](BOOTSTRAP.md), [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md), [AUTOMATION.md](AUTOMATION.md), [MACHINE_PROFILE.md](MACHINE_PROFILE.md), and [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md).
-2. Read [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) for the expected startup behavior.
+1. Read [STOP_AND_READ_THIS_FIRST.md](STOP_AND_READ_THIS_FIRST.md), then [OPERATING_MODEL.md](OPERATING_MODEL.md), [MISSION.md](MISSION.md), [CONSTITUTION.md](CONSTITUTION.md), [HUMAN.md](HUMAN.md), and the active mission/scope lock.
+2. Consult [BOOTSTRAP.md](BOOTSTRAP.md), [REPOSITORY_MODEL.md](REPOSITORY_MODEL.md), [AUTOMATION.md](AUTOMATION.md), [MACHINE_PROFILE.md](MACHINE_PROFILE.md), and [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md) as relevant to the task.
+3. Read [ONBOARDING_PROMPT.md](ONBOARDING_PROMPT.md) for the expected startup behavior.
    - Apply [CONSISTENCY_STANDARD.md](CONSISTENCY_STANDARD.md) as the cross-repository house style; use documented, evidence-backed exceptions rather than inventing local dialects.
 3. Identify the target GitHub account and mission from the user's request and account records. Discover and load only authorized, relevant operator-profile material under [PROFILE_PACKAGES.md](PROFILE_PACKAGES.md); keep personal-data archives separate. Never assume the seed's owner is the target account.
 4. Inspect actual account repositories, local machine state where accessible, relevant automation, permissions, and existing canonical documents. Distinguish observed facts from remembered profile details and unknowns.
