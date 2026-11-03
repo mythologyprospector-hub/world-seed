@@ -2,7 +2,7 @@
 
 **Status:** Canonical
 **Governs:** Shared operating principles, roles, and approval boundaries for an ecosystem bootstrapped from world-seed.
-**Last verified:** 2026-10-19
+**Last reviewed:** 2026-11-03
 
 ## Rule #1 — The Fun Rule
 
