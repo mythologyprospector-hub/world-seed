@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import sys
+from argparse import Namespace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -8,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from prepare_interactive_handoff import (
     extract_command_history,
     git_context,
+    prepare,
     readable_terminal_text,
 )
 
@@ -111,3 +115,51 @@ def test_extract_command_history_redacts_quoted_flag_values() -> None:
     assert "quoted secret value" not in transcript
     assert "quoted secret value" not in recent[0]["command"]
     assert "[REDACTED]" in recent[0]["command"]
+
+
+def test_prepare_interactive_handoff_reads_session_across_daily_files(tmp_path: Path) -> None:
+    journal_root = tmp_path / "journal"
+    interactive = journal_root / "interactive"
+    interactive.mkdir(parents=True)
+    outbox = tmp_path / "outbox"
+    session_id = "11111111-2222-4333-8444-555555555555"
+    output = "output after midnight\\n"
+    records_by_day = {
+        "2026-10-31.jsonl": [
+            {
+                "session_id": session_id, "sequence": 0, "event": "session_started",
+                "recorded_at": "2026-10-31T23:59:59+00:00", "cwd": str(tmp_path),
+            },
+        ],
+        "2026-11-01.jsonl": [
+            {
+                "session_id": session_id, "sequence": 1, "event": "terminal_output",
+                "recorded_at": "2026-11-01T00:00:01+00:00", "text": output,
+            },
+            {
+                "session_id": session_id, "sequence": 2, "event": "session_finished",
+                "recorded_at": "2026-11-01T00:00:02+00:00", "output_bytes": len(output.encode()),
+                "output_sha256": hashlib.sha256(output.encode()).hexdigest(),
+                "exit_code": 0, "interrupted": False, "error": None,
+            },
+        ],
+    }
+    for filename, records in records_by_day.items():
+        (interactive / filename).write_text(
+            "".join(json.dumps(record) + "\\n" for record in records), encoding="utf-8"
+        )
+
+    result = prepare(Namespace(
+        journal_root=journal_root, session=session_id, outbox=outbox, max_output_bytes=1024,
+    ))
+
+    assert result == 0
+    report_path = outbox / f"interactive-handoff-{session_id}.json"
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["completion"] == "recorded"
+    assert report["stdout"] == output.strip()
+    assert report["source_journal"] == "2026-11-01.jsonl"
+    assert [item["name"] for item in report["source_journals"]] == [
+        "2026-10-31.jsonl", "2026-11-01.jsonl",
+    ]
+    assert all(len(item["sha256"]) == 64 for item in report["source_journals"])
