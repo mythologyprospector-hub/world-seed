@@ -162,6 +162,7 @@ def git_context(cwd: str) -> tuple[str | None, str | None, bool | None]:
 def prepare(args: argparse.Namespace) -> int:
     root = args.journal_root.expanduser() / "interactive"
     matches: list[dict[str, Any]] = []
+    sources: dict[str, Path] = {}
     source: Path | None = None
     try:
         for path in sorted(root.glob("*.jsonl")):
@@ -178,6 +179,7 @@ def prepare(args: argparse.Namespace) -> int:
                         ) from exc
                     if isinstance(record, dict) and record.get("session_id") == args.session:
                         matches.append(record)
+                        sources[path.name] = path
                         source = path
         if not matches or source is None:
             raise ValueError("exact session ID was not found in the interactive journal")
@@ -274,6 +276,10 @@ def prepare(args: argparse.Namespace) -> int:
             "redaction_notice": "Heuristic redaction is not guaranteed to find every secret. Review this file before publishing.",
             "source_journal": source.name,
             "source_journal_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            "source_journals": [
+                {"name": journal.name, "sha256": hashlib.sha256(journal.read_bytes()).hexdigest()}
+                for journal in sorted(sources.values(), key=lambda item: item.name)
+            ],
             "journal_warnings": 0,
             "session_interrupted": finished.get("interrupted") if finished else None,
             "session_error": finished.get("error") if finished else None,
