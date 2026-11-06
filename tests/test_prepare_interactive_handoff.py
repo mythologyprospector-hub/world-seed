@@ -123,7 +123,7 @@ def test_prepare_interactive_handoff_reads_session_across_daily_files(tmp_path: 
     interactive.mkdir(parents=True)
     outbox = tmp_path / "outbox"
     session_id = "11111111-2222-4333-8444-555555555555"
-    output = "output after midnight\\n"
+    output = "output after midnight\n"
     records_by_day = {
         "2026-10-31.jsonl": [
             {
@@ -146,7 +146,7 @@ def test_prepare_interactive_handoff_reads_session_across_daily_files(tmp_path: 
     }
     for filename, records in records_by_day.items():
         (interactive / filename).write_text(
-            "".join(json.dumps(record) + "\\n" for record in records), encoding="utf-8"
+            "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8"
         )
 
     result = prepare(Namespace(
