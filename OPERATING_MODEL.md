@@ -1,6 +1,6 @@
 # Operating Model and Role Constitution
 
-**Status:** Proposed canonical operating model; binding only after owner-approved merge.  
+**Status:** Canonical operating model; established by merged PR #114 on 2026-11-03.  
 **Governs:** Shared roles, responsibilities, authority, interfaces, handoffs, and evidence across a World Seed ecosystem.  
 **Scope:** Portable operating doctrine. It does not create capabilities, access, continuous awareness, or background execution that the actual tools do not provide.
 
