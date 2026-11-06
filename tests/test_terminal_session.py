@@ -263,7 +263,7 @@ def test_interactive_pty_session_refuses_to_launch_without_writable_journal(tmp_
                     captured.extend(os.read(master, 4096))
                 except OSError:
                     break
-        assert process.poll() is not None, "launcher did not fail promptly when journaling was unavailable"
+        assert process.poll() is not None, f"launcher did not fail promptly when journaling was unavailable; output={captured.decode(errors='replace')!r}"
         assert process.returncode == 125
         assert b"cannot persist session start" in captured
         assert b"PTY_SESSION_SENTINEL" not in captured
@@ -410,7 +410,7 @@ def test_interactive_bash_session_records_command_boundaries_and_preserves_bashr
                     captured.extend(os.read(master, 4096))
                 except OSError:
                     break
-        assert process.poll() is not None, "journaled Bash session did not exit"
+        assert process.poll() is not None, f"journaled Bash session did not exit; output={captured.decode(errors='replace')!r}"
         assert process.returncode == 0
     finally:
         if process.poll() is None:
