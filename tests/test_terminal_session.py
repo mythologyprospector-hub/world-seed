@@ -67,6 +67,33 @@ def test_latest_pointer_warning_does_not_echo_sensitive_exception(capsys) -> Non
     assert "synthetic-report-secret" not in warning
 
 
+def test_session_records_roll_over_at_utc_midnight(tmp_path: Path) -> None:
+    root = tmp_path / "journal"
+    session = {"session_id": "rollover-test", "sequence": 0}
+    terminal_session.append_session_record(root, {
+        **session, "event": "session_started",
+        "recorded_at": "2026-10-31T23:59:59.000+00:00",
+    })
+    terminal_session.append_session_record(root, {
+        **session, "sequence": 1, "event": "terminal_output",
+        "recorded_at": "2026-11-01T01:00:01.000+01:00", "text": "after midnight",
+    })
+    terminal_session.append_session_record(root, {
+        **session, "sequence": 2, "event": "session_finished",
+        "recorded_at": "2026-11-01T00:00:02.000+00:00",
+    })
+
+    previous_day = root / "interactive" / "2026-10-31.jsonl"
+    current_day = root / "interactive" / "2026-11-01.jsonl"
+    assert previous_day.exists()
+    assert current_day.exists()
+    previous_records = [json.loads(line) for line in previous_day.read_text().splitlines()]
+    current_records = [json.loads(line) for line in current_day.read_text().splitlines()]
+    assert [record["event"] for record in previous_records] == ["session_started"]
+    assert [record["event"] for record in current_records] == ["terminal_output", "session_finished"]
+    assert [record["sequence"] for record in previous_records + current_records] == [0, 1, 2]
+
+
 def test_final_report_is_attempted_when_completion_record_fails(tmp_path: Path) -> None:
     class FakeReporter:
         enabled = True
@@ -77,7 +104,7 @@ def test_final_report_is_attempted_when_completion_record_fails(tmp_path: Path) 
             self.calls.append((state, exit_code, force))
 
     reporter = FakeReporter()
-    final = {"event": "session_finished", "exit_code": 7}
+    final = {"event": "session_finished", "recorded_at": "2026-11-03T12:00:00+00:00", "exit_code": 7}
     with patch.object(terminal_session, "append_record", side_effect=OSError("disk full")):
         failed = terminal_session._write_final_state(
             tmp_path / "journal.jsonl", final, reporter, 7
@@ -236,7 +263,7 @@ def test_interactive_pty_session_refuses_to_launch_without_writable_journal(tmp_
                     captured.extend(os.read(master, 4096))
                 except OSError:
                     break
-        assert process.poll() is not None, "launcher did not fail promptly when journaling was unavailable"
+        assert process.poll() is not None, f"launcher did not fail promptly when journaling was unavailable; output={captured.decode(errors='replace')!r}"
         assert process.returncode == 125
         assert b"cannot persist session start" in captured
         assert b"PTY_SESSION_SENTINEL" not in captured
@@ -333,3 +360,73 @@ def test_terminate_child_process_escalates_when_sigterm_is_ignored() -> None:
             os.waitpid(child_pid, 0)
         except ChildProcessError:
             pass
+
+
+
+def test_interactive_bash_session_records_command_boundaries_and_preserves_bashrc(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    home.mkdir()
+    hook_log = home / "prompt-hook.log"
+    (home / ".bashrc").write_text(
+        f"PROMPT_COMMAND='printf user-hook >> {hook_log}'\n",
+        encoding="utf-8",
+    )
+    master, slave = pty.openpty()
+    env = os.environ.copy()
+    env["HOME"] = str(home)
+    env["SHELL"] = "/bin/bash"
+    journal_root = tmp_path / "journal"
+    process = subprocess.Popen(
+        [sys.executable, str(SCRIPT), "--no-live-report", "--log-dir", str(journal_root)],
+        stdin=slave, stdout=slave, stderr=slave, env=env, close_fds=True,
+    )
+    os.close(slave)
+    captured = bytearray()
+    try:
+        os.write(master, b"printf 'COMMAND_CAPTURE_SENTINEL\\n'\n")
+        deadline = time.monotonic() + 8
+        while time.monotonic() < deadline:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    chunk = os.read(master, 4096)
+                except OSError:
+                    chunk = b""
+                if chunk:
+                    captured.extend(chunk)
+            if b"COMMAND_CAPTURE_SENTINEL" in captured and b"world-seed-command;" in captured:
+                break
+            if process.poll() is not None:
+                break
+        assert process.poll() is None, "journaled Bash session exited unexpectedly"
+        assert b"COMMAND_CAPTURE_SENTINEL" in captured
+        assert b"world-seed-command;" in captured
+        os.write(master, b"exit 0\n")
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline and process.poll() is None:
+            ready, _, _ = select.select([master], [], [], 0.1)
+            if ready:
+                try:
+                    captured.extend(os.read(master, 4096))
+                except OSError:
+                    break
+        assert process.poll() is not None, f"journaled Bash session did not exit; output={captured.decode(errors='replace')!r}"
+        assert process.returncode == 0
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+        os.close(master)
+
+    journal_files = list((journal_root / "interactive").glob("*.jsonl"))
+    assert len(journal_files) == 1
+    records = [json.loads(line) for line in journal_files[0].read_text().splitlines()]
+    output = "".join(
+        record.get("text", "")
+        for record in records
+        if record.get("event") == "terminal_output"
+    )
+    assert "world-seed-command;" in output
+    assert "COMMAND_CAPTURE_SENTINEL" in output
+    assert hook_log.read_text(encoding="utf-8").count("user-hook") >= 1
+    assert not list((journal_root / "interactive").glob(".*.bashrc"))
