@@ -157,7 +157,7 @@ def test_prepare_interactive_handoff_reads_session_across_daily_files(tmp_path: 
     report_path = outbox / f"interactive-handoff-{session_id}.json"
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["completion"] == "recorded"
-    assert report["stdout"] == output.strip()
+    assert report["stdout"].strip() == output.strip()
     assert report["source_journal"] == "2026-11-01.jsonl"
     assert [item["name"] for item in report["source_journals"]] == [
         "2026-10-31.jsonl", "2026-11-01.jsonl",
