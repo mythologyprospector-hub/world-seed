@@ -18,6 +18,20 @@ The local JSON Lines journal is stored under:
 
 The session records start and finish events, terminal output, timestamps, session identity, working-directory context, output byte count and hash, and the shell's exit status. The launcher restores terminal settings when the session ends. Raw journal data remains local; this launcher does not upload it.
 
+## Rolling command continuity window
+
+For interactive Bash sessions, the launcher creates a temporary owner-only rc wrapper, sources the operator's normal ~/.bashrc, and adds a PROMPT_COMMAND hook. The hook emits a private OSC marker after each completed command; the PTY journal stores that marker alongside the terminal output so the handoff preparer can associate command text, exit status, and the output observed before the next prompt. The wrapper is removed when the session ends. The operator's ~/.bashrc is not modified.
+
+The launcher prints the session UUID. To prepare a bounded handoff containing the **last 10 completed Bash commands** and their corresponding terminal output, run:
+
+```bash
+python3 scripts/prepare_interactive_handoff.py --session SESSION_UUID
+```
+
+Replace SESSION_UUID with the identifier printed when the journaled session started. Preparation writes a private local JSON report to the handoff outbox; it does not upload. Inspect the command list and output, including the redaction notice, before publishing that exact report with the existing explicit terminal_handoff.py publish --confirm-publish operation.
+
+The handoff keeps the newest command history when the output budget is exceeded. Command text and output are heuristically redacted, not guaranteed safe; never capture commands or output containing secrets. Raw PTY journals remain local. Bash is the currently supported shell for command-boundary markers. Other shells, sessions where the hook cannot be installed, and commands that do not return to a prompt are reported as transcript-only or incomplete rather than being assigned invented command boundaries.
+
 The current `scripts/terminal_session.py` launcher sets `WORLD_SEED_TERMINAL_MODE=journal` in the child shell environment, so an enrolled session can display a JOURNAL label. An ordinary shell with no marker displays NORMAL. This label is only a visual indication of how the shell was launched. It is not proof that recording is healthy, and it does not itself perform recording or remote publication. The interactive PTY journal remains local; the separately invoked `world-seed-see` wrapper publishes bounded snapshots, not the raw journal. See [BASH_PROMPT.md](BASH_PROMPT.md).
 
 ## Run a command
